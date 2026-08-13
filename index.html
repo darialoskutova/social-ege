@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ЕГЭ по обществознанию</title>
+
+    <!-- Красивый современный шрифт -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            background: #fafbfc;
+            color: #172033;
+        }
+
+
+        /* -------------------- */
+        /* ШАПКА */
+        /* -------------------- */
+
+        header {
+            height: 82px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 35px;
+
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .nav {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav a {
+            text-decoration: none;
+            color: #475064;
+
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav a:hover {
+            color: #1746a2;
+        }
+
+        .login-button {
+            display: inline-block;
+
+            padding: 12px 20px;
+
+            background: #1746a2;
+            color: white !important;
+
+            border-radius: 12px;
+
+            transition: 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(23,70,162,0.20);
+        }
+
+
+        /* -------------------- */
+        /* ПЕРВЫЙ ЭКРАН */
+        /* -------------------- */
+
+        .hero {
+            min-height: calc(100vh - 82px);
+
+            position: relative;
+            overflow: hidden;
+
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-container {
+            width: 100%;
+            max-width: 1240px;
+
+            margin: 0 auto;
+            padding: 60px 35px 100px;
+
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+
+            align-items: center;
+            gap: 60px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+
+        /* Фоновая геометрия */
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .shape-one {
+            width: 530px;
+            height: 530px;
+
+            right: -160px;
+            top: -110px;
+
+            background: rgba(67, 125, 219, 0.08);
+        }
+
+        .shape-two {
+            width: 250px;
+            height: 250px;
+
+            left: -100px;
+            bottom: 40px;
+
+            border: 45px solid rgba(23, 70, 162, 0.045);
+        }
+
+        .shape-three {
+            width: 390px;
+            height: 390px;
+
+            right: 25%;
+            bottom: -260px;
+
+            border: 1px solid rgba(23, 70, 162, 0.12);
+        }
+
+        .grid-decoration {
+            position: absolute;
+
+            right: 4%;
+            top: 17%;
+
+            width: 280px;
+            height: 280px;
+
+            opacity: 0.12;
+
+            background-image:
+                linear-gradient(#4775c4 1px, transparent 1px),
+                linear-gradient(90deg, #4775c4 1px, transparent 1px);
+
+            background-size: 32px 32px;
+
+            mask-image: linear-gradient(
+                to bottom right,
+                transparent,
+                black,
+                transparent
+            );
+        }
+
+
+        /* -------------------- */
+        /* ТЕКСТ */
+        /* -------------------- */
+
+        .eyebrow {
+            display: inline-block;
+
+            margin-bottom: 20px;
+
+            color: #1746a2;
+
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+
+            max-width: 680px;
+
+            font-size: clamp(48px, 5.6vw, 78px);
+            line-height: 1.02;
+            letter-spacing: -3.4px;
+
+            font-weight: 800;
+        }
+
+        h1 span {
+            color: #1746a2;
+        }
+
+        .hero-description {
+            max-width: 580px;
+
+            margin: 28px 0 34px;
+
+            color: #626b7b;
+
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .primary-button {
+            display: inline-block;
+
+            padding: 16px 25px;
+
+            border-radius: 13px;
+
+            background: #1746a2;
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            transition: 0.2s;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(23, 70, 162, 0.22);
+        }
+
+        .secondary-button {
+            display: inline-block;
+
+            padding: 15px 23px;
+
+            border-radius: 13px;
+            border: 1px solid #d6dce6;
+
+            background: rgba(255,255,255,0.7);
+
+            color: #333c4e;
+
+            text-decoration: none;
+
+            font-size: 15px;
+            font-weight: 700;
+
+            transition: 0.2s;
+        }
+
+        .secondary-button:hover {
+            background: white;
+            border-color: #b9c5d8;
+        }
+
+
+        /* -------------------- */
+        /* КОЛЛАЖ УЧЕБНИКОВ */
+        /* -------------------- */
+
+        .books {
+            height: 600px;
+            position: relative;
+        }
+
+        .book {
+            position: absolute;
+
+            object-fit: contain;
+
+            filter: drop-shadow(
+                0 25px 25px rgba(30, 45, 75, 0.18)
+            );
+
+            transition: transform 0.35s ease;
+        }
+
+        .book:hover {
+            z-index: 10;
+        }
+
+        .constitution {
+            width: 300px;
+
+            right: 175px;
+            top: 60px;
+
+            transform: rotate(-7deg);
+        }
+
+        .constitution:hover {
+            transform: rotate(-4deg) translateY(-8px);
+        }
+
+        .textbook {
+            width: 240px;
+
+            right: 10px;
+            top: 220px;
+
+            transform: rotate(7deg);
+        }
+
+        .textbook:hover {
+            transform: rotate(4deg) translateY(-8px);
+        }
+
+        .ege {
+            width: 285px;
+
+            right: 105px;
+            top: 250px;
+
+            transform: rotate(2deg);
+        }
+
+        .ege:hover {
+            transform: rotate(0deg) translateY(-8px);
+        }
+
+
+        /* -------------------- */
+        /* БЛОК НИЖЕ */
+        /* -------------------- */
+
+        .intro-section {
+            padding: 100px 35px;
+
+            background: white;
+        }
+
+        .intro-container {
+            max-width: 1100px;
+
+            margin: 0 auto;
+        }
+
+        .section-label {
+            color: #1746a2;
+
+            font-size: 13px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 1.4px;
+        }
+
+        .intro-section h2 {
+            max-width: 750px;
+
+            margin: 15px 0 25px;
+
+            font-size: 40px;
+            line-height: 1.15;
+
+            letter-spacing: -1.5px;
+        }
+
+        .intro-text {
+            max-width: 720px;
+
+            color: #606979;
+
+            line-height: 1.75;
+
+            font-size: 17px;
+        }
+
+
+        /* -------------------- */
+        /* ТЕЛЕФОН */
+        /* -------------------- */
+
+        @media (max-width: 900px) {
+
+            header {
+                padding: 0 20px;
+            }
+
+            .nav a:not(.login-button) {
+                display: none;
+            }
+
+            .hero-container {
+                grid-template-columns: 1fr;
+
+                padding: 50px 22px 60px;
+                gap: 20px;
+            }
+
+            h1 {
+                letter-spacing: -2px;
+            }
+
+            .books {
+                height: 470px;
+                max-width: 500px;
+                width: 100%;
+
+                margin: 0 auto;
+            }
+
+            .constitution {
+                width: 230px;
+                left: 4%;
+                right: auto;
+                top: 25px;
+            }
+
+            .ege {
+                width: 220px;
+                right: 5%;
+                top: 130px;
+            }
+
+            .textbook {
+                width: 175px;
+                right: 7%;
+                top: 265px;
+            }
+
+            .intro-section {
+                padding: 70px 22px;
+            }
+
+            .intro-section h2 {
+                font-size: 32px;
+            }
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ШАПКА -->
+
+<header>
+
+    <div class="logo">
+        ОБЩЕСТВОЗНАНИЕ
+    </div>
+
+    <nav class="nav">
+
+        <a href="#about">
+            Обо мне
+        </a>
+
+        <a href="#preparation">
+            Подготовка
+        </a>
+
+        <a class="login-button" href="cabinet.html">
+            Войти в личный кабинет
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+
+<section class="hero">
+
+    <!-- Геометрия на фоне -->
+
+    <div class="shape shape-one"></div>
+    <div class="shape shape-two"></div>
+    <div class="shape shape-three"></div>
+    <div class="grid-decoration"></div>
+
+
+    <div class="hero-container">
+
+
+        <!-- ЛЕВАЯ ЧАСТЬ -->
+
+        <div class="hero-content">
+
+            <div class="eyebrow">
+                Подготовка к ЕГЭ
+            </div>
+
+            <h1>
+                ЕГЭ по <span>обществознанию</span>
+            </h1>
+
+            <p class="hero-description">
+                От первой темы — до балла, о котором мечтаешь.
+                Конспекты, практика и все необходимые материалы
+                в одной системе.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a class="primary-button" href="cabinet.html">
+                    Войти в личный кабинет
+                </a>
+
+                <a class="secondary-button" href="#about">
+                    Узнать обо мне ↓
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ПРАВАЯ ЧАСТЬ -->
+
+        <div class="books">
+
+            <img
+                class="book constitution"
+                src="constitution.webp"
+                alt="Конституция Российской Федерации"
+            >
+
+            <img
+                class="book ege"
+                src="ege.webp"
+                alt="Сборник ЕГЭ по обществознанию"
+            >
+
+            <img
+                class="book textbook"
+                src="textbook.webp"
+                alt="Учебник по обществознанию"
+            >
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- ОБО МНЕ -->
+
+<section class="intro-section" id="about">
+
+    <div class="intro-container">
+
+        <div class="section-label">
+            Обо мне
+        </div>
+
+        <h2>
+            Помогаю разобраться в обществознании,
+            а не просто выучить материал к экзамену
+        </h2>
+
+        <p class="intro-text">
+            Здесь позже мы разместим короткий рассказ о тебе:
+            образование, опыт подготовки учеников,
+            результаты и твой подход к занятиям.
+        </p>
+
+    </div>
+
+</section>
+
+
+</body>
+</html>

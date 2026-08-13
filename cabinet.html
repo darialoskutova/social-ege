@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            background: #fafbfc;
+            color: #172033;
+        }
+
+        header {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 24px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 18px;
+            letter-spacing: -0.4px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #475064;
+            font-weight: 600;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-link:hover {
+            color: #1746a2;
+        }
+
+        .page {
+            min-height: calc(100vh - 80px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* КРУПНАЯ ФОНОВАЯ ГЕОМЕТРИЯ */
+
+        .shape-one {
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            background: rgba(67, 125, 219, 0.07);
+            top: -170px;
+            right: -120px;
+            pointer-events: none;
+        }
+
+        .shape-two {
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 40px solid rgba(23, 70, 162, 0.035);
+            bottom: -80px;
+            left: -100px;
+            pointer-events: none;
+        }
+
+        /* ТОЧЕЧНЫЙ УЗОР */
+
+        .dot-pattern {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: 8%;
+            bottom: 8%;
+            opacity: 0.22;
+            background-image:
+                radial-gradient(
+                    circle,
+                    rgba(23, 70, 162, 0.35) 1.5px,
+                    transparent 1.5px
+                );
+            background-size: 18px 18px;
+            pointer-events: none;
+        }
+
+        /* КОНТУРНЫЕ КРУГИ */
+
+        .ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(23, 70, 162, 0.12);
+            pointer-events: none;
+        }
+
+        .ring-one {
+            width: 130px;
+            height: 130px;
+            top: 27%;
+            left: 3%;
+        }
+
+        .ring-two {
+            width: 70px;
+            height: 70px;
+            right: 10%;
+            top: 15%;
+            border-width: 8px;
+            border-color: rgba(67, 125, 219, 0.05);
+        }
+
+        /* ДЕКОРАТИВНЫЕ ПЛЮСЫ */
+
+        .plus {
+            position: absolute;
+            color: rgba(23, 70, 162, 0.17);
+            font-size: 30px;
+            font-weight: 400;
+            pointer-events: none;
+        }
+
+        .plus-one {
+            left: 8%;
+            top: 16%;
+            transform: rotate(15deg);
+        }
+
+        .plus-two {
+            right: 5%;
+            top: 55%;
+            font-size: 22px;
+            transform: rotate(-12deg);
+        }
+
+        /* ОСНОВНОЙ КОНТЕНТ */
+
+        .container {
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 60px 30px 100px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .top-block {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 30px;
+            margin-bottom: 36px;
+        }
+
+        .top-text {
+            max-width: 620px;
+        }
+
+        .eyebrow {
+            color: #1746a2;
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: 52px;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin: 12px 0 12px;
+        }
+
+        .subtitle {
+            color: #667084;
+            font-size: 17px;
+            margin: 0;
+        }
+
+        .hero-illustration {
+            flex-shrink: 0;
+            width: 220px;
+            margin-top: -10px;
+        }
+
+        .hero-illustration img {
+            width: 100%;
+            display: block;
+            border-radius: 20px;
+        }
+
+        /* КАРТОЧКИ КУРСОВ */
+
+        .courses {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .course-card {
+            position: relative;
+            min-height: 190px;
+            padding: 28px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid #e7ebf1;
+            text-decoration: none;
+            color: #172033;
+            overflow: hidden;
+            transition: 0.25s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 35px rgba(29, 49, 82, 0.09);
+            border-color: #d6dfed;
+        }
+
+        .course-number {
+            display: inline-block;
+            color: #1746a2;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 35px;
+        }
+
+        .course-card h2 {
+            margin: 0;
+            font-size: 27px;
+            letter-spacing: -0.8px;
+        }
+
+        .arrow {
+            position: absolute;
+            right: 25px;
+            bottom: 24px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5fb;
+            color: #1746a2;
+            font-size: 20px;
+            transition: 0.2s;
+        }
+
+        .course-card:hover .arrow {
+            background: #1746a2;
+            color: white;
+            transform: translateX(3px);
+        }
+
+        /* ДОПОЛНИТЕЛЬНЫЕ МАТЕРИАЛЫ */
+
+        .library {
+            margin-top: 20px;
+        }
+
+        .library-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px;
+            border-radius: 20px;
+            background: #1746a2;
+            color: white;
+            text-decoration: none;
+            transition: 0.25s;
+        }
+
+        .library-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 35px rgba(23, 70, 162, 0.18);
+        }
+
+        .library-text h2 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
+
+        .library-text p {
+            margin: 0;
+            opacity: 0.78;
+            font-size: 14px;
+        }
+
+        .library-arrow {
+            font-size: 26px;
+        }
+
+        /* МОБИЛЬНАЯ ВЕРСИЯ */
+
+        @media (max-width: 900px) {
+            .top-block {
+                align-items: center;
+            }
+
+            .hero-illustration {
+                width: 180px;
+            }
+        }
+
+        @media (max-width: 760px) {
+            header {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 45px 20px 70px;
+            }
+
+            .top-block {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 28px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .hero-illustration {
+                width: 150px;
+                align-self: flex-end;
+                margin-top: 0;
+            }
+
+            .courses {
+                grid-template-columns: 1fr;
+            }
+
+            .course-card {
+                min-height: 150px;
+            }
+
+            .library-card {
+                align-items: flex-start;
+                gap: 20px;
+            }
+
+            .ring-one {
+                display: none;
+            }
+
+            .plus-one {
+                display: none;
+            }
+
+            .dot-pattern {
+                right: -30px;
+                bottom: 2%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">
+        ОБЩЕСТВОЗНАНИЕ
+    </div>
+
+    <a class="back-link" href="index.html">
+        ← На главную
+    </a>
+</header>
+
+<section class="page">
+
+    <div class="shape-one"></div>
+    <div class="shape-two"></div>
+    <div class="dot-pattern"></div>
+    <div class="ring ring-one"></div>
+    <div class="ring ring-two"></div>
+    <div class="plus plus-one">+</div>
+    <div class="plus plus-two">+</div>
+
+    <div class="container">
+
+        <div class="top-block">
+
+            <div class="top-text">
+                <div class="eyebrow">
+                    Личный кабинет
+                </div>
+
+                <h1>
+                    Моя подготовка
+                </h1>
+
+                <p class="subtitle">
+                    Выберите раздел, чтобы продолжить обучение.
+                </p>
+            </div>
+
+            <div class="hero-illustration">
+                <img src="study-illustration.png" alt="Иллюстрация учебы">
+            </div>
+
+        </div>
+
+        <div class="courses">
+
+            <a class="course-card" href="sociology.html">
+                <span class="course-number">01</span>
+                <h2>Социология</h2>
+                <span class="arrow">→</span>
+            </a>
+
+            <a class="course-card" href="economics.html">
+                <span class="course-number">02</span>
+                <h2>Экономика</h2>
+                <span class="arrow">→</span>
+            </a>
+
+            <a class="course-card" href="politics.html">
+                <span class="course-number">03</span>
+                <h2>Политика</h2>
+                <span class="arrow">→</span>
+            </a>
+
+            <a class="course-card" href="law.html">
+                <span class="course-number">04</span>
+                <h2>Право</h2>
+                <span class="arrow">→</span>
+            </a>
+
+        </div>
+
+        <div class="library">
+            <a class="library-card" href="materials.html">
+                <div class="library-text">
+                    <h2>Дополнительные материалы</h2>
+                    <p>Планы, учебники, варианты и материалы для подготовки</p>
+                </div>
+
+                <div class="library-arrow">→</div>
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+</html>

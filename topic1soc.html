@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Тема 1</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            background: #fafbfc;
+            color: #172033;
+        }
+
+        header {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 24px 35px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #475064;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .back-link:hover {
+            color: #1746a2;
+        }
+
+        .page {
+            min-height: calc(100vh - 80px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+
+            width: 450px;
+            height: 450px;
+
+            border-radius: 50%;
+
+            background: rgba(67, 125, 219, 0.07);
+
+            top: -180px;
+            right: -130px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+
+            padding: 55px 30px 100px;
+
+            position: relative;
+            z-index: 2;
+        }
+
+        .eyebrow {
+            color: #1746a2;
+
+            text-transform: uppercase;
+            letter-spacing: 1.3px;
+
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        h1 {
+            margin: 12px 0 12px;
+
+            font-size: 50px;
+            letter-spacing: -2px;
+            line-height: 1.1;
+        }
+
+        .subtitle {
+            margin-bottom: 42px;
+
+            color: #667084;
+            font-size: 17px;
+        }
+
+        .materials {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .material-card {
+            min-height: 180px;
+
+            padding: 26px;
+
+            border-radius: 20px;
+
+            background: white;
+            border: 1px solid #e7ebf1;
+
+            text-decoration: none;
+            color: #172033;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+
+            transition: 0.25s;
+        }
+
+        .material-card:hover {
+            transform: translateY(-4px);
+
+            box-shadow:
+                0 16px 35px rgba(29, 49, 82, 0.09);
+        }
+
+        .material-type {
+            color: #1746a2;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .material-card h2 {
+            margin: 16px 0 8px;
+            font-size: 24px;
+        }
+
+        .material-card p {
+            margin: 0;
+
+            color: #6b7484;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .open {
+            margin-top: 25px;
+
+            color: #1746a2;
+
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .test-card {
+            background: #1746a2;
+            color: white;
+            border: none;
+        }
+
+        .test-card .material-type,
+        .test-card .open {
+            color: white;
+        }
+
+        .test-card p {
+            color: rgba(255,255,255,0.75);
+        }
+
+        @media (max-width: 700px) {
+
+            header {
+                padding: 20px;
+            }
+
+            .container {
+                padding: 45px 20px 70px;
+            }
+
+            h1 {
+                font-size: 39px;
+            }
+
+            .materials {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        ОБЩЕСТВОЗНАНИЕ
+    </div>
+
+    <a class="back-link" href="sociology.html">
+        ← К темам
+    </a>
+
+</header>
+
+
+<section class="page">
+
+    <div class="shape"></div>
+
+    <div class="container">
+
+        <div class="eyebrow">
+            Социология • Занятие 01
+        </div>
+
+        <h1>
+            Тема 1
+        </h1>
+
+        <p class="subtitle">
+            Все материалы занятия собраны здесь.
+        </p>
+
+
+        <div class="materials">
+
+            <a class="material-card" href="#">
+
+                <div>
+
+                    <div class="material-type">
+                        Теория
+                    </div>
+
+                    <h2>
+                        Конспект
+                    </h2>
+
+                    <p>
+                        Основные понятия и теория по теме занятия.
+                    </p>
+
+                </div>
+
+                <div class="open">
+                    Открыть →
+                </div>
+
+            </a>
+
+
+            <a class="material-card" href="#">
+
+                <div>
+
+                    <div class="material-type">
+                        Практика
+                    </div>
+
+                    <h2>
+                        Домашнее задание
+                    </h2>
+
+                    <p>
+                        Задания для закрепления материала.
+                    </p>
+
+                </div>
+
+                <div class="open">
+                    Открыть →
+                </div>
+
+            </a>
+
+
+            <a class="material-card test-card" href="#">
+
+                <div>
+
+                    <div class="material-type">
+                        Проверка знаний
+                    </div>
+
+                    <h2>
+                        Тест
+                    </h2>
+
+                    <p>
+                        Проверь, насколько хорошо усвоена тема.
+                    </p>
+
+                </div>
+
+                <div class="open">
+                    Пройти тест →
+                </div>
+
+            </a>
+
+
+            <a class="material-card" href="#">
+
+                <div>
+
+                    <div class="material-type">
+                        Дополнительно
+                    </div>
+
+                    <h2>
+                        Материалы
+                    </h2>
+
+                    <p>
+                        Полезные документы, схемы и дополнительные задания.
+                    </p>
+
+                </div>
+
+                <div class="open">
+                    Посмотреть →
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+</body>
+</html>
