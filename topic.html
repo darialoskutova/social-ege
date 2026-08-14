@@ -294,7 +294,7 @@
     <header>
         <div class="brand">ОБЩЕСТВОЗНАНИЕ</div>
 
-        <a href="sociology.html" class="back-link">
+        <a href="/social-ege/sociology.html" class="back-link">
             ← Назад к социологии
         </a>
     </header>
@@ -432,9 +432,11 @@
 
 </div>
 
-<script src="data.js"></script>
+<script src="data.js?v=2"></script>
 
 <script>
+    const SITE_ROOT = "/social-ege/";
+
     const params = new URLSearchParams(window.location.search);
     const topicKey = params.get("topic");
     const topic = topics[topicKey];
@@ -465,7 +467,7 @@
 
         if (topic.notes) {
 
-            notesCard.href = topic.notes;
+            notesCard.href = SITE_ROOT + topic.notes;
             notesCard.classList.remove("disabled");
             notesAction.textContent = "Открыть конспект";
 
@@ -481,7 +483,7 @@
 
         if (topic.homework) {
 
-            homeworkCard.href = topic.homework;
+            homeworkCard.href = SITE_ROOT + topic.homework;
             homeworkCard.classList.remove("disabled");
             homeworkAction.textContent = "Скачать задание";
 
