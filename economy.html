@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Экономика | Обществознание</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Manrope", sans-serif;
+            background: #fafbfc;
+            color: #172033;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .page {
+            position: relative;
+            min-height: 100vh;
+            padding: 0 24px 70px;
+        }
+
+        .shape {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .shape-one {
+            width: 330px;
+            height: 330px;
+            background: #eef3ff;
+            top: -150px;
+            right: -100px;
+        }
+
+        .shape-two {
+            width: 230px;
+            height: 230px;
+            border: 38px solid #f0edff;
+            left: -130px;
+            bottom: -80px;
+        }
+
+        .dots {
+            position: fixed;
+            width: 130px;
+            height: 130px;
+            right: 5%;
+            bottom: 7%;
+            opacity: 0.2;
+            z-index: 0;
+            background-image: radial-gradient(#1746a2 2px, transparent 2px);
+            background-size: 18px 18px;
+        }
+
+        header {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 28px 0 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            color: #1746a2;
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: 0.03em;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #5e687a;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #1746a2;
+        }
+
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            padding: 62px 0 48px;
+            max-width: 780px;
+        }
+
+        .label {
+            display: inline-flex;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background: #edf3ff;
+            color: #1746a2;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(42px, 6vw, 68px);
+            line-height: 1.05;
+            letter-spacing: -0.045em;
+        }
+
+        .subtitle {
+            margin: 20px 0 0;
+            color: #697386;
+            font-size: 17px;
+            line-height: 1.65;
+        }
+
+        .topics {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .topic-card {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #edf0f5;
+            border-radius: 22px;
+            padding: 22px 26px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+
+            box-shadow: 0 10px 28px rgba(32, 45, 78, 0.05);
+
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-3px);
+            border-color: #dfe7fa;
+            box-shadow: 0 16px 35px rgba(32, 45, 78, 0.09);
+        }
+
+        .topic-info {
+            min-width: 0;
+        }
+
+        .number {
+            color: #1746a2;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            margin-bottom: 7px;
+        }
+
+        .topic-title {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        .arrow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #edf3ff;
+            color: #1746a2;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 19px;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 760px) {
+            .page {
+                padding: 0 18px 50px;
+            }
+
+            header {
+                padding-top: 22px;
+            }
+
+            .hero {
+                padding: 45px 0 36px;
+            }
+
+            h1 {
+                font-size: 43px;
+            }
+
+            .topic-card {
+                padding: 20px;
+            }
+
+            .topic-title {
+                font-size: 16px;
+            }
+
+            .arrow {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page">
+
+    <div class="shape shape-one"></div>
+    <div class="shape shape-two"></div>
+    <div class="dots"></div>
+
+    <header>
+
+        <div class="brand">
+            ОБЩЕСТВОЗНАНИЕ
+        </div>
+
+        <a href="cabinet.html" class="back-link">
+            ← Назад в кабинет
+        </a>
+
+    </header>
+
+    <main>
+
+        <section class="hero">
+
+            <div class="label">
+                РАЗДЕЛ
+            </div>
+
+            <h1>
+                Экономика
+            </h1>
+
+            <p class="subtitle">
+                Выберите тему занятия.
+            </p>
+
+        </section>
+
+        <section class="topics">
+
+            <a href="topic.html?topic=eco15" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 15</div>
+                    <div class="topic-title">Экономика как наука и хозяйство</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco16" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 16</div>
+                    <div class="topic-title">Экономические системы</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco17" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 17</div>
+                    <div class="topic-title">Рынок. Спрос и предложение</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco18" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 18</div>
+                    <div class="topic-title">Рынок. Торговля</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco19" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 19</div>
+                    <div class="topic-title">Виды рынков. Конкуренция</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco20" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 20</div>
+                    <div class="topic-title">Государство в рыночной экономике. Мировая экономика</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco21" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 21</div>
+                    <div class="topic-title">Государственный бюджет. Собственность</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco22" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 22</div>
+                    <div class="topic-title">Финансовые институты. Финансовые услуги</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco23" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 23</div>
+                    <div class="topic-title">Предпринимательство</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco24" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 24</div>
+                    <div class="topic-title">Деньги. Ценные бумаги</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco25" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 25</div>
+                    <div class="topic-title">Инфляция. Семейный бюджет</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco26" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 26</div>
+                    <div class="topic-title">Рынок труда</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco27" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 27</div>
+                    <div class="topic-title">Экономический рост</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+            <a href="topic.html?topic=eco28" class="topic-card">
+                <div class="topic-info">
+                    <div class="number">ЗАНЯТИЕ 28</div>
+                    <div class="topic-title">Налоги</div>
+                </div>
+                <div class="arrow">→</div>
+            </a>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>
