@@ -1,0 +1,8 @@
+# Private Google Forms exports contain answer keys and must never be published.
+private-data/
+*.secret.json
+
+# macOS and temporary office files
+.DS_Store
+**/.DS_Store
+~$*.docx
