@@ -5,10 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Личный кабинет подготовки к ЕГЭ по обществознанию">
     <title>Обществознание с Дарьей — подготовка к ЕГЭ</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        @font-face {
+            font-family: "Manrope";
+            font-style: normal;
+            font-weight: 500 800;
+            font-display: swap;
+            src: url("assets/fonts/manrope-cyrillic.woff2") format("woff2");
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        @font-face {
+            font-family: "Manrope";
+            font-style: normal;
+            font-weight: 500 800;
+            font-display: swap;
+            src: url("assets/fonts/manrope-latin.woff2") format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212, U+2215;
+        }
+
+        @font-face {
+            font-family: "Onest";
+            font-style: normal;
+            font-weight: 400 700;
+            font-display: swap;
+            src: url("assets/fonts/onest-cyrillic.woff2") format("woff2");
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        @font-face {
+            font-family: "Onest";
+            font-style: normal;
+            font-weight: 400 700;
+            font-display: swap;
+            src: url("assets/fonts/onest-latin.woff2") format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212, U+2215;
+        }
+
         :root {
             --paper: #f5f1e8;
             --paper-light: #fffdf7;
@@ -9365,6 +9398,242 @@
                 display: none;
             }
         }
+
+        /* Fixed top navigation */
+        html {
+            scroll-padding-top: 104px;
+        }
+
+        #appView {
+            overflow: visible;
+        }
+
+        .app-shell {
+            display: block;
+            overflow: visible;
+        }
+
+        .sidebar {
+            position: sticky;
+            z-index: 200;
+            top: 0;
+            display: flex;
+            width: 100%;
+            height: auto;
+            min-height: 80px;
+            flex-direction: row;
+            align-items: center;
+            gap: 22px;
+            padding: 10px 22px;
+            border: 0;
+            border-bottom: 1px solid #c7d2e4;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 9px 24px rgba(17, 47, 108, 0.08);
+            backdrop-filter: blur(15px);
+        }
+
+        .sidebar .brand {
+            flex: 0 0 auto;
+            margin: 0;
+        }
+
+        .sidebar .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .nav {
+            display: flex;
+            min-width: 0;
+            flex: 1 1 auto;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .nav-button {
+            display: grid;
+            width: auto;
+            min-height: 48px;
+            grid-template-columns: 31px max-content;
+            gap: 7px;
+            padding: 6px 11px;
+            border: 1px solid transparent;
+            border-radius: 13px;
+            text-align: left;
+        }
+
+        .nav-number {
+            display: none;
+        }
+
+        .nav-icon {
+            width: 30px;
+            height: 30px;
+            border-color: #cbd6e8;
+            border-radius: 9px;
+            background: #ffffff;
+        }
+
+        .nav-icon svg {
+            width: 17px;
+            height: 17px;
+        }
+
+        .nav-button:hover,
+        .nav-button.is-active {
+            border-color: #aebfdf;
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .nav-button:hover .nav-icon,
+        .nav-button.is-active .nav-icon {
+            border-color: var(--blue);
+            background: var(--blue);
+            box-shadow: none;
+        }
+
+        .sidebar-user {
+            display: grid;
+            min-width: 120px;
+            flex: 0 0 auto;
+            grid-template-columns: 1fr;
+            justify-items: end;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .sidebar-user strong {
+            max-width: 160px;
+            overflow: hidden;
+            color: var(--blue-dark);
+            font-size: 12px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sidebar-user span {
+            display: none;
+        }
+
+        .sidebar-user .text-button {
+            margin-top: 2px;
+            color: var(--wine);
+            font-size: 10px;
+        }
+
+        .mobile-bar {
+            display: none !important;
+        }
+
+        .selected-subject-heading,
+        .lesson-section-tabs {
+            scroll-margin-top: 104px;
+        }
+
+        @media (max-width: 900px) {
+            html {
+                scroll-padding-top: 126px;
+            }
+
+            #appView {
+                padding: 0;
+            }
+
+            .app-shell {
+                width: 100%;
+                min-height: 100vh;
+                border: 0;
+                border-radius: 0;
+            }
+
+            .sidebar,
+            body.menu-open .sidebar {
+                position: sticky;
+                top: 0;
+                left: auto;
+                width: 100%;
+                height: auto;
+                min-height: 0;
+                flex-wrap: wrap;
+                gap: 6px 12px;
+                padding: 8px 12px 7px;
+                transform: none !important;
+            }
+
+            .sidebar .brand {
+                max-width: calc(100% - 135px);
+                order: 1;
+                font-size: 10px;
+            }
+
+            .sidebar .brand-mark {
+                width: 34px;
+                height: 34px;
+                border-radius: 10px;
+                font-size: 8px;
+            }
+
+            .sidebar-user {
+                min-width: 110px;
+                order: 2;
+                margin-left: auto;
+            }
+
+            .sidebar-user strong {
+                max-width: 110px;
+                font-size: 10px;
+            }
+
+            .nav {
+                order: 3;
+                width: calc(100vw - 24px);
+                flex: 0 0 100%;
+                justify-content: flex-start;
+                padding-bottom: 2px;
+                overflow-x: auto;
+                overscroll-behavior-inline: contain;
+                scrollbar-width: none;
+            }
+
+            .nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-button {
+                min-width: max-content;
+                min-height: 40px;
+                grid-template-columns: 27px max-content;
+                padding: 5px 9px;
+                border-radius: 11px;
+                font-size: 11px;
+            }
+
+            .nav-icon {
+                width: 27px;
+                height: 27px;
+                border-radius: 8px;
+            }
+
+            .nav-icon svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            .page {
+                width: min(calc(100% - 28px), 1120px);
+                padding-top: 34px;
+            }
+
+            .selected-subject-heading,
+            .lesson-section-tabs {
+                scroll-margin-top: 126px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -10179,6 +10448,7 @@
             user: "daria-ege-demo-user",
             works: "daria-ege-demo-works",
             testAttempts: "daria-ege-test-attempts",
+            testDrafts: "daria-ege-test-drafts",
             messages: "daria-ege-teacher-messages"
         };
         const dailyCoursePlan = [
@@ -10512,6 +10782,7 @@
         let matchingSelectedDefinition = null;
         let matchingSolved = new Set();
         let matchingMistakes = 0;
+        let testDraftSaveTimer = null;
         let currentOralQuestion = null;
         let slotAnimationTimer = null;
 
@@ -11163,10 +11434,72 @@
                     ${renderQuestionControl(question)}
                 </article>
             `).join("");
-            document.getElementById("testAnswerStatus").textContent = "После отправки сразу появятся балл и процент выполнения.";
             form.hidden = false;
             unavailable.hidden = true;
             form.querySelector('button[type="submit"]').textContent = "Отправить тест";
+            const restoredAnswers = restoreTestDraft(test, form);
+            document.getElementById("testAnswerStatus").textContent = restoredAnswers
+                ? `Черновик восстановлен · заполнено ${restoredAnswers} из ${test.questionCount}`
+                : "Ответы сохраняются автоматически. После отправки появятся балл, процент и разбор.";
+        }
+
+        function getTestDrafts() {
+            return readJson(storage.testDrafts, {});
+        }
+
+        function getTestDraftKey(test = currentTest) {
+            if (!test) return null;
+            const user = readJson(storage.user, { name: "Ученик", login: "" });
+            return `${user.login || user.name || "local"}::${test.id}`;
+        }
+
+        function saveCurrentTestDraft() {
+            const form = document.getElementById("authorTestForm");
+            const draftKey = getTestDraftKey();
+            if (!currentTest || !draftKey || form.dataset.reviewed === "true") return;
+
+            const values = {};
+            const answered = new Set();
+            for (const [name, rawValue] of new FormData(form).entries()) {
+                const value = String(rawValue);
+                if (!value.trim()) continue;
+                (values[name] ||= []).push(value);
+                answered.add(name);
+            }
+
+            const drafts = getTestDrafts();
+            drafts[draftKey] = {
+                testId: currentTest.id,
+                values,
+                answeredCount: answered.size,
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem(storage.testDrafts, JSON.stringify(drafts));
+            document.getElementById("testAnswerStatus").textContent = `Черновик сохранён · заполнено ${answered.size} из ${currentTest.questionCount}`;
+        }
+
+        function restoreTestDraft(test, form) {
+            const draft = getTestDrafts()[getTestDraftKey(test)];
+            if (!draft?.values) return 0;
+
+            form.querySelectorAll("[name]").forEach((control) => {
+                const savedValues = draft.values[control.name] || [];
+                if (control.type === "checkbox" || control.type === "radio") {
+                    control.checked = savedValues.includes(control.value);
+                } else if (savedValues.length) {
+                    control.value = savedValues[0];
+                }
+            });
+            return Number(draft.answeredCount || Object.keys(draft.values).length);
+        }
+
+        function clearCurrentTestDraft(test = currentTest) {
+            const draftKey = getTestDraftKey(test);
+            if (!draftKey) return;
+            const drafts = getTestDrafts();
+            if (!(draftKey in drafts)) return;
+            delete drafts[draftKey];
+            localStorage.setItem(storage.testDrafts, JSON.stringify(drafts));
         }
 
         function getTestAttempts() {
@@ -11774,6 +12107,18 @@
             document.getElementById("fileLabel").textContent = file ? file.name : "Выбрать выполненную работу";
         });
 
+        document.getElementById("authorTestForm").addEventListener("input", (event) => {
+            if (!event.target.matches("input, select")) return;
+            clearTimeout(testDraftSaveTimer);
+            testDraftSaveTimer = setTimeout(saveCurrentTestDraft, 220);
+        });
+
+        document.getElementById("authorTestForm").addEventListener("change", (event) => {
+            if (!event.target.matches("input, select")) return;
+            clearTimeout(testDraftSaveTimer);
+            saveCurrentTestDraft();
+        });
+
         document.getElementById("authorTestForm").addEventListener("submit", async (event) => {
             event.preventDefault();
             if (!currentTest) return;
@@ -11788,6 +12133,7 @@
             }
 
             const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+            clearTimeout(testDraftSaveTimer);
             submitButton.disabled = true;
             submitButton.textContent = "Проверяем…";
             const formData = new FormData(event.currentTarget);
@@ -11817,6 +12163,7 @@
                 createdAt: new Date().toISOString()
             });
             saveTestAttempts(attempts);
+            clearCurrentTestDraft(currentTest);
 
             if (result) {
                 document.getElementById("testResultPoints").textContent = `${result.earnedPoints} / ${result.totalPoints}`;
