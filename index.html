@@ -7988,6 +7988,58 @@
             line-height: 1.5;
         }
 
+        #lessonPage .test-answer-option.is-correct-answer {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            color: var(--blue-dark);
+            box-shadow: inset 4px 0 0 var(--blue);
+        }
+
+        #lessonPage .test-answer-option.is-selected-wrong {
+            border-color: var(--wine);
+            background: var(--wine-soft);
+            color: var(--wine);
+            box-shadow: inset 4px 0 0 var(--wine);
+        }
+
+        #lessonPage .test-text-answer.is-correct,
+        #lessonPage .test-select-answer.is-correct {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+        }
+
+        #lessonPage .test-text-answer.is-wrong,
+        #lessonPage .test-select-answer.is-wrong {
+            border-color: var(--wine);
+            background: var(--wine-soft);
+            color: var(--wine);
+        }
+
+        #lessonPage .test-answer-review {
+            display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            margin-top: 12px;
+            padding: 11px 13px;
+            border: 1px solid #c7d3ea;
+            border-radius: 13px;
+            background: var(--blue-soft);
+            color: var(--blue-dark);
+            font-size: 11px;
+            line-height: 1.45;
+        }
+
+        #lessonPage .test-answer-review.is-wrong {
+            border-color: #d9bdc2;
+            background: var(--wine-soft);
+            color: var(--wine);
+        }
+
+        #lessonPage .test-answer-review strong {
+            flex: 0 0 auto;
+            text-transform: uppercase;
+        }
+
         #lessonPage .prototype-warning {
             border-color: #d7deeb;
             background: #ffffff;
@@ -8641,7 +8693,7 @@
 
         #practicePage .game-mode-art img[src$="cursor.jpg"] { transform: scale(1.15); }
         #practicePage .game-mode-art img[src$="meh.jpg"] { transform: scale(1.35); }
-        #practicePage .game-mode-art img[src$="dragon.jpg"] { transform: scale(1.08); }
+        #practicePage .game-mode-art img[src$="dragon.jpg"] { transform: translateY(-10px) scale(1.12); }
         #practicePage .game-mode-art img[src$="what.jpg"] { transform: translateX(12%) scale(0.86); }
         #practicePage .game-mode-art img[src$="cutesmile.jpg"] { transform: scale(1.24); }
         #practicePage .game-mode-art img[src$="chudak.jpg"] { transform: scale(0.78); }
@@ -8672,6 +8724,236 @@
 
         .game-section-card > b {
             color: var(--blue);
+        }
+
+        .game-blank {
+            display: inline-block;
+            min-width: 132px;
+            border-bottom: 4px solid var(--wine);
+            color: var(--wine);
+            line-height: 0.9;
+        }
+
+        .matching-board {
+            display: grid;
+            grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+            gap: 16px;
+            width: 100%;
+        }
+
+        .matching-column {
+            display: grid;
+            align-content: start;
+            gap: 8px;
+        }
+
+        .matching-column h3 {
+            margin: 0 0 4px;
+            color: var(--blue-dark);
+            font-size: 13px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .matching-card {
+            min-height: 62px;
+            padding: 12px 14px;
+            border: 1px solid #c7d2e4;
+            border-radius: 15px;
+            background: #ffffff;
+            color: var(--ink);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            line-height: 1.35;
+            text-align: left;
+            cursor: pointer;
+            transition: 150ms ease;
+        }
+
+        .matching-card:hover:not(:disabled),
+        .matching-card.is-selected {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px var(--blue-soft);
+            transform: translateY(-1px);
+        }
+
+        .matching-card.is-matched {
+            border-color: var(--blue);
+            background: var(--blue);
+            color: #ffffff;
+            opacity: 0.74;
+        }
+
+        .matching-card.is-wrong {
+            border-color: var(--wine);
+            background: var(--wine-soft);
+            color: var(--wine);
+        }
+
+        .sequence-trail {
+            display: flex;
+            min-height: 76px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 12px;
+            border: 1px dashed var(--blue);
+            border-radius: 17px;
+            background: var(--blue-soft);
+        }
+
+        .sequence-trail > span {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: #ffffff;
+            color: var(--blue-dark);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .sequence-trail > span > b {
+            display: grid;
+            width: 20px;
+            height: 20px;
+            place-items: center;
+            border-radius: 50%;
+            background: var(--blue);
+            color: #ffffff;
+            font-size: 9px;
+        }
+
+        .sequence-pieces {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            width: 100%;
+        }
+
+        .sequence-piece.is-selected {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            color: var(--blue);
+        }
+
+        .game-inline-reset {
+            justify-self: start;
+            border: 0;
+            background: transparent;
+            color: var(--wine);
+            font: inherit;
+            font-size: 11px;
+            font-weight: 850;
+            cursor: pointer;
+        }
+
+        .term-constructor {
+            width: 100%;
+            padding: 18px;
+            border: 1px solid #c7d2e4;
+            border-radius: 19px;
+            background: var(--blue-soft);
+        }
+
+        .term-constructor label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--blue-dark);
+            font-size: 11px;
+            font-weight: 850;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .term-constructor > div {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 9px;
+        }
+
+        .term-constructor input {
+            min-width: 0;
+            padding: 13px 15px;
+            border: 1px solid #b9c8e2;
+            border-radius: 13px;
+            background: #ffffff;
+            color: var(--ink);
+            font: inherit;
+            outline: none;
+        }
+
+        .term-constructor input:focus,
+        .term-constructor input.is-correct {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(23, 70, 162, 0.11);
+        }
+
+        .term-constructor input.is-wrong {
+            border-color: var(--wine);
+            background: var(--wine-soft);
+            color: var(--wine);
+        }
+
+        .dual-case {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 13px;
+            width: 100%;
+        }
+
+        .dual-case-group {
+            padding: 14px;
+            border: 1px solid #c7d2e4;
+            border-radius: 18px;
+            background: #ffffff;
+        }
+
+        .dual-case-group h3 {
+            margin: 0 0 10px;
+            color: var(--blue-dark);
+            font-size: 14px;
+        }
+
+        .dual-case-group > div {
+            display: grid;
+            gap: 7px;
+        }
+
+        .dual-case .game-answer {
+            min-height: 50px;
+            padding: 10px 12px;
+            font-size: 11px;
+        }
+
+        .game-answer.is-selected {
+            border-color: var(--blue);
+            background: var(--blue-soft);
+            color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(23, 70, 162, 0.08);
+        }
+
+        .dual-check {
+            justify-self: start;
+        }
+
+        @media (max-width: 720px) {
+            .matching-board,
+            .dual-case,
+            .sequence-pieces {
+                grid-template-columns: 1fr;
+            }
+
+            .matching-card {
+                min-height: 54px;
+            }
+
+            .term-constructor > div {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 900px) {
@@ -9128,27 +9410,25 @@
                 <span>Обществознание с Дарьей</span>
             </button>
             <blockquote>Вход в учебную платформу подготовки к ЕГЭ по обществознанию.</blockquote>
-            <small>В рабочей версии здесь будет защищённый вход по почте и паролю.</small>
+            <small>Кабинет ученика</small>
         </aside>
 
         <main class="login-main">
             <form class="login-card" id="loginForm">
                 <p class="eyebrow">Личный кабинет</p>
                 <h1>С возвращением</h1>
-                <p>Для просмотра прототипа достаточно указать имя. Настоящую авторизацию подключим позже.</p>
+                <p>Введите имя и логин, который используете на курсе.</p>
                 <label class="field">
-                    <span>Твоё имя</span>
-                    <input id="studentName" name="name" autocomplete="name" placeholder="Например, Маша" required>
+                    <span>Имя и фамилия</span>
+                    <input id="studentName" name="name" autocomplete="name" placeholder="Например, Мария Иванова" required>
                 </label>
                 <label class="field">
-                    <span>Электронная почта</span>
-                    <input id="studentEmail" name="email" type="email" autocomplete="email" placeholder="name@example.com">
+                    <span>Логин</span>
+                    <input id="studentLogin" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Например, maria_ivanova" pattern="[A-Za-z0-9._-]{3,32}" title="От 3 до 32 латинских букв, цифр, точек, дефисов или знаков подчёркивания" required>
                 </label>
                 <div class="login-actions">
                     <button class="button" type="submit">Войти как ученик <span aria-hidden="true">→</span></button>
-                    <button class="button button--ghost" type="button" id="teacherDemoButton">Открыть демо преподавателя</button>
                 </div>
-                <div class="demo-hint">Это макет: данные сохраняются только в этом браузере. Пароль сейчас не требуется.</div>
             </form>
         </main>
     </section>
@@ -9381,7 +9661,7 @@
                                     <div><p class="eyebrow">Результат теста</p><h3 id="testResultTitle">Результат сохранён</h3><small id="testResultNote"></small></div>
                                 </div>
                                 <div class="test-submit-panel">
-                                    <p id="testAnswerStatus">После отправки тест отметится в прогрессе темы. Проверка результата подключится вместе с защищённой базой.</p>
+                                    <p id="testAnswerStatus">После отправки сразу появятся балл, процент и разбор ответов.</p>
                                     <button class="button" type="submit">Отправить тест</button>
                                 </div>
                             </form>
@@ -9407,7 +9687,7 @@
                                     <textarea id="studentComment" placeholder="Например: не уверена в пункте 3"></textarea>
                                 </label>
                                 <button class="button" type="submit">Отправить на проверку</button>
-                                <p class="prototype-warning">В прототипе сохраняется только название файла, сам файл никуда не загружается.</p>
+                                <p class="prototype-warning">До подключения защищённого хранилища файл остаётся на этом устройстве; в кабинете фиксируется только его название.</p>
                             </form>
                         </section>
                     </section>
@@ -9477,28 +9757,28 @@
                             </div>
                             <div class="game-mode-grid">
                                 <button class="game-mode-card game-mode-card--speed" type="button" data-game-mode="speed">
-                                    <span class="game-mode-label">01 · на время</span><strong>ЕГЭ-спринт</strong><small>Быстрый раунд: 20 секунд на каждый вопрос</small><span class="game-mode-art"><img src="картинки/cursor.jpg" alt=""></span>
+                                    <span class="game-mode-label">01 · на время</span><strong>Соединение на время</strong><small>Соедини 15 терминов с точными признаками</small><span class="game-mode-art"><img src="картинки/cursor.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--terms" type="button" data-game-mode="terms">
-                                    <span class="game-mode-label">02 · понятия</span><strong>Словарь ЕГЭ</strong><small>Найди точное определение термина</small><span class="game-mode-art"><img src="картинки/finger.jpg" alt=""></span>
+                                    <span class="game-mode-label">02 · по темам</span><strong>Пропуски в конспекте</strong><small>Восстанови 15 фрагментов из разных тем</small><span class="game-mode-art"><img src="картинки/finger.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--fact" type="button" data-game-mode="fact">
-                                    <span class="game-mode-label">03 · проверка</span><strong>Правда или ошибка</strong><small>Проверь утверждение и найди ошибку</small><span class="game-mode-art"><img src="картинки/meh.jpg" alt=""></span>
+                                    <span class="game-mode-label">03 · 15 утверждений</span><strong>Правда или ложь</strong><small>Реши, верно ли каждое сложное утверждение</small><span class="game-mode-art"><img src="картинки/meh.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--state" type="button" data-game-mode="constitution">
-                                    <span class="game-mode-label">04 · право</span><strong>Игра по Конституции</strong><small>Права, основы строя и органы власти</small><span class="game-mode-art"><img src="картинки/dragon.jpg" alt=""></span>
+                                    <span class="game-mode-label">04 · право</span><strong>Конституционный раунд</strong><small>Вставь пропуски в положения Конституции РФ</small><span class="game-mode-art"><img src="картинки/dragon.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--odd" type="button" data-game-mode="odd">
-                                    <span class="game-mode-label">05 · логика</span><strong>Что здесь лишнее?</strong><small>Найди понятие, которое выбивается из общего ряда</small><span class="game-mode-art"><img src="картинки/what.jpg" alt=""></span>
+                                    <span class="game-mode-label">05 · классификация</span><strong>Лишнее звено</strong><small>Найди и объясни ошибку в каждом ряду</small><span class="game-mode-art"><img src="картинки/what.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--examples" type="button" data-game-mode="examples">
-                                    <span class="game-mode-label">06 · примеры</span><strong>Узнай по ситуации</strong><small>Определи понятие по примеру из жизни</small><span class="game-mode-art"><img src="картинки/cutesmile.jpg" alt=""></span>
+                                    <span class="game-mode-label">06 · последовательности</span><strong>Соберите цепочку</strong><small>Расставь этапы процессов в верном порядке</small><span class="game-mode-art"><img src="картинки/cutesmile.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--authority" type="button" data-game-mode="authority">
-                                    <span class="game-mode-label">07 · государство</span><strong>Кто это решает?</strong><small>Соотнеси полномочие с государственным органом</small><span class="game-mode-art"><img src="картинки/chudak.jpg" alt=""></span>
+                                    <span class="game-mode-label">07 · точный ответ</span><strong>Термин-конструктор</strong><small>Вспомни понятие без вариантов ответа</small><span class="game-mode-art"><img src="картинки/chudak.jpg" alt=""></span>
                                 </button>
                                 <button class="game-mode-card game-mode-card--economy" type="button" data-game-mode="economyCase">
-                                    <span class="game-mode-label">08 · экономика</span><strong>Экономический детектив</strong><small>Разбери ситуацию на рынке и выбери объяснение</small><span class="game-mode-art"><img src="картинки/roblox.jpg" alt=""></span>
+                                    <span class="game-mode-label">08 · два шага</span><strong>Экономический детектив</strong><small>Определи явление и докажи вывод</small><span class="game-mode-art"><img src="картинки/roblox.jpg" alt=""></span>
                                 </button>
                             </div>
                         </div>
@@ -9614,7 +9894,7 @@
                             </div>
                             <button class="button button--small button--light" type="button" id="returnToStudent">Вернуться в кабинет ученика</button>
                         </div>
-                        <div class="admin-banner">Демонстрационный режим без защиты. В рабочей версии этот экран будет доступен только учётной записи преподавателя.</div>
+                        <div class="admin-banner">Доступ преподавателя будет открыт после подключения защищённой авторизации.</div>
                         <div id="adminWorkList"></div>
                         <section class="admin-message-section">
                             <div class="topic-section-heading"><div><p class="eyebrow">Вопросы учеников</p><h2>Сообщения</h2></div></div>
@@ -9630,6 +9910,7 @@
 
     <script src="data/tests-public.js"></script>
     <script src="data/tests-score-hashes.js"></script>
+    <script src="data/practice-games.js"></script>
     <script>
         const topics = [
             {
@@ -10205,21 +10486,12 @@
             economyCase: "картинки/roblox.jpg"
         };
 
-        const practiceRoundDefinitions = [
-            { label: "Раунд 01", title: "Разминка", description: "4 вопроса · базовый уровень" },
-            { label: "Раунд 02", title: "Смешанная практика", description: "4 вопроса · несколько тем" },
-            { label: "Раунд 03", title: "Посложнее", description: "4 вопроса · нужна внимательность" }
-        ];
-
-        Object.entries(extraPracticeQuestions).forEach(([gameKey, extraQuestions]) => {
-            const game = practiceGames[gameKey];
-            if (!game) return;
-            const completeBank = [...game.questions, ...extraQuestions];
-            game.image = practiceGameImages[gameKey];
-            game.sections = practiceRoundDefinitions.map((round, index) => ({
-                ...round,
-                questions: completeBank.slice(index * 4, index * 4 + 4)
-            }));
+        Object.entries(window.EGE_PRACTICE_GAMES_V2 || {}).forEach(([gameKey, game]) => {
+            practiceGames[gameKey] = {
+                ...game,
+                image: practiceGameImages[gameKey],
+                returnView: "gamesHub"
+            };
         });
 
         let currentSubject = "soc";
@@ -10234,6 +10506,12 @@
         let gameAnswered = false;
         let gameTimerId = null;
         let gameTimeLeft = 0;
+        let gameSequenceSelection = [];
+        let gameDualSelection = {};
+        let matchingSelectedTerm = null;
+        let matchingSelectedDefinition = null;
+        let matchingSolved = new Set();
+        let matchingMistakes = 0;
         let currentOralQuestion = null;
         let slotAnimationTimer = null;
 
@@ -10292,47 +10570,86 @@
         }
 
         function openPracticeGame(gameKey) {
-            const game = practiceGames[gameKey];
-            if (!game || !game.sections) return;
-            activeGameKey = gameKey;
-            document.getElementById("gameSectionsLabel").textContent = game.label;
-            document.getElementById("gameSectionsTitle").textContent = game.title;
-            document.getElementById("gameSectionsImage").src = game.image || "картинки/cursor.jpg";
-            document.getElementById("gameSectionGrid").innerHTML = game.sections.map((section, index) => `
-                <button class="game-section-card" type="button" data-game-section="${index}">
-                    <span>${escapeHtml(section.label)}</span>
-                    <strong>${escapeHtml(section.title)}</strong>
-                    <small>${escapeHtml(section.description)}</small>
-                    <b aria-hidden="true">→</b>
-                </button>
-            `).join("");
-            showPracticePanel("gameSectionsHub");
+            startPracticeGame(gameKey);
         }
 
-        function startPracticeGame(gameKey, sectionIndex = null) {
+        function startPracticeGame(gameKey) {
             const game = practiceGames[gameKey];
             if (!game) return;
             activeGameKey = gameKey;
-            const numericSectionIndex = sectionIndex === null ? 0 : Number(sectionIndex);
-            const section = game.sections ? game.sections[numericSectionIndex] : null;
-            activeGameSectionIndex = section ? numericSectionIndex : 0;
-            activeGameQuestions = section ? section.questions : game.questions;
+            activeGameSectionIndex = 0;
+            activeGameQuestions = game.questions || [];
             gameQuestionIndex = 0;
             gameScoreValue = 0;
             gameAnswered = false;
-            document.getElementById("gameModeLabel").textContent = section ? `${game.label} · ${section.title}` : game.label;
+            gameSequenceSelection = [];
+            gameDualSelection = {};
+            matchingSelectedTerm = null;
+            matchingSelectedDefinition = null;
+            matchingSolved = new Set();
+            matchingMistakes = 0;
+            document.getElementById("gameModeLabel").textContent = game.label;
             document.getElementById("gameTitle").textContent = game.title;
             document.getElementById("gameBackButton").textContent = game.returnView === "constitutionHub"
                 ? "← К разделу Конституции"
-                : "← К раундам игры";
+                : "← К восьми играм";
             showPracticePanel("gameStage");
             renderGameQuestion();
+        }
+
+        function shuffledEntries(values, offset = 0) {
+            if (values.length < 2) return [...values];
+            const shift = (offset * 4 + 3) % values.length;
+            return values.map((value, index) => ({ value, index }))
+                .slice(shift)
+                .concat(values.map((value, index) => ({ value, index })).slice(0, shift))
+                .reverse();
+        }
+
+        function renderMatchingGame() {
+            const game = practiceGames[activeGameKey];
+            const definitions = shuffledEntries(activeGameQuestions.map((pair) => pair.match), 2);
+            document.getElementById("gameQuestionCount").textContent = `${matchingSolved.size} из ${activeGameQuestions.length} пар`;
+            document.getElementById("gameScore").textContent = `Ошибки: ${matchingMistakes}`;
+            document.getElementById("gameProgressBar").style.width = `${Math.round((matchingSolved.size / activeGameQuestions.length) * 100)}%`;
+            document.getElementById("gameQuestion").textContent = "Сначала выберите термин, затем — его точное определение";
+            document.getElementById("gameAnswers").innerHTML = `
+                <div class="matching-board">
+                    <div class="matching-column"><h3>Термины</h3>${activeGameQuestions.map((pair, index) => `
+                        <button class="matching-card" type="button" data-match-side="term" data-match-id="${index}">${escapeHtml(pair.term)}</button>
+                    `).join("")}</div>
+                    <div class="matching-column"><h3>Признаки</h3>${definitions.map((entry) => `
+                        <button class="matching-card" type="button" data-match-side="definition" data-match-id="${entry.index}">${escapeHtml(entry.value)}</button>
+                    `).join("")}</div>
+                </div>`;
+            document.getElementById("gameFeedback").hidden = true;
+            document.getElementById("gameNextButton").hidden = true;
+            const timer = document.getElementById("gameTimer");
+            timer.hidden = false;
+            gameTimeLeft = game.seconds;
+            updateGameTimer();
+            gameTimerId = setInterval(() => {
+                gameTimeLeft -= 1;
+                updateGameTimer();
+                if (gameTimeLeft <= 0) {
+                    gameScoreValue = matchingSolved.size;
+                    renderGameFinish();
+                }
+            }, 1000);
+        }
+
+        function renderClozeTitle(value) {
+            return escapeHtml(value).replace("___", '<span class="game-blank">________</span>');
         }
 
         function renderGameQuestion() {
             stopGameTimer();
             const game = practiceGames[activeGameKey];
             if (!game) return;
+            if (game.format === "matching") {
+                renderMatchingGame();
+                return;
+            }
             if (gameQuestionIndex >= activeGameQuestions.length) {
                 renderGameFinish();
                 return;
@@ -10345,10 +10662,39 @@
             document.getElementById("gameQuestionCount").textContent = `Вопрос ${gameQuestionIndex + 1} из ${activeGameQuestions.length}`;
             document.getElementById("gameScore").textContent = `${gameScoreValue} ${gameScoreValue === 1 ? "балл" : "баллов"}`;
             document.getElementById("gameProgressBar").style.width = `${progress}%`;
-            document.getElementById("gameQuestion").textContent = question.question;
-            document.getElementById("gameAnswers").innerHTML = question.options.map((option, index) => `
-                <button class="game-answer" type="button" data-game-answer="${index}">${escapeHtml(option)}</button>
-            `).join("");
+            document.getElementById("gameQuestion").innerHTML = ["cloze", "constitution"].includes(game.format)
+                ? renderClozeTitle(question.question)
+                : escapeHtml(question.question);
+
+            if (game.format === "sequence") {
+                const pieces = shuffledEntries(question.sequence, gameQuestionIndex);
+                document.getElementById("gameAnswers").innerHTML = `
+                    <div class="sequence-trail" id="gameSequenceTrail"><span>Нажимайте на карточки по порядку</span></div>
+                    <div class="sequence-pieces">${pieces.map((entry) => `
+                        <button class="game-answer sequence-piece" type="button" data-sequence-part="${entry.index}">${escapeHtml(entry.value)}</button>
+                    `).join("")}</div>
+                    <button class="game-inline-reset" type="button" data-sequence-reset>Сбросить порядок</button>`;
+            } else if (game.format === "input") {
+                document.getElementById("gameAnswers").innerHTML = `
+                    <div class="term-constructor">
+                        <label for="gameTextAnswer">Точный термин</label>
+                        <div><input id="gameTextAnswer" type="text" autocomplete="off" placeholder="Введите ответ"><button class="button button--small" type="button" data-check-game-text>Проверить</button></div>
+                    </div>`;
+                requestAnimationFrame(() => document.getElementById("gameTextAnswer")?.focus());
+            } else if (game.format === "dual") {
+                gameDualSelection = {};
+                document.getElementById("gameAnswers").innerHTML = `
+                    <div class="dual-case">${question.groups.map((group, groupIndex) => `
+                        <section class="dual-case-group"><h3>${escapeHtml(group.label)}</h3><div>${group.options.map((option, optionIndex) => `
+                            <button class="game-answer" type="button" data-dual-group="${groupIndex}" data-dual-option="${optionIndex}">${escapeHtml(option)}</button>
+                        `).join("")}</div></section>
+                    `).join("")}</div>
+                    <button class="button button--small dual-check" type="button" data-check-dual>Проверить две версии</button>`;
+            } else {
+                document.getElementById("gameAnswers").innerHTML = question.options.map((option, index) => `
+                    <button class="game-answer" type="button" data-game-answer="${index}">${escapeHtml(option)}</button>
+                `).join("");
+            }
             document.getElementById("gameFeedback").hidden = true;
             document.getElementById("gameNextButton").hidden = true;
             timer.hidden = !game.timed;
@@ -10394,6 +10740,111 @@
             const nextButton = document.getElementById("gameNextButton");
             nextButton.textContent = gameQuestionIndex === activeGameQuestions.length - 1 ? "Показать результат" : "Следующий вопрос";
             nextButton.hidden = false;
+        }
+
+        function finishCustomGameQuestion(isCorrect, explanation) {
+            if (gameAnswered) return;
+            gameAnswered = true;
+            if (isCorrect) gameScoreValue += 1;
+            document.querySelectorAll("#gameAnswers button, #gameAnswers input").forEach((control) => {
+                control.disabled = true;
+            });
+            const feedback = document.getElementById("gameFeedback");
+            feedback.hidden = false;
+            feedback.textContent = `${isCorrect ? "Верно. " : "Неверно. "}${explanation}`;
+            document.getElementById("gameScore").textContent = `${gameScoreValue} ${gameScoreValue === 1 ? "балл" : "баллов"}`;
+            const nextButton = document.getElementById("gameNextButton");
+            nextButton.textContent = gameQuestionIndex === activeGameQuestions.length - 1 ? "Показать результат" : "Следующий вопрос";
+            nextButton.hidden = false;
+        }
+
+        function handleSequencePart(partIndex, button) {
+            if (gameAnswered || gameSequenceSelection.includes(partIndex)) return;
+            gameSequenceSelection.push(partIndex);
+            button.classList.add("is-selected");
+            button.disabled = true;
+            const question = activeGameQuestions[gameQuestionIndex];
+            document.getElementById("gameSequenceTrail").innerHTML = gameSequenceSelection
+                .map((index, order) => `<span><b>${order + 1}</b>${escapeHtml(question.sequence[index])}</span>`)
+                .join("");
+            if (gameSequenceSelection.length === question.sequence.length) {
+                const isCorrect = gameSequenceSelection.every((value, index) => value === index);
+                finishCustomGameQuestion(isCorrect, question.explanation);
+            }
+        }
+
+        function checkTextGameAnswer() {
+            if (gameAnswered) return;
+            const input = document.getElementById("gameTextAnswer");
+            const question = activeGameQuestions[gameQuestionIndex];
+            const submitted = normalizeTestAnswer(input.value);
+            if (!submitted) {
+                input.focus();
+                return;
+            }
+            const isCorrect = question.answers.some((answer) => normalizeTestAnswer(answer) === submitted);
+            input.classList.add(isCorrect ? "is-correct" : "is-wrong");
+            finishCustomGameQuestion(isCorrect, `${question.explanation}${isCorrect ? "" : ` Правильный ответ: ${question.answers[0]}.`}`);
+        }
+
+        function checkDualGameAnswer() {
+            if (gameAnswered) return;
+            const question = activeGameQuestions[gameQuestionIndex];
+            if (Object.keys(gameDualSelection).length !== question.groups.length) {
+                document.getElementById("gameFeedback").textContent = "Сначала выберите по одному ответу в каждом блоке.";
+                document.getElementById("gameFeedback").hidden = false;
+                return;
+            }
+            const isCorrect = question.groups.every((group, index) => gameDualSelection[index] === group.correct);
+            question.groups.forEach((group, groupIndex) => {
+                document.querySelectorAll(`[data-dual-group="${groupIndex}"]`).forEach((button) => {
+                    const optionIndex = Number(button.dataset.dualOption);
+                    if (optionIndex === group.correct) button.classList.add("is-correct");
+                    if (optionIndex === gameDualSelection[groupIndex] && optionIndex !== group.correct) button.classList.add("is-wrong");
+                });
+            });
+            finishCustomGameQuestion(isCorrect, question.explanation);
+        }
+
+        function handleMatchingCard(button) {
+            const side = button.dataset.matchSide;
+            const id = Number(button.dataset.matchId);
+            if (matchingSolved.has(id)) return;
+            document.querySelectorAll(`[data-match-side="${side}"]`).forEach((card) => card.classList.remove("is-selected"));
+            button.classList.add("is-selected");
+            if (side === "term") matchingSelectedTerm = id;
+            else matchingSelectedDefinition = id;
+            if (matchingSelectedTerm === null || matchingSelectedDefinition === null) return;
+
+            const termCard = document.querySelector(`[data-match-side="term"][data-match-id="${matchingSelectedTerm}"]`);
+            const definitionCard = document.querySelector(`[data-match-side="definition"][data-match-id="${matchingSelectedDefinition}"]`);
+            if (matchingSelectedTerm === matchingSelectedDefinition) {
+                matchingSolved.add(matchingSelectedTerm);
+                termCard.classList.add("is-matched");
+                definitionCard.classList.add("is-matched");
+                termCard.disabled = true;
+                definitionCard.disabled = true;
+                document.getElementById("gameFeedback").textContent = "Пара собрана верно.";
+            } else {
+                matchingMistakes += 1;
+                termCard.classList.add("is-wrong");
+                definitionCard.classList.add("is-wrong");
+                document.getElementById("gameFeedback").textContent = "Эти карточки не образуют пару.";
+                setTimeout(() => {
+                    termCard?.classList.remove("is-wrong", "is-selected");
+                    definitionCard?.classList.remove("is-wrong", "is-selected");
+                }, 450);
+            }
+            document.getElementById("gameFeedback").hidden = false;
+            matchingSelectedTerm = null;
+            matchingSelectedDefinition = null;
+            document.getElementById("gameQuestionCount").textContent = `${matchingSolved.size} из ${activeGameQuestions.length} пар`;
+            document.getElementById("gameScore").textContent = `Ошибки: ${matchingMistakes}`;
+            document.getElementById("gameProgressBar").style.width = `${Math.round((matchingSolved.size / activeGameQuestions.length) * 100)}%`;
+            if (matchingSolved.size === activeGameQuestions.length) {
+                gameScoreValue = Math.max(0, activeGameQuestions.length - matchingMistakes);
+                setTimeout(renderGameFinish, 350);
+            }
         }
 
         function renderGameFinish() {
@@ -10598,6 +11049,7 @@
             let earnedPoints = 0;
             let gradedQuestions = 0;
             let correctQuestions = 0;
+            const questionResults = {};
 
             for (const [questionId, answerKey] of Object.entries(scoringTest.answers)) {
                 if (!answerKey.points) continue;
@@ -10610,6 +11062,12 @@
                     ? submittedHashes.length === acceptedHashes.length
                         && submittedHashes.every((hash, index) => hash === acceptedHashes[index])
                     : submittedHashes.some((hash) => acceptedHashes.includes(hash));
+
+                questionResults[questionId] = {
+                    isCorrect,
+                    submittedAnswers: values,
+                    acceptedAnswers: answerKey.acceptedAnswers || []
+                };
 
                 gradedQuestions += 1;
                 if (isCorrect) {
@@ -10625,15 +11083,63 @@
                 percent: totalPoints ? Math.round((earnedPoints / totalPoints) * 100) : 0,
                 correctQuestions,
                 gradedQuestions,
-                ungradedPoints: Math.max(0, Number(test.totalPoints || 0) - totalPoints)
+                ungradedPoints: Math.max(0, Number(test.totalPoints || 0) - totalPoints),
+                questionResults
             };
+        }
+
+        function clearTestReview(form, shouldReset = true) {
+            if (shouldReset) form.reset();
+            form.dataset.reviewed = "false";
+            form.querySelectorAll("input, select").forEach((control) => {
+                control.disabled = false;
+                control.classList.remove("is-correct", "is-wrong");
+            });
+            form.querySelectorAll(".test-answer-option").forEach((option) => {
+                option.classList.remove("is-correct-answer", "is-selected-wrong");
+            });
+            form.querySelectorAll(".test-answer-review").forEach((review) => review.remove());
+            document.getElementById("testResultCard").hidden = true;
+        }
+
+        function renderTestReview(result) {
+            const form = document.getElementById("authorTestForm");
+            Object.entries(result.questionResults).forEach(([questionId, review]) => {
+                const article = Array.from(form.querySelectorAll("[data-test-question-id]"))
+                    .find((element) => element.dataset.testQuestionId === questionId);
+                if (!article) return;
+                const accepted = review.acceptedAnswers.map(normalizeTestAnswer);
+
+                article.querySelectorAll(".test-answer-option").forEach((option) => {
+                    const input = option.querySelector("input");
+                    const isAccepted = accepted.includes(normalizeTestAnswer(input.value));
+                    if (isAccepted) option.classList.add("is-correct-answer");
+                    if (input.checked && !isAccepted) option.classList.add("is-selected-wrong");
+                });
+
+                article.querySelectorAll(".test-text-answer, .test-select-answer").forEach((control) => {
+                    control.classList.add(review.isCorrect ? "is-correct" : "is-wrong");
+                });
+
+                const answerText = review.acceptedAnswers.join(review.acceptedAnswers.length > 1 ? "; " : "");
+                article.insertAdjacentHTML("beforeend", `
+                    <div class="test-answer-review ${review.isCorrect ? "is-correct" : "is-wrong"}">
+                        <strong>${review.isCorrect ? "Верно" : "Неверно"}</strong>
+                        ${review.isCorrect ? "" : `<span>Правильный ответ: ${escapeHtml(answerText)}</span>`}
+                    </div>`);
+            });
+
+            form.querySelectorAll("input, select").forEach((control) => {
+                control.disabled = true;
+            });
+            form.dataset.reviewed = "true";
         }
 
         function renderEmbeddedTest(test) {
             currentTest = test || null;
             const form = document.getElementById("authorTestForm");
             const unavailable = document.getElementById("testUnavailable");
-            document.getElementById("testResultCard").hidden = true;
+            clearTestReview(form);
 
             if (!test) {
                 document.getElementById("embeddedTestTitle").textContent = "Тест пока не добавлен";
@@ -10647,7 +11153,7 @@
             document.getElementById("embeddedTestTitle").textContent = test.title;
             document.getElementById("embeddedTestMeta").textContent = `${test.questionCount} вопросов · ${test.totalPoints} баллов`;
             document.getElementById("testQuestions").innerHTML = test.questions.map((question) => `
-                <article class="test-question">
+                <article class="test-question" data-test-question-id="${escapeHtml(question.id)}">
                     <div class="test-question-heading">
                         <span class="test-question-number">${question.number}</span>
                         <p class="test-question-title">${escapeHtml(question.prompt || (question.image ? "Задание по изображению" : "В исходной форме у этого вопроса отсутствует текст"))}</p>
@@ -10660,7 +11166,7 @@
             document.getElementById("testAnswerStatus").textContent = "После отправки сразу появятся балл и процент выполнения.";
             form.hidden = false;
             unavailable.hidden = true;
-            form.reset();
+            form.querySelector('button[type="submit"]').textContent = "Отправить тест";
         }
 
         function getTestAttempts() {
@@ -10954,9 +11460,9 @@
         }
 
         function renderStudentMessages() {
-            const user = readJson(storage.user, { name: "Ученик", email: "" });
+            const user = readJson(storage.user, { name: "Ученик", login: "" });
             const messages = getTeacherMessages()
-                .filter((message) => message.studentEmail ? message.studentEmail === user.email : message.studentName === user.name)
+                .filter((message) => message.studentLogin ? message.studentLogin === user.login : message.studentName === user.name)
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const container = document.getElementById("studentMessageList");
             container.innerHTML = messages.length ? messages.map((message) => `
@@ -10986,7 +11492,7 @@
             const container = document.getElementById("adminWorkList");
 
             if (!works.length) {
-                container.innerHTML = '<div class="empty-state">Пока нет отправленных работ. Вернись в кабинет ученика и отправь демонстрационный файл.</div>';
+                container.innerHTML = '<div class="empty-state">Пока нет отправленных работ.</div>';
                 return;
             }
 
@@ -11045,6 +11551,46 @@
                 return;
             }
 
+            const matchingCard = event.target.closest("[data-match-side]");
+            if (matchingCard) {
+                handleMatchingCard(matchingCard);
+                return;
+            }
+
+            const sequencePart = event.target.closest("[data-sequence-part]");
+            if (sequencePart) {
+                handleSequencePart(Number(sequencePart.dataset.sequencePart), sequencePart);
+                return;
+            }
+
+            const sequenceReset = event.target.closest("[data-sequence-reset]");
+            if (sequenceReset) {
+                gameSequenceSelection = [];
+                renderGameQuestion();
+                return;
+            }
+
+            const checkTextButton = event.target.closest("[data-check-game-text]");
+            if (checkTextButton) {
+                checkTextGameAnswer();
+                return;
+            }
+
+            const dualOption = event.target.closest("[data-dual-group]");
+            if (dualOption) {
+                const groupIndex = Number(dualOption.dataset.dualGroup);
+                gameDualSelection[groupIndex] = Number(dualOption.dataset.dualOption);
+                document.querySelectorAll(`[data-dual-group="${groupIndex}"]`).forEach((button) => button.classList.remove("is-selected"));
+                dualOption.classList.add("is-selected");
+                return;
+            }
+
+            const checkDualButton = event.target.closest("[data-check-dual]");
+            if (checkDualButton) {
+                checkDualGameAnswer();
+                return;
+            }
+
             const gameAnswerButton = event.target.closest("[data-game-answer]");
             if (gameAnswerButton) {
                 finishGameQuestion(Number(gameAnswerButton.dataset.gameAnswer));
@@ -11053,14 +11599,14 @@
 
             const restartGameButton = event.target.closest("[data-restart-game]");
             if (restartGameButton) {
-                startPracticeGame(activeGameKey, activeGameSectionIndex);
+                startPracticeGame(activeGameKey);
                 return;
             }
 
             const gameBackButton = event.target.closest("#gameBackButton");
             if (gameBackButton) {
                 const game = practiceGames[activeGameKey];
-                showPracticePanel(game && game.sections ? "gameSectionsHub" : game ? game.returnView : "gamesHub");
+                showPracticePanel(game ? game.returnView : "gamesHub");
                 return;
             }
 
@@ -11141,7 +11687,7 @@
                 work.teacherComment = document.querySelector(`[data-admin-comment="${id}"]`).value.trim();
                 saveWorks(works);
                 renderAdminWorks();
-                showToast("Статус и комментарий сохранены в деморежиме.");
+                showToast("Статус и комментарий сохранены на этом устройстве.");
                 return;
             }
 
@@ -11154,25 +11700,18 @@
                 message.reply = document.querySelector(`[data-message-reply="${id}"]`).value.trim();
                 saveTeacherMessages(messages);
                 renderAdminMessages();
-                showToast("Ответ ученику сохранён в деморежиме.");
+                showToast("Ответ ученику сохранён на этом устройстве.");
             }
         });
 
         document.getElementById("loginForm").addEventListener("submit", (event) => {
             event.preventDefault();
             const name = document.getElementById("studentName").value.trim();
-            const email = document.getElementById("studentEmail").value.trim();
-            if (!name) return;
-            setUser({ name, email });
+            const login = document.getElementById("studentLogin").value.trim().toLowerCase();
+            if (!name || !login) return;
+            setUser({ name, login });
             showView("appView");
             showPage("dashboard");
-        });
-
-        document.getElementById("teacherDemoButton").addEventListener("click", () => {
-            const existingUser = readJson(storage.user, null);
-            if (!existingUser) setUser({ name: "Демо-ученик", email: "" });
-            showView("appView");
-            showPage("admin");
         });
 
         document.getElementById("returnToStudent").addEventListener("click", () => {
@@ -11189,7 +11728,16 @@
 
         document.getElementById("gameNextButton").addEventListener("click", () => {
             gameQuestionIndex += 1;
+            gameSequenceSelection = [];
+            gameDualSelection = {};
             renderGameQuestion();
+        });
+
+        document.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && event.target.id === "gameTextAnswer") {
+                event.preventDefault();
+                checkTextGameAnswer();
+            }
         });
 
         document.getElementById("slotSpinButton").addEventListener("click", spinOralQuestion);
@@ -11204,12 +11752,12 @@
 
         document.getElementById("teacherMessageForm").addEventListener("submit", (event) => {
             event.preventDefault();
-            const user = readJson(storage.user, { name: "Ученик", email: "" });
+            const user = readJson(storage.user, { name: "Ученик", login: "" });
             const messages = getTeacherMessages();
             messages.push({
                 id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
                 studentName: user.name,
-                studentEmail: user.email,
+                studentLogin: user.login,
                 category: document.getElementById("teacherMessageCategory").value,
                 text: document.getElementById("teacherMessageText").value.trim(),
                 reply: "",
@@ -11218,7 +11766,7 @@
             saveTeacherMessages(messages);
             event.currentTarget.reset();
             renderStudentMessages();
-            showToast("Сообщение преподавателю сохранено в деморежиме.");
+            showToast("Сообщение сохранено на этом устройстве.");
         });
 
         document.getElementById("answerFile").addEventListener("change", (event) => {
@@ -11229,6 +11777,15 @@
         document.getElementById("authorTestForm").addEventListener("submit", async (event) => {
             event.preventDefault();
             if (!currentTest) return;
+
+            if (event.currentTarget.dataset.reviewed === "true") {
+                clearTestReview(event.currentTarget);
+                document.getElementById("testAnswerStatus").textContent = "После отправки сразу появятся балл, процент и разбор ответов.";
+                const retryButton = event.currentTarget.querySelector('button[type="submit"]');
+                retryButton.textContent = "Отправить тест";
+                event.currentTarget.querySelector("input, select")?.focus();
+                return;
+            }
 
             const submitButton = event.currentTarget.querySelector('button[type="submit"]');
             submitButton.disabled = true;
@@ -11270,6 +11827,7 @@
                     : `Верно выполнено ${result.correctQuestions} из ${result.gradedQuestions} автоматически проверяемых заданий.`;
                 document.getElementById("testResultCard").hidden = false;
                 document.getElementById("testAnswerStatus").textContent = `Тест отправлен: ${result.earnedPoints} из ${result.totalPoints} баллов.`;
+                renderTestReview(result);
                 requestAnimationFrame(() => {
                     document.getElementById("testResultCard").scrollIntoView({ behavior: "smooth", block: "center" });
                 });
@@ -11278,7 +11836,7 @@
             }
 
             submitButton.disabled = false;
-            submitButton.textContent = "Отправить ещё раз";
+            submitButton.textContent = result ? "Пройти тест заново" : "Отправить ещё раз";
             renderTopicProgress();
             renderTopics(currentSubject);
             renderDashboardProgress();
@@ -11290,7 +11848,7 @@
         document.getElementById("uploadForm").addEventListener("submit", (event) => {
             event.preventDefault();
             const file = document.getElementById("answerFile").files[0];
-            const user = readJson(storage.user, { name: "Демо-ученик", email: "" });
+            const user = readJson(storage.user, { name: "Ученик", login: "" });
             if (!file) {
                 showToast("Сначала выбери файл с выполненной работой.");
                 return;
@@ -11302,7 +11860,7 @@
                 topicId: currentTopic.id,
                 topicTitle: currentTopic.title,
                 studentName: user.name,
-                studentEmail: user.email,
+                studentLogin: user.login,
                 fileName: file.name,
                 studentComment: document.getElementById("studentComment").value.trim(),
                 teacherComment: "",
@@ -11315,7 +11873,7 @@
             renderTopicProgress();
             renderTopics(currentSubject);
             renderDashboardProgress();
-            showToast("ДЗ прикреплено и отмечено в прогрессе темы. В прототипе сохраняется только название файла.");
+            showToast("ДЗ отмечено в прогрессе темы; пока сохраняется только название файла.");
         });
 
         const savedUser = readJson(storage.user, null);
