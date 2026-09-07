@@ -175,6 +175,8 @@ html[data-theme="dark"] .landing-brand-mark { color: #0d1728; }
 .landing-navigation a:hover { color: var(--landing-blue-deep); }
 .landing-navigation a:hover::after { transform: scaleX(1); }
 
+.landing-navigation-cabinet { display: none; }
+
 .landing-header-actions {
     display: flex;
     align-items: center;
@@ -1080,6 +1082,21 @@ html.landing-enhanced .reveal-on-scroll.is-visible {
     }
 
     .landing-header-actions .landing-button { display: none; }
+    .landing-navigation-cabinet {
+        display: inline-flex;
+        min-height: 44px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 3px;
+        border: 0;
+        border-radius: 11px;
+        background: var(--landing-blue);
+        color: #fff;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 850;
+        cursor: pointer;
+    }
     .landing-hero,
     .landing-section,
     .landing-footer { width: min(calc(100% - 32px), 1180px); }
