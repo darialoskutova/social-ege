@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /social-ege/
+
+Sitemap: https://darialoskutova.github.io/social-ege/sitemap.xml

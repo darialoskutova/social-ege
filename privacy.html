@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Политика обработки персональных данных сайта подготовки к ЕГЭ по обществознанию.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://darialoskutova.github.io/social-ege/privacy.html">
+    <meta name="theme-color" content="#1746a2">
+    <title>Политика персональных данных — подготовка к ЕГЭ</title>
+    <script>
+        try {
+            document.documentElement.dataset.theme = localStorage.getItem("daria-ege-color-theme") === "dark" ? "dark" : "light";
+        } catch {
+            document.documentElement.dataset.theme = "light";
+        }
+    </script>
+    <style>
+        @font-face {
+            font-family: "Manrope";
+            font-style: normal;
+            font-weight: 500 800;
+            font-display: swap;
+            src: url("assets/fonts/manrope-cyrillic.woff2") format("woff2");
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        @font-face {
+            font-family: "Manrope";
+            font-style: normal;
+            font-weight: 500 800;
+            font-display: swap;
+            src: url("assets/fonts/manrope-latin.woff2") format("woff2");
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2190-2193, U+2212, U+2215;
+        }
+
+        :root {
+            --paper: #f7f8fb;
+            --card: #ffffff;
+            --ink: #152033;
+            --muted: #667085;
+            --line: #dce3ee;
+            --blue: #1746a2;
+            --blue-soft: #edf3ff;
+            --wine: #7e2338;
+            --wine-soft: #fbf0f3;
+            color-scheme: light;
+        }
+
+        html[data-theme="dark"] {
+            --paper: #0d1728;
+            --card: #14233a;
+            --ink: #f3f6fb;
+            --muted: #b4c0d2;
+            --line: #344a69;
+            --blue: #8fb2ff;
+            --blue-soft: #1b3155;
+            --wine: #f2a6b8;
+            --wine-soft: #3a2030;
+            color-scheme: dark;
+        }
+
+        * { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 8% 3%, color-mix(in srgb, var(--blue) 12%, transparent) 0 130px, transparent 131px),
+                var(--paper);
+            color: var(--ink);
+            font-family: "Manrope", Arial, sans-serif;
+            line-height: 1.65;
+        }
+
+        button, a { font: inherit; }
+        a { color: var(--blue); }
+
+        .policy-header {
+            position: sticky;
+            z-index: 10;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 16px max(22px, calc((100vw - 1060px) / 2));
+            border-bottom: 1px solid var(--line);
+            background: color-mix(in srgb, var(--paper) 92%, transparent);
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: .06em;
+            text-decoration: none;
+        }
+
+        .brand-mark {
+            display: grid;
+            width: 46px;
+            height: 34px;
+            place-items: center;
+            border-radius: 11px;
+            background: var(--blue);
+            color: var(--card);
+            letter-spacing: .02em;
+        }
+
+        html[data-theme="dark"] .brand-mark { color: #0d1728; }
+
+        .theme-toggle {
+            padding: 9px 13px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--card);
+            color: var(--ink);
+            cursor: pointer;
+            font-weight: 750;
+        }
+
+        .policy-shell {
+            width: min(100% - 36px, 980px);
+            margin: 56px auto 90px;
+        }
+
+        .policy-hero {
+            padding: clamp(26px, 5vw, 54px);
+            border: 1px solid var(--line);
+            border-radius: 30px;
+            background: var(--card);
+            box-shadow: 0 18px 56px rgba(25, 45, 84, .08);
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            color: var(--wine);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            max-width: 800px;
+            margin: 0;
+            font-size: clamp(32px, 6vw, 62px);
+            line-height: 1.05;
+            letter-spacing: -.045em;
+        }
+
+        .updated { margin: 18px 0 0; color: var(--muted); }
+
+        .draft-notice {
+            margin: 22px 0 0;
+            padding: 18px 20px;
+            border: 1px solid color-mix(in srgb, var(--wine) 40%, var(--line));
+            border-left: 5px solid var(--wine);
+            border-radius: 16px;
+            background: var(--wine-soft);
+        }
+
+        .draft-notice strong { display: block; margin-bottom: 5px; }
+
+        .policy-content {
+            display: grid;
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .policy-section {
+            padding: clamp(24px, 4vw, 38px);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: var(--card);
+        }
+
+        .policy-section h2 {
+            margin: 0 0 14px;
+            color: var(--blue);
+            font-size: clamp(21px, 3vw, 28px);
+            letter-spacing: -.025em;
+        }
+
+        .policy-section h3 { margin: 22px 0 8px; font-size: 17px; }
+        .policy-section p { margin: 10px 0; }
+        .policy-section ul { margin: 10px 0; padding-left: 22px; }
+        .policy-section li + li { margin-top: 7px; }
+
+        .placeholder {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 7px;
+            background: var(--wine-soft);
+            color: var(--wine);
+            font-weight: 800;
+        }
+
+        .policy-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .policy-button {
+            display: inline-flex;
+            align-items: center;
+            min-height: 46px;
+            padding: 0 18px;
+            border: 1px solid var(--blue);
+            border-radius: 13px;
+            background: var(--blue);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .policy-button--light { background: var(--card); color: var(--blue); }
+
+        .cookie-banner {
+            position: fixed;
+            z-index: 100;
+            right: 24px;
+            bottom: 24px;
+            left: 24px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 22px;
+            align-items: center;
+            width: min(calc(100% - 48px), 920px);
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            background: var(--card);
+            box-shadow: 0 22px 70px rgba(10, 26, 55, .22);
+        }
+
+        .cookie-banner[hidden] { display: none; }
+        .cookie-banner h2 { margin: 0 0 5px; font-size: 18px; }
+        .cookie-banner p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .cookie-banner a { display: inline-block; margin-top: 6px; font-size: 13px; font-weight: 800; }
+
+        .cookie-banner-actions { display: flex; gap: 9px; }
+
+        .cookie-choice {
+            min-height: 43px;
+            padding: 0 15px;
+            border: 1px solid var(--blue);
+            border-radius: 12px;
+            background: var(--blue);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .cookie-choice--necessary { background: var(--card); color: var(--blue); }
+
+        @media (max-width: 700px) {
+            .policy-header { padding: 13px 18px; }
+            .brand > span:last-child { display: none; }
+            .policy-shell { margin-top: 28px; }
+            .cookie-banner { right: 14px; bottom: 14px; left: 14px; grid-template-columns: 1fr; width: auto; }
+            .cookie-banner-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="policy-header">
+        <a class="brand" href="index.html"><span class="brand-mark">ЕГЭ</span><span>ОБЩЕСТВОЗНАНИЕ</span></a>
+        <button class="theme-toggle" type="button" id="themeToggle">Сменить тему</button>
+    </header>
+
+    <main class="policy-shell">
+        <section class="policy-hero">
+            <p class="eyebrow">Правовая информация</p>
+            <h1>Политика обработки персональных данных</h1>
+            <p class="updated">Редакция от 7 сентября 2026 года</p>
+            <div class="draft-notice">
+                <strong>Это шаблон для предварительной проверки.</strong>
+                Перед публикацией заполните данные оператора и при необходимости передайте текст юристу.
+            </div>
+        </section>
+
+        <div class="policy-content">
+            <section class="policy-section">
+                <h2>1. Кто обрабатывает данные</h2>
+                <p>Оператор сайта: <span class="placeholder">[УКАЗАТЬ ФИО ОПЕРАТОРА]</span>.</p>
+                <p>Статус оператора: <span class="placeholder">[УКАЗАТЬ СТАТУС]</span>.</p>
+                <p>Контактный email: <span class="placeholder">[УКАЗАТЬ EMAIL]</span>. Дополнительный контакт: <span class="placeholder">[УКАЗАТЬ КОНТАКТ]</span>.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>2. Какие данные могут обрабатываться</h2>
+                <ul>
+                    <li>технические сведения о запросе к сайту, которые может получать хостинг GitHub Pages: IP-адрес, дата и время запроса, тип браузера и устройства, адрес запрошенной страницы;</li>
+                    <li>данные аналитики Яндекс Метрики — только после отдельного согласия посетителя;</li>
+                    <li>выбор темы оформления, согласие или отказ от аналитики, учебный прогресс, имя и логин кабинета — локально в браузере пользователя.</li>
+                </ul>
+                <p>На текущем этапе у сайта нет собственного сервера и базы пользователей. Данные, сохранённые учебной частью в localStorage, остаются на устройстве пользователя и сами по себе не отправляются оператору сайта.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>3. Для чего нужны данные</h2>
+                <ul>
+                    <li>для технической загрузки и корректной работы сайта;</li>
+                    <li>для сохранения выбранной темы, состояния учебных форм и прогресса на устройстве;</li>
+                    <li>для получения обезличенной статистики посещений и использования публичных разделов — только при разрешённой аналитике;</li>
+                    <li>для обнаружения технических ошибок и улучшения структуры сайта.</li>
+                </ul>
+                <p>В цели аналитики не передаются имя, фамилия, логин, пароль, контакты, содержимое форм и ответы ученика.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>4. Cookies и localStorage</h2>
+                <p>Сайт использует localStorage для работы интерфейса: например, чтобы запомнить тему оформления, состояние учебных заданий и выбор посетителя по аналитике.</p>
+                <p>При выборе «Разрешить аналитику» загружается Яндекс Метрика, которая может сохранять собственные cookies и иные технические идентификаторы. При выборе «Только необходимые» Метрика не загружается.</p>
+                <p>Изменить решение можно кнопкой «Настройки cookies» ниже. После сброса сайт снова покажет выбор. Также данные сайта можно удалить в настройках браузера.</p>
+                <div class="policy-actions">
+                    <button class="policy-button policy-button--light" type="button" data-cookie-settings>Настройки cookies</button>
+                </div>
+            </section>
+
+            <section class="policy-section">
+                <h2>5. Сторонние сервисы</h2>
+                <h3>GitHub Pages</h3>
+                <p>Сайт размещён на GitHub Pages. При открытии страниц GitHub может обрабатывать технические сведения в соответствии со своей <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener noreferrer" target="_blank">политикой конфиденциальности</a>.</p>
+                <h3>Яндекс Метрика</h3>
+                <p>После согласия посетителя применяется сервис веб-аналитики Яндекс Метрика. Описание используемых сервисом данных и cookies приведено в <a href="https://yandex.ru/support/metrica/ru/code/data-collected" rel="noopener noreferrer" target="_blank">справке Метрики</a> и <a href="https://yandex.ru/support/metrica/ru/general/cookie-usage" rel="noopener noreferrer" target="_blank">справке о cookies</a>. Правила Яндекса описаны в его <a href="https://yandex.ru/legal/confidential/ru/" rel="noopener noreferrer" target="_blank">политике конфиденциальности</a>.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>6. Сроки и безопасность</h2>
+                <p>Выбор аналитики хранится в браузере до его сброса пользователем. Остальные локальные данные сохраняются до удаления через интерфейс сайта или настройки браузера. Сроки хранения технических данных сторонними сервисами определяются их правилами.</p>
+                <p>Оператор применяет разумные организационные и технические меры, но передача данных через интернет не может гарантировать абсолютную безопасность.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>7. Права пользователя</h2>
+                <p>Пользователь может запросить сведения об обработке своих данных, их уточнение, прекращение обработки или удаление в случаях, предусмотренных законом, а также отозвать согласие на аналитику.</p>
+                <p>Обращения направляются на <span class="placeholder">[УКАЗАТЬ EMAIL]</span>. Чтобы обращение можно было проверить, укажите, каким разделом сайта вы пользовались и суть запроса; не отправляйте пароль.</p>
+            </section>
+
+            <section class="policy-section">
+                <h2>8. Изменения политики</h2>
+                <p>Политика может обновляться при изменении сайта, используемых сервисов или требований законодательства. Актуальная версия размещается на этой странице.</p>
+                <div class="policy-actions">
+                    <a class="policy-button" href="index.html">Вернуться на главную</a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <section class="cookie-banner" id="cookieBanner" role="dialog" aria-modal="false" aria-labelledby="cookieBannerTitle" hidden>
+        <div>
+            <h2 id="cookieBannerTitle">Настройки аналитики</h2>
+            <p>Яндекс Метрика включается только с вашего согласия.</p>
+            <a href="privacy.html">Подробнее</a>
+        </div>
+        <div class="cookie-banner-actions">
+            <button class="cookie-choice" type="button" data-cookie-accept>Разрешить аналитику</button>
+            <button class="cookie-choice cookie-choice--necessary" type="button" data-cookie-reject>Только необходимые</button>
+        </div>
+    </section>
+
+    <script src="analytics.js"></script>
+    <script>
+        document.getElementById("themeToggle").addEventListener("click", () => {
+            const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+            document.documentElement.dataset.theme = nextTheme;
+            try {
+                localStorage.setItem("daria-ege-color-theme", nextTheme);
+            } catch {
+                // Тема останется активной до закрытия страницы.
+            }
+        });
+    </script>
+</body>
+</html>
+<!--
+ПЕРЕД ПУБЛИКАЦИЕЙ ПРОВЕРИТЬ ПОЛИТИКУ
+И ЗАПОЛНИТЬ ДАННЫЕ ОПЕРАТОРА
+-->
