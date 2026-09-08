@@ -11,16 +11,16 @@
 }
 
 #welcomeView.landing {
-    --landing-paper: #f7f4ee;
-    --landing-card: #fffdf9;
+    --landing-paper: #f6f8fb;
+    --landing-card: #ffffff;
     --landing-ink: #20283a;
     --landing-muted: #687184;
     --landing-navy: #183f73;
     --landing-navy-deep: #102f58;
     --landing-wine: #8b3046;
-    --landing-blue-soft: #e7edf5;
-    --landing-wine-soft: #f2e4e7;
-    --landing-sand: #f0e8d9;
+    --landing-blue-soft: #e7eef7;
+    --landing-wine-soft: #f3f6fa;
+    --landing-sand: #edf2f7;
     --landing-line: #cdd5df;
     --landing-platform: #17375f;
     --landing-platform-ink: #f9fbff;
@@ -46,10 +46,10 @@ html[data-theme="dark"] #welcomeView.landing {
     --landing-muted: #b7c0ce;
     --landing-navy: #a9c4ea;
     --landing-navy-deep: #d9e6f8;
-    --landing-wine: #eca6b6;
+    --landing-wine: #b9cbe4;
     --landing-blue-soft: #1c2c43;
-    --landing-wine-soft: #35242c;
-    --landing-sand: #302c27;
+    --landing-wine-soft: #182638;
+    --landing-sand: #142235;
     --landing-line: #34445a;
     --landing-platform: #192c47;
     --landing-platform-ink: #f6f8fc;
@@ -663,11 +663,25 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 }
 
 .landing-section-heading {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(260px, .48fr);
     gap: 55px;
     align-items: end;
     margin-bottom: 44px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid color-mix(in srgb, var(--landing-line) 82%, transparent);
+}
+
+.landing-section-heading::after {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 72px;
+    height: 3px;
+    border-radius: 3px;
+    background: var(--landing-wine);
+    content: "";
 }
 
 .landing-section-heading > p {
@@ -689,7 +703,9 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--landing-wine) 24%, var(--landing-line));
     border-radius: 32px 74px 32px 32px;
-    background: var(--landing-wine-soft);
+    background:
+        radial-gradient(color-mix(in srgb, var(--landing-wine) 18%, transparent) 1px, transparent 1.3px) right 34px top 34px / 18px 18px,
+        var(--landing-wine-soft);
 }
 
 .landing-about::before {
@@ -702,6 +718,18 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border-radius: 20px;
     content: "";
     transform: rotate(15deg);
+}
+
+.landing-about::after {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    width: 92px;
+    height: 28px;
+    border-top: 2px solid color-mix(in srgb, var(--landing-navy) 38%, transparent);
+    border-bottom: 2px solid color-mix(in srgb, var(--landing-wine) 42%, transparent);
+    content: "";
+    transform: rotate(-7deg);
 }
 
 .landing-about-intro {
@@ -837,6 +865,17 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     transform: rotate(19deg);
 }
 
+.landing-program::after {
+    position: absolute;
+    bottom: 42px;
+    left: -44px;
+    width: 116px;
+    height: 116px;
+    border: 1px dashed color-mix(in srgb, var(--landing-wine) 42%, transparent);
+    border-radius: 50%;
+    content: "";
+}
+
 .landing-program-grid {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -852,6 +891,8 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border: 1px solid var(--landing-line);
     border-radius: 22px 22px 38px 22px;
     background: var(--landing-card);
+    box-shadow: 0 11px 25px color-mix(in srgb, var(--landing-navy) 7%, transparent);
+    transition: border-color .2s ease, transform .2s ease;
 }
 
 .landing-program-card:nth-child(2) {
@@ -872,6 +913,17 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     background: var(--landing-blue-soft);
 }
 
+.landing-program-card::before {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 25px;
+    height: 25px;
+    border-top: 2px solid color-mix(in srgb, var(--landing-wine) 52%, transparent);
+    border-right: 2px solid color-mix(in srgb, var(--landing-navy) 42%, transparent);
+    content: "";
+}
+
 .landing-program-card::after {
     position: absolute;
     right: -30px;
@@ -881,6 +933,11 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border: 1px solid color-mix(in srgb, var(--landing-navy) 24%, transparent);
     border-radius: 50%;
     content: "";
+}
+
+.landing-program-card:hover {
+    border-color: color-mix(in srgb, var(--landing-navy) 42%, var(--landing-line));
+    transform: translateY(-3px);
 }
 
 .landing-program-icon {
@@ -959,7 +1016,7 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 }
 
 .landing-platform .landing-kicker {
-    color: #efb2bf;
+    color: #bfd4ee;
 }
 
 .landing-platform h2,
@@ -1062,7 +1119,7 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 }
 
 .landing-platform-list b {
-    color: #efb2bf;
+    color: #bfd4ee;
     font-size: 9px;
 }
 
@@ -1086,7 +1143,10 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--landing-navy) 18%, var(--landing-line));
     border-radius: 70px 32px 32px 32px;
-    background: var(--landing-sand);
+    background:
+        linear-gradient(color-mix(in srgb, var(--landing-navy) 5%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+        linear-gradient(90deg, color-mix(in srgb, var(--landing-navy) 5%, transparent) 1px, transparent 1px) 0 0 / 28px 28px,
+        var(--landing-sand);
 }
 
 .landing-benefits::before {
@@ -1096,6 +1156,18 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     height: 180px;
     border: 1px solid color-mix(in srgb, var(--landing-wine) 26%, transparent);
     border-radius: 50%;
+}
+
+.landing-benefits::after {
+    position: absolute;
+    right: 32px;
+    bottom: 26px;
+    width: 130px;
+    height: 38px;
+    border-top: 2px solid color-mix(in srgb, var(--landing-wine) 40%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--landing-navy) 30%, transparent);
+    content: "";
+    transform: rotate(5deg);
 }
 
 .landing-benefit-grid {
@@ -1209,6 +1281,7 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     padding: 27px;
     overflow: hidden;
     border: 1px solid var(--landing-line);
+    border-top: 4px solid color-mix(in srgb, var(--landing-navy) 52%, var(--landing-line));
     border-radius: 22px 22px 42px 22px;
     background: var(--landing-card);
 }
@@ -1223,11 +1296,13 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 
 .landing-format--featured {
     border-color: color-mix(in srgb, var(--landing-wine) 50%, var(--landing-line));
+    border-top-color: var(--landing-wine);
     background: var(--landing-wine-soft);
 }
 
 .landing-format--support {
     background: var(--landing-wine-soft);
+    border-top-color: var(--landing-wine);
 }
 
 .landing-format::after {
@@ -1310,7 +1385,9 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--landing-navy) 18%, var(--landing-line));
     border-radius: 32px;
-    background: var(--landing-blue-soft);
+    background:
+        repeating-linear-gradient(0deg, transparent 0 31px, color-mix(in srgb, var(--landing-navy) 5%, transparent) 32px),
+        var(--landing-blue-soft);
 }
 
 .landing-documents::after {
@@ -1420,11 +1497,23 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 }
 
 .landing-review-grid article {
+    position: relative;
     min-height: 280px;
     padding: 22px;
     border: 1px dashed color-mix(in srgb, var(--landing-navy) 37%, var(--landing-line));
     border-radius: 20px 20px 38px 20px;
     background: var(--landing-card);
+}
+
+.landing-review-grid article::before {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 22px;
+    height: 17px;
+    border: 1px solid color-mix(in srgb, var(--landing-navy) 34%, var(--landing-line));
+    border-radius: 7px 7px 7px 2px;
+    content: "";
 }
 
 .landing-review-grid article:nth-child(2) {
