@@ -32,24 +32,6 @@
         });
     }
 
-    landing.querySelectorAll(".landing-faq-item h3 button").forEach((button) => {
-        button.addEventListener("click", () => {
-            const answerId = button.getAttribute("aria-controls");
-            const answer = answerId ? document.getElementById(answerId) : null;
-            if (!answer) return;
-
-            const willOpen = button.getAttribute("aria-expanded") !== "true";
-            landing.querySelectorAll(".landing-faq-item h3 button").forEach((otherButton) => {
-                const otherAnswerId = otherButton.getAttribute("aria-controls");
-                const otherAnswer = otherAnswerId ? document.getElementById(otherAnswerId) : null;
-                otherButton.setAttribute("aria-expanded", "false");
-                if (otherAnswer) otherAnswer.hidden = true;
-            });
-            button.setAttribute("aria-expanded", String(willOpen));
-            answer.hidden = !willOpen;
-        });
-    });
-
     function closeLightbox() {
         if (!lightbox || lightbox.hidden) return;
         lightbox.hidden = true;

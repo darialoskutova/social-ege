@@ -10503,14 +10503,14 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="landing.css?v=20260908-3">
+    <link rel="stylesheet" href="landing.css?v=20260908-4">
 </head>
 <body>
     <section class="view landing" id="welcomeView">
         <header class="landing-header">
             <a class="landing-brand" href="#top" aria-label="На начало страницы">
                 <span class="landing-brand-mark">ЕГЭ</span>
-                <span><strong>С Дарьей</strong><small>обществознание</small></span>
+                <span><strong>С Дарьей</strong><small>обществознание · 2027</small></span>
             </a>
 
             <button class="landing-menu-button" id="landingMenuButton" type="button" aria-expanded="false" aria-controls="landingNavigation">
@@ -10519,10 +10519,11 @@
 
             <nav class="landing-navigation" id="landingNavigation" aria-label="Навигация по странице">
                 <a href="#about">Обо мне</a>
-                <a href="#process">Как проходят занятия</a>
+                <a href="#program">Программа</a>
                 <a href="#platform">Платформа</a>
-                <a href="#results">Результаты</a>
+                <a href="#benefits">Преимущества</a>
                 <a href="#formats">Форматы</a>
+                <a href="#documents">Документы</a>
                 <a href="#reviews">Отзывы</a>
                 <button class="landing-navigation-cabinet" type="button" data-open="loginView" data-analytics-goal="cabinet_click">Личный кабинет</button>
             </nav>
@@ -10539,229 +10540,189 @@
         <main id="landingContent">
             <section class="landing-hero" id="top" aria-labelledby="landingTitle">
                 <div class="landing-hero-copy reveal-on-scroll">
-                    <p class="landing-kicker">ЕГЭ по обществознанию · 2027</p>
-                    <h1 id="landingTitle"><small>Подготовка к</small> ЕГЭ по обществознанию <span>с Дарьей</span></h1>
-                    <p class="landing-lead">Я веду занятия сама: объясняю теорию, проверяю вторую часть и слежу за прогрессом. Конспекты, тесты, домашние задания и обратная связь собраны в личном кабинете — после урока не нужно искать материалы по чатам.</p>
+                    <p class="landing-kicker">Личная платформа преподавателя</p>
+                    <h1 id="landingTitle"><small>Подготовка к</small><span>ЕГЭ по обществознанию</span><em>2027</em></h1>
+                    <p class="landing-lead">Занятия со мной, тематические конспекты, практика первой и второй частей и обратная связь — в одной системе подготовки.</p>
                     <div class="landing-actions">
-                        <a class="landing-button" href="#diagnostics">Записаться на диагностику</a>
+                        <a class="landing-button" href="#formats">Форматы занятий</a>
                         <a class="landing-button landing-button--secondary" href="#platform" data-analytics-goal="program_click">Посмотреть платформу</a>
                     </div>
-                    <p class="landing-teacher-note"><span aria-hidden="true">✓</span> Занятия и проверка — лично со мной</p>
+                    <div class="landing-hero-note">
+                        <span aria-hidden="true"></span>
+                        <p><strong>Не потоковая школа.</strong> Я сама веду занятия, проверяю работы и вижу прогресс ученика.</p>
+                    </div>
                 </div>
 
                 <div class="landing-hero-visual reveal-on-scroll" aria-label="Учебники, Конституция и материалы для подготовки к ЕГЭ">
-                    <span class="landing-soft-square landing-soft-square--one" aria-hidden="true"></span>
-                    <span class="landing-soft-square landing-soft-square--two" aria-hidden="true"></span>
-                    <div class="landing-hero-year" aria-hidden="true"><span>Экзамен</span><strong>2027</strong><small>обществознание</small></div>
-                    <div class="landing-answer-sheet" aria-hidden="true"><b>БЛАНК ОТВЕТОВ № 1</b><span></span><span></span><span></span><span></span></div>
+                    <div class="landing-hero-grid" aria-hidden="true"></div>
+                    <div class="landing-hero-year" aria-hidden="true"><span>экзамен</span><strong>2027</strong></div>
+                    <div class="landing-answer-sheet" aria-hidden="true"><b>БЛАНК ОТВЕТОВ</b><small>Обществознание</small><i></i><i></i><i></i></div>
+                    <img class="landing-study-character" src="study-illustration.png" alt="Иллюстрация ученика за подготовкой к экзамену">
                     <img class="landing-book landing-book--textbook" src="textbook.webp" alt="Учебник по обществознанию">
                     <img class="landing-book landing-book--ege" src="ege.webp" alt="Сборник заданий ЕГЭ по обществознанию">
                     <img class="landing-book landing-book--constitution" src="constitution.webp" alt="Конституция Российской Федерации">
-                    <div class="landing-screen-note" aria-hidden="true"><span>личный кабинет</span><i></i><i></i><i></i></div>
-                    <div class="landing-hero-topics" aria-hidden="true"><span>Экономика</span><span>Социология</span><span>Политика</span><span>Право</span></div>
-                </div>
-                <svg class="landing-edge-wave" viewBox="0 0 180 30" aria-hidden="true"><path d="M2 16c23-27 42 24 66 0s44 23 68 0 31-9 42-2"/></svg>
-            </section>
-
-            <section class="landing-section landing-personal" aria-labelledby="personalTitle">
-                <div class="landing-section-label"><span>01</span><small>личный формат</small></div>
-                <div class="landing-personal-note reveal-on-scroll">
-                    <div class="landing-personal-copy">
-                        <p class="landing-kicker">Один преподаватель</p>
-                        <h2 id="personalTitle">Один преподаватель на всём пути</h2>
-                        <p>Занятия, проверку второй части, ответы на вопросы и план подготовки веду я сама. Ученик не переходит от преподавателя к куратору и обратно — я вижу весь его прогресс и понимаю, где именно теряются баллы.</p>
-                    </div>
-                    <ul class="landing-check-list">
-                        <li><span>✓</span>объясняю темы сама</li>
-                        <li><span>✓</span>проверяю вторую часть сама</li>
-                        <li><span>✓</span>отвечаю на вопросы</li>
-                        <li><span>✓</span>вижу результаты тестов</li>
-                        <li><span>✓</span>корректирую план подготовки</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section class="landing-section landing-process" id="process" data-analytics-view="program_view" aria-labelledby="processTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>02</span><small>как занимаемся</small></div>
-                    <div><p class="landing-kicker">Маршрут по теме</p><h2 id="processTitle">Как проходит подготовка</h2></div>
-                </div>
-                <ol class="landing-route">
-                    <li class="reveal-on-scroll"><span>01</span><div><h3>Разбираем тему</h3><p>На занятии — логика темы, сложные места, типовые ловушки и то, как это спрашивают на ЕГЭ.</p></div><small>занятие</small></li>
-                    <li class="reveal-on-scroll"><span>02</span><div><h3>Закрепляем первую часть</h3><p>После темы ученик проходит тематический тест.</p></div><small>часть 1</small></li>
-                    <li class="reveal-on-scroll"><span>03</span><div><h3>Делаем вторую часть</h3><p>К каждой теме есть задания с развёрнутым ответом.</p></div><small>часть 2</small></li>
-                    <li class="reveal-on-scroll"><span>04</span><div><h3>Я проверяю работу</h3><p>Ошибки разбираются по критериям экзамена.</p></div><small>проверка</small></li>
-                    <li class="reveal-on-scroll"><span>05</span><div><h3>Фиксируем прогресс</h3><p>В кабинете видно, что уже пройдено, какие работы сданы и к каким темам нужно вернуться.</p></div><small>результат</small></li>
-                </ol>
-            </section>
-
-            <section class="landing-section landing-platform" id="platform" data-analytics-view="materials_view" aria-labelledby="platformTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>03</span><small>платформа</small></div>
-                    <div><p class="landing-kicker">Между занятиями</p><h2 id="platformTitle">Как выглядит подготовка между занятиями</h2><p>Я не хотела, чтобы подготовка выглядела как папка из десятков PDF и переписка «а какое сегодня ДЗ?». Поэтому собрала для учеников личный кабинет: здесь лежат конспекты, тесты, задания второй части, дополнительные материалы и весь прогресс по курсу.</p></div>
-                </div>
-                <figure class="landing-platform-shot reveal-on-scroll">
-                    <button type="button" data-lightbox-src="assets/landing/profi-platform.jpg" data-lightbox-alt="Экраны личного кабинета для подготовки к ЕГЭ">
-                        <img src="assets/landing/profi-platform.jpg" alt="Реальные экраны личного кабинета: темы курса, план на день и прогресс" loading="lazy">
-                    </button>
-                    <figcaption>Интерфейс личного кабинета ученика</figcaption>
-                </figure>
-                <div class="landing-platform-notes">
-                    <article><span>01</span><h3>Личный прогресс</h3><p>Видно завершённые темы и результаты.</p></article>
-                    <article><span>02</span><h3>План на день</h3><p>Понятно, что делать дальше.</p></article>
-                    <article><span>03</span><h3>Темы курса</h3><p>Социология, экономика, политика и право.</p></article>
-                    <article><span>04</span><h3>Первая и вторая части</h3><p>Тест и задания с развёрнутым ответом.</p></article>
-                </div>
-            </section>
-
-            <section class="landing-section landing-topic-inside" aria-labelledby="insideTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>04</span><small>практика</small></div>
-                    <div><p class="landing-kicker">Одна тема</p><h2 id="insideTitle">Внутри каждой темы — теория и практика</h2><p>После занятия ученик возвращается к теме в личном кабинете: открывает конспект, проходит тест первой части, выполняет задания второй части и отправляет работу на проверку.</p></div>
-                </div>
-                <div class="landing-material-showcase">
-                    <figure class="landing-material-shot landing-material-shot--wide reveal-on-scroll"><span>конспект + практика</span><img src="assets/landing/profi-notes.jpg" alt="Примеры реальных конспектов и практических заданий" loading="lazy"><figcaption>Материалы распределены по темам курса</figcaption></figure>
-                    <figure class="landing-material-shot reveal-on-scroll"><span>тест + вторая часть</span><img src="assets/landing/homework.jpg" alt="Тест, результат и форма отправки второй части в личном кабинете" loading="lazy"><figcaption>Результат теста сохраняется, работу можно отправить на проверку</figcaption></figure>
-                </div>
-            </section>
-
-            <section class="landing-section landing-results" id="results" aria-labelledby="resultsTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>05</span><small>результаты</small></div>
-                    <div><p class="landing-kicker">Реальные баллы</p><h2 id="resultsTitle">Результаты учеников</h2><p>Результат зависит от стартового уровня, регулярности занятий и времени до экзамена. Ниже — реальные результаты моих учеников.</p></div>
-                </div>
-                <div class="landing-score-line reveal-on-scroll" aria-label="Результаты учеников: 92, 92, 90, 86, 83, 83 и 80 баллов">
-                    <span><strong>92</strong><small>балла</small></span><i></i><span><strong>92</strong><small>балла</small></span><i></i><span><strong>90</strong><small>баллов</small></span><i></i><span><strong>86</strong><small>баллов</small></span><i></i><span><strong>83</strong><small>балла</small></span><i></i><span><strong>83</strong><small>балла</small></span><i></i><span><strong>80</strong><small>баллов</small></span>
-                </div>
-            </section>
-
-            <section class="landing-section landing-reviews" id="reviews" aria-labelledby="reviewsTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>06</span><small>отзывы</small></div>
-                    <div><p class="landing-kicker">Без пересказа</p><h2 id="reviewsTitle">Отзывы учеников и родителей</h2></div>
-                </div>
-                <!-- TODO: добавить реальные отзывы -->
-                <div class="landing-reviews-placeholder reveal-on-scroll">
-                    <div class="landing-message-lines" aria-hidden="true"><span></span><span></span><span></span></div>
-                    <p>Здесь появятся скриншоты реальных отзывов — без выдуманных цитат и пересказа чужих слов.</p>
+                    <div class="landing-hero-sticker" aria-hidden="true">теория<br>+ практика</div>
+                    <svg class="landing-hero-wave" viewBox="0 0 180 35" aria-hidden="true"><path d="M2 19c25-29 43 21 68-2s45 23 70-1 27-8 38-3"/></svg>
                 </div>
             </section>
 
             <section class="landing-section landing-about" id="about" data-analytics-view="about_view" aria-labelledby="aboutTitle">
-                <div class="landing-about-photo reveal-on-scroll">
-                    <span class="landing-photo-number">07</span>
-                    <img src="assets/landing/daria.png" alt="Преподаватель обществознания Дарья Лоскутова" loading="lazy">
-                    <svg viewBox="0 0 260 36" aria-hidden="true"><path d="M2 22c29-31 58 24 88-2s57 24 87-2 53-12 80 2"/></svg>
-                </div>
                 <div class="landing-about-copy reveal-on-scroll">
-                    <p class="landing-kicker">Обо мне</p>
-                    <h2 id="aboutTitle">Я Дарья Лоскутова, преподаватель обществознания.</h2>
-                    <p>Учусь в НИЯУ МИФИ по направлению «Международные отношения», средний балл — 4,83.</p>
-                    <p>Сама сдала ЕГЭ по обществознанию на 94 балла и каждый год слежу за экзаменом не только по демоверсиям: иду на ЕГЭ вместе с учениками.</p>
-                    <p>Мне важно не просто объяснить тему на уроке, а сделать подготовку управляемой: чтобы ученик понимал, что уже умеет, где теряет баллы и что конкретно делать дальше.</p>
+                    <p class="landing-kicker">О преподавателе</p>
+                    <h2 id="aboutTitle">Дарья, преподаватель обществознания</h2>
+                    <p class="landing-about-intro">Мне важно, чтобы подготовка была понятной: ученик знает, какую тему проходит, где теряет баллы и что нужно сделать дальше.</p>
+                    <div class="landing-about-text">
+                        <p>Учусь в НИЯУ МИФИ по направлению «Международные отношения», средний балл — 4,83.</p>
+                        <p>Сдала ЕГЭ по обществознанию на 94 балла и ежегодно сдаю экзамен вместе с учениками, чтобы следить за его актуальным форматом.</p>
+                    </div>
                     <dl class="landing-facts">
                         <div><dt>94</dt><dd>мой результат ЕГЭ</dd></div>
                         <div><dt>4,83</dt><dd>средний балл в МИФИ</dd></div>
-                        <div><dt>ежегодно</dt><dd>сдаю ЕГЭ вместе с учениками</dd></div>
+                        <div><dt>лично</dt><dd>проверяю вторую часть</dd></div>
                     </dl>
                 </div>
-            </section>
-
-            <section class="landing-section landing-documents" aria-labelledby="documentsTitle">
-                <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>08</span><small>документы</small></div>
-                    <div><p class="landing-kicker">Образование</p><h2 id="documentsTitle">Образование и документы</h2><p>Нажмите на документ, чтобы рассмотреть его крупнее.</p></div>
-                </div>
-                <div class="landing-document-grid">
-                    <button class="landing-document landing-document--main reveal-on-scroll" type="button" data-lightbox-src="assets/landing/diploma.jpg" data-lightbox-alt="Диплом бакалавра Дарьи Лоскутовой">
-                        <img src="assets/landing/diploma.jpg" alt="Диплом бакалавра Дарьи Лоскутовой" loading="lazy"><span>Диплом бакалавра</span>
-                    </button>
-                    <button class="landing-document landing-document--grades reveal-on-scroll" type="button" data-lightbox-src="assets/landing/diploma-grades.jpg" data-lightbox-alt="Приложение к диплому с оценками">
-                        <img src="assets/landing/diploma-grades.jpg" alt="Приложение к диплому Дарьи с оценками" loading="lazy"><span>Приложение к диплому · оценки</span>
-                    </button>
-                    <button class="landing-document reveal-on-scroll" type="button" data-lightbox-src="assets/landing/certificate-1.jpg" data-lightbox-alt="Диплом победителя педагогической олимпиады">
-                        <img src="assets/landing/certificate-1.jpg" alt="Диплом победителя педагогической олимпиады" loading="lazy"><span>Педагогический успех · I место</span>
-                    </button>
-                    <button class="landing-document reveal-on-scroll" type="button" data-lightbox-src="assets/landing/certificate-2.jpg" data-lightbox-alt="Диплом победителя олимпиады для учителей обществознания">
-                        <img src="assets/landing/certificate-2.jpg" alt="Диплом победителя олимпиады для учителей обществознания" loading="lazy"><span>ФГОС соответствие · I место</span>
-                    </button>
+                <div class="landing-about-visual reveal-on-scroll">
+                    <div class="landing-about-photo">
+                        <img src="assets/landing/daria.png" alt="Преподаватель обществознания Дарья Лоскутова" loading="lazy">
+                    </div>
+                    <div class="landing-about-card landing-about-card--one"><span>01</span>занятия веду сама</div>
+                    <div class="landing-about-card landing-about-card--two"><span>02</span>вижу весь прогресс</div>
+                    <svg viewBox="0 0 260 36" aria-hidden="true"><path d="M2 22c29-31 58 24 88-2s57 24 87-2 53-12 80 2"/></svg>
                 </div>
             </section>
 
-            <section class="landing-section landing-comparison" aria-labelledby="comparisonTitle">
+            <section class="landing-section landing-program" id="program" data-analytics-view="program_view" aria-labelledby="programTitle">
                 <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>09</span><small>формат</small></div>
-                    <div><p class="landing-kicker">Лично + структурированно</p><h2 id="comparisonTitle">Что отличается в моём формате</h2></div>
+                    <div><p class="landing-kicker">Структура подготовки</p><h2 id="programTitle">Как устроена программа</h2></div>
+                    <p>Курс разделён на основные блоки ЕГЭ. Здесь — обзор программы; учебные материалы доступны ученикам только после входа в личный кабинет.</p>
                 </div>
-                <p class="landing-comparison-context reveal-on-scroll">В большой школе эти функции часто распределены между преподавателем, куратором и платформой.</p>
-                <div class="landing-comparison-table reveal-on-scroll">
-                    <div class="landing-comparison-head"><span></span><strong>В моём формате</strong></div>
-                    <div><span>Преподаватель</span><strong>Я веду занятия сама</strong></div>
-                    <div><span>Проверка второй части</span><strong>Я проверяю работы сама</strong></div>
-                    <div><span>Материалы между занятиями</span><strong>Личный кабинет</strong></div>
-                    <div><span>Прогресс</span><strong>Виден в одном месте</strong></div>
-                    <div><span>Вопросы</span><strong>Можно задать преподавателю</strong></div>
-                    <div><span>Формат</span><strong>Индивидуально / пара / мини-группа / сопровождение</strong></div>
+                <div class="landing-program-grid">
+                    <article class="landing-program-card landing-program-card--sociology reveal-on-scroll">
+                        <div class="landing-program-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><circle cx="11" cy="11" r="4"/><circle cx="23" cy="13" r="3"/><path d="M4 25c1-5 3.5-7 7-7s6 2 7 7M19 20c4-1 7 1 8 5"/></svg></div>
+                        <span>01 · общество</span><h3>Социология</h3><p>Человек и общество, социализация, социальные группы и отношения.</p><small>теория · тест · вторая часть</small>
+                    </article>
+                    <article class="landing-program-card landing-program-card--economy reveal-on-scroll">
+                        <div class="landing-program-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 25V15M13 25V9M21 25V18M29 25V5M3 27h27"/><path d="m5 11 8-6 8 8 8-9"/></svg></div>
+                        <span>02 · рынок</span><h3>Экономика</h3><p>Рыночный механизм, фирмы, финансы и экономическая политика.</p><small>теория · тест · вторая часть</small>
+                    </article>
+                    <article class="landing-program-card landing-program-card--politics reveal-on-scroll">
+                        <div class="landing-program-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="m4 12 12-7 12 7M6 14h20M8 14v10M14 14v10M20 14v10M26 27H6"/></svg></div>
+                        <span>03 · государство</span><h3>Политика</h3><p>Политическая система, органы власти, участие граждан и выборы.</p><small>теория · тест · вторая часть</small>
+                    </article>
+                    <article class="landing-program-card landing-program-card--law reveal-on-scroll">
+                        <div class="landing-program-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M16 5v22M8 8h16M5 25h22M8 8 3 18h10L8 8Zm16 0-5 10h10L24 8Z"/></svg></div>
+                        <span>04 · нормы</span><h3>Право</h3><p>Конституция, отрасли права, права человека и юридические задачи.</p><small>теория · тест · вторая часть</small>
+                    </article>
+                    <article class="landing-program-card landing-program-card--extra reveal-on-scroll">
+                        <div class="landing-program-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 6h9c2 0 3 1 3 3v18c0-2-1-3-3-3H5V6Zm22 0h-7c-2 0-3 1-3 3v18c0-2 1-3 3-3h7V6Z"/><path d="M8 11h6M20 11h4M8 15h6M20 15h4"/></svg></div>
+                        <span>05 · повторение</span><h3>Дополнительные материалы</h3><p>Учебники, Конституция, сборники заданий и интерактивная практика.</p><small>для закрепления курса</small>
+                    </article>
+                </div>
+            </section>
+
+            <section class="landing-section landing-platform" id="platform" data-analytics-view="materials_view" aria-labelledby="platformTitle">
+                <div class="landing-section-heading reveal-on-scroll">
+                    <div><p class="landing-kicker">Личный кабинет</p><h2 id="platformTitle">Как выглядит платформа</h2></div>
+                    <p>После занятия ученик открывает нужную тему и сразу видит конспект, тест, вторую часть и дополнительные материалы.</p>
+                </div>
+                <div class="landing-platform-layout">
+                    <button class="landing-platform-main reveal-on-scroll" type="button" data-lightbox-src="assets/landing/profi-platform.jpg" data-lightbox-alt="Главная страница личного кабинета ученика">
+                        <span>Главная ученика</span><img src="assets/landing/profi-platform.jpg" alt="Главная страница личного кабинета с темами и прогрессом" loading="lazy">
+                    </button>
+                    <div class="landing-platform-side">
+                        <button class="landing-platform-detail reveal-on-scroll" type="button" data-lightbox-src="assets/landing/profi-notes.jpg" data-lightbox-alt="Конспекты и практика по темам курса">
+                            <img src="assets/landing/profi-notes.jpg" alt="Конспекты и задания в личном кабинете" loading="lazy"><span>Конспект и практика</span>
+                        </button>
+                        <button class="landing-platform-detail reveal-on-scroll" type="button" data-lightbox-src="assets/landing/homework.jpg" data-lightbox-alt="Тест и отправка второй части">
+                            <img src="assets/landing/homework.jpg" alt="Тест и отправка домашней работы на проверку" loading="lazy"><span>Тест и вторая часть</span>
+                        </button>
+                    </div>
+                </div>
+                <ul class="landing-platform-list reveal-on-scroll">
+                    <li><b>01</b><span><strong>Конспекты</strong>по каждой теме курса</span></li>
+                    <li><b>02</b><span><strong>Домашние задания</strong>с практикой второй части</span></li>
+                    <li><b>03</b><span><strong>Тематические тесты</strong>с сохранением результата</span></li>
+                    <li><b>04</b><span><strong>Личный прогресс</strong>и комментарии преподавателя</span></li>
+                </ul>
+            </section>
+
+            <section class="landing-section landing-benefits" id="benefits" aria-labelledby="benefitsTitle">
+                <div class="landing-section-heading reveal-on-scroll">
+                    <div><p class="landing-kicker">Что важно в работе</p><h2 id="benefitsTitle">Подготовка без лишнего хаоса</h2></div>
+                    <p>Платформа дополняет занятия и помогает не терять материалы, сроки и комментарии по работам.</p>
+                </div>
+                <div class="landing-benefit-grid">
+                    <article class="landing-benefit landing-benefit--lead reveal-on-scroll"><span>всё рядом</span><h3>Одна тема — одно понятное пространство</h3><p>Теория, первая часть, развёрнутые задания и обратная связь собраны вместе.</p><div aria-hidden="true"><i></i><i></i><i></i></div></article>
+                    <article class="landing-benefit reveal-on-scroll"><b>01</b><h3>Понятный порядок тем</h3><p>Видно, что уже пройдено и к чему перейти дальше.</p></article>
+                    <article class="landing-benefit reveal-on-scroll"><b>02</b><h3>Мои конспекты</h3><p>Материал структурирован под содержание экзамена.</p></article>
+                    <article class="landing-benefit reveal-on-scroll"><b>03</b><h3>Практика второй части</h3><p>Работы можно отправить через кабинет и получить комментарий.</p></article>
+                    <article class="landing-benefit reveal-on-scroll"><b>04</b><h3>Не потоковый формат</h3><p>Занятия, проверку и обратную связь веду я сама.</p></article>
+                    <article class="landing-benefit reveal-on-scroll"><b>05</b><h3>Прогресс сохраняется</h3><p>Результаты тестов и сданные работы остаются в профиле.</p></article>
                 </div>
             </section>
 
             <section class="landing-section landing-formats" id="formats" aria-labelledby="formatsTitle">
                 <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>10</span><small>занятия</small></div>
-                    <div><p class="landing-kicker">Варианты работы</p><h2 id="formatsTitle">Как можно заниматься</h2></div>
+                    <div><p class="landing-kicker">Варианты работы</p><h2 id="formatsTitle">Форматы подготовки</h2></div>
+                    <p>Можно заниматься регулярно или выбрать самостоятельную работу с проверкой и поддержкой.</p>
                 </div>
                 <div class="landing-format-grid">
-                    <article class="landing-format landing-format--large reveal-on-scroll"><span>01</span><div><p>Индивидуально</p><h3>3 000 ₽ <small>/ 60 минут</small></h3></div><p>Занятие один на один. Личный темп и возможность подробно разбирать индивидуальные пробелы.</p></article>
-                    <article class="landing-format landing-format--large reveal-on-scroll"><span>02</span><div><p>В паре</p><h3>2 000 ₽ <small>/ занятие</small></h3></div><p>Два ученика примерно одного уровня. Больше взаимодействия, но сохраняется возможность уделять внимание каждому.</p></article>
-                    <article class="landing-format reveal-on-scroll"><span>03</span><div><p>Мини-группа</p><h3>1 500 ₽ <small>/ занятие</small></h3></div><p>До 6 человек. Общая программа, личный кабинет и индивидуальная работа со второй частью.</p></article>
-                    <article class="landing-format reveal-on-scroll"><span>04</span><div><p>Сопровождение</p><h3>4 000 ₽ <small>/ месяц</small></h3></div><p>Конспекты, практика, проверка домашних заданий, обратная связь и одно занятие в конце месяца для разбора сложных мест.</p></article>
+                    <article class="landing-format landing-format--featured reveal-on-scroll"><div class="landing-format-top"><span>01</span><small>один на один</small></div><h3>Индивидуально</h3><p>Личный темп и возможность подробно разбирать индивидуальные пробелы.</p><div class="landing-format-price"><strong>3 000 ₽</strong><span>60 минут</span></div></article>
+                    <article class="landing-format reveal-on-scroll"><div class="landing-format-top"><span>02</span><small>два ученика</small></div><h3>В паре</h3><p>Работа с учеником примерно одного уровня при внимании к каждому.</p><div class="landing-format-price"><strong>2 000 ₽</strong><span>занятие</span></div></article>
+                    <article class="landing-format reveal-on-scroll"><div class="landing-format-top"><span>03</span><small>до 6 человек</small></div><h3>Мини-группа</h3><p>Общая программа, личный кабинет и индивидуальная работа со второй частью.</p><div class="landing-format-price"><strong>1 500 ₽</strong><span>занятие</span></div></article>
+                    <article class="landing-format landing-format--support reveal-on-scroll"><div class="landing-format-top"><span>04</span><small>самостоятельно</small></div><h3>С сопровождением</h3><p>Конспекты, практика, проверка ДЗ, обратная связь и одно итоговое занятие в месяц.</p><div class="landing-format-price"><strong>4 000 ₽</strong><span>месяц</span></div></article>
                 </div>
             </section>
 
-            <section class="landing-section landing-diagnostics" id="diagnostics" aria-labelledby="diagnosticsTitle">
-                <div class="landing-diagnostics-copy reveal-on-scroll">
-                    <p class="landing-kicker">Начало подготовки</p>
-                    <h2 id="diagnosticsTitle">Начать можно с короткой диагностики</h2>
-                    <p>За 25–30 минут посмотрим текущий уровень, разберём несколько заданий и составим план подготовки. Я покажу, как устроен личный кабинет, и предложу формат занятий, если он действительно подходит.</p>
-                    <div class="landing-actions">
-                        <!-- TODO: вставить ссылку Telegram -->
-                        <a class="landing-button landing-button--wine" href="YOUR_TELEGRAM_LINK">Записаться на диагностику</a>
-                        <a class="landing-text-link" href="YOUR_TELEGRAM_LINK">Написать в Telegram <span aria-hidden="true">→</span></a>
-                    </div>
-                </div>
-                <div class="landing-diagnostics-visual reveal-on-scroll">
-                    <div class="landing-diagnostic-sheet" aria-hidden="true"><span>ДИАГНОСТИКА</span><b>01</b><i></i><b>02</b><i></i><b>03</b><i></i></div>
-                    <img src="study-illustration.png" alt="Иллюстрация подготовки к занятиям" loading="lazy">
-                </div>
-            </section>
-
-            <section class="landing-section landing-faq" aria-labelledby="faqTitle">
+            <section class="landing-section landing-documents" id="documents" aria-labelledby="documentsTitle">
                 <div class="landing-section-heading reveal-on-scroll">
-                    <div class="landing-section-label"><span>11</span><small>вопросы</small></div>
-                    <div><p class="landing-kicker">Коротко о занятиях</p><h2 id="faqTitle">Вопросы перед началом</h2></div>
+                    <div><p class="landing-kicker">Образование</p><h2 id="documentsTitle">Дипломы и сертификаты</h2></div>
+                    <p>Каждый документ можно открыть крупнее. В галерее также есть приложение к диплому с оценками.</p>
                 </div>
-                <div class="landing-accordion">
-                    <article class="landing-faq-item"><h3><button type="button" aria-expanded="false" aria-controls="faqAnswer1">Можно ли прийти с нуля?<span aria-hidden="true">+</span></button></h3><div id="faqAnswer1" hidden><p>Да. На диагностике определяется стартовый уровень, после чего выстраивается порядок тем и объём практики.</p></div></article>
-                    <article class="landing-faq-item"><h3><button type="button" aria-expanded="false" aria-controls="faqAnswer2">Сколько домашней работы?<span aria-hidden="true">+</span></button></h3><div id="faqAnswer2" hidden><p>Зависит от цели и текущего уровня, но после каждой темы есть практика первой и второй частей.</p></div></article>
-                    <article class="landing-faq-item"><h3><button type="button" aria-expanded="false" aria-controls="faqAnswer3">Как проверяется вторая часть?<span aria-hidden="true">+</span></button></h3><div id="faqAnswer3" hidden><p>Работа отправляется через личный кабинет. Я проверяю её по критериям ЕГЭ и возвращаю комментарии.</p></div></article>
+                <div class="landing-document-grid">
+                    <button class="landing-document landing-document--main reveal-on-scroll" type="button" data-lightbox-src="assets/landing/diploma.jpg" data-lightbox-alt="Диплом бакалавра Дарьи Лоскутовой">
+                        <img src="assets/landing/diploma.jpg" alt="Диплом бакалавра Дарьи Лоскутовой" loading="lazy"><span><b>01</b>Диплом бакалавра</span>
+                    </button>
+                    <button class="landing-document landing-document--wide reveal-on-scroll" type="button" data-lightbox-src="assets/landing/diploma-grades.jpg" data-lightbox-alt="Приложение к диплому с оценками">
+                        <img src="assets/landing/diploma-grades.jpg" alt="Приложение к диплому Дарьи с оценками" loading="lazy"><span><b>02</b>Приложение к диплому · оценки</span>
+                    </button>
+                    <button class="landing-document reveal-on-scroll" type="button" data-lightbox-src="assets/landing/certificate-1.jpg" data-lightbox-alt="Диплом победителя педагогической олимпиады">
+                        <img src="assets/landing/certificate-1.jpg" alt="Диплом победителя педагогической олимпиады" loading="lazy"><span><b>03</b>Педагогический успех · I место</span>
+                    </button>
+                    <button class="landing-document reveal-on-scroll" type="button" data-lightbox-src="assets/landing/certificate-2.jpg" data-lightbox-alt="Диплом победителя олимпиады для учителей обществознания">
+                        <img src="assets/landing/certificate-2.jpg" alt="Диплом победителя олимпиады для учителей обществознания" loading="lazy"><span><b>04</b>Олимпиада для учителей · I место</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="landing-section landing-reviews" id="reviews" aria-labelledby="reviewsTitle">
+                <div class="landing-section-heading reveal-on-scroll">
+                    <div><p class="landing-kicker">Отзывы</p><h2 id="reviewsTitle">Отзывы учеников и родителей</h2></div>
+                    <p>Здесь будут размещены скриншоты реальных сообщений — без придуманных цитат.</p>
+                </div>
+                <div class="landing-review-grid reveal-on-scroll" aria-label="Места для будущих скриншотов отзывов">
+                    <article><span>отзыв ученика</span><div aria-hidden="true"><i></i><i></i><i></i></div><small>скриншот будет добавлен</small></article>
+                    <article><span>отзыв родителя</span><div aria-hidden="true"><i></i><i></i><i></i></div><small>скриншот будет добавлен</small></article>
+                    <article><span>ещё один отзыв</span><div aria-hidden="true"><i></i><i></i><i></i></div><small>скриншот будет добавлен</small></article>
                 </div>
             </section>
         </main>
 
         <footer class="landing-footer">
-            <div><strong>С Дарьей</strong><span>Подготовка к ЕГЭ по обществознанию</span></div>
+            <div class="landing-footer-brand"><strong>С Дарьей</strong><span>Подготовка к ЕГЭ по обществознанию · 2027</span></div>
             <nav aria-label="Ссылки в подвале">
-                <!-- TODO: вставить ссылку Telegram -->
-                <a href="YOUR_TELEGRAM_LINK">Telegram</a>
+                <a href="#about">О преподавателе</a>
+                <a href="#formats">Форматы занятий</a>
                 <button type="button" data-open="loginView" data-analytics-goal="cabinet_click">Личный кабинет</button>
-                <a href="privacy.html">Политика обработки персональных данных</a>
+                <a href="privacy.html">Обработка персональных данных</a>
                 <button type="button" data-cookie-settings>Настройки cookies</button>
             </nav>
+            <p>© 2026 · Обществознание с Дарьей</p>
         </footer>
 
         <div class="landing-lightbox" id="landingLightbox" role="dialog" aria-modal="true" aria-labelledby="landingLightboxCaption" hidden>
             <button class="landing-lightbox-close" type="button" aria-label="Закрыть документ">×</button>
-            <img src="" alt="">
+            <img alt="">
             <p id="landingLightboxCaption"></p>
         </div>
     </section>
@@ -11295,7 +11256,7 @@
     <div class="toast" id="toast" role="status" hidden></div>
 
     <script src="analytics.js"></script>
-    <script src="landing.js?v=20260907"></script>
+    <script src="landing.js?v=20260908"></script>
     <script src="data/tests-public.js?v=20260904"></script>
     <script src="data/tests-score-hashes.js?v=20260904-2"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
