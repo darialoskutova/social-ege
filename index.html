@@ -10503,7 +10503,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="landing.css?v=20260909-3">
+    <link rel="stylesheet" href="landing.css?v=20260909-4">
 </head>
 <body>
     <section class="view landing" id="welcomeView">
@@ -10554,6 +10554,7 @@
                 </div>
 
                 <div class="landing-hero-visual reveal-on-scroll" aria-label="Учебники, Конституция и материалы для подготовки к ЕГЭ">
+                    <span class="landing-paperclip landing-paperclip--hero" aria-hidden="true"></span>
                     <div class="landing-hero-grid" aria-hidden="true"></div>
                     <div class="landing-hero-year" aria-hidden="true"><span>экзамен</span><strong>2027</strong></div>
                     <div class="landing-answer-sheet" aria-hidden="true"><b>БЛАНК ОТВЕТОВ</b><small>Обществознание</small><i></i><i></i><i></i></div>
@@ -10587,6 +10588,7 @@
                     </dl>
                 </div>
                 <div class="landing-about-visual reveal-on-scroll">
+                    <span class="landing-paperclip landing-paperclip--photo" aria-hidden="true"></span>
                     <div class="landing-about-photo">
                         <img src="assets/landing/daria.png" alt="Преподаватель обществознания Дарья Лоскутова" loading="lazy">
                     </div>
@@ -10597,6 +10599,7 @@
             </section>
 
             <section class="landing-section landing-program" id="program" data-analytics-view="program_view" aria-labelledby="programTitle">
+                <div class="landing-study-tabs" aria-hidden="true"><span>теория</span><span>практика</span></div>
                 <div class="landing-section-heading reveal-on-scroll" data-index="02">
                     <div><p class="landing-kicker">Структура подготовки</p><h2 id="programTitle">Как устроена программа</h2></div>
                     <p>Курс разделён на основные блоки ЕГЭ. Здесь — обзор программы; учебные материалы доступны ученикам только после входа в личный кабинет.</p>
@@ -10626,6 +10629,7 @@
             </section>
 
             <section class="landing-section landing-platform" id="platform" data-analytics-view="materials_view" aria-labelledby="platformTitle">
+                <span class="landing-tape landing-tape--platform" aria-hidden="true"></span>
                 <div class="landing-section-heading reveal-on-scroll" data-index="03">
                     <div><p class="landing-kicker">Личный кабинет</p><h2 id="platformTitle">Как выглядит платформа</h2></div>
                     <p>После занятия ученик открывает нужную тему и сразу видит конспект, тест, вторую часть и дополнительные материалы.</p>
@@ -10667,6 +10671,7 @@
             </section>
 
             <section class="landing-section landing-formats" id="formats" aria-labelledby="formatsTitle">
+                <span class="landing-paperclip landing-paperclip--formats" aria-hidden="true"></span>
                 <div class="landing-section-heading reveal-on-scroll" data-index="05">
                     <div><p class="landing-kicker">Варианты работы</p><h2 id="formatsTitle">Форматы подготовки</h2></div>
                     <p>Можно заниматься регулярно или выбрать самостоятельную работу с проверкой и поддержкой.</p>
@@ -11199,13 +11204,28 @@
                         <div class="practice-panel" id="constitutionHub" hidden>
                             <button class="back-button practice-back" type="button" data-practice-home>← Дополнительная практика</button>
                             <div class="constitution-hero">
-                                <div><p class="eyebrow">Задание № 23</p><h1>Конституция РФ</h1><button class="button button--small" type="button" data-game-mode="task23">Начать тренировку</button></div>
-                                <div class="constitution-seal" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="32"/><path d="M30 43h40L50 29zM35 48v21M45 48v21M55 48v21M65 48v21M29 73h42"/></svg><span>23</span></div>
+                                <span class="constitution-hero-tab" aria-hidden="true">основы права</span>
+                                <div class="constitution-hero-copy">
+                                    <p class="eyebrow">Подготовка к заданию № 23</p>
+                                    <h1>Конституция РФ</h1>
+                                    <p class="constitution-hero-text">Текст Конституции, короткая шпаргалка по положениям и тренировка в формате экзамена.</p>
+                                    <button class="button button--small" type="button" data-game-mode="task23">Перейти к тренировке</button>
+                                </div>
+                                <div class="constitution-hero-art" aria-hidden="true">
+                                    <span class="constitution-paperclip"></span>
+                                    <img src="constitution.webp" alt="">
+                                    <div class="constitution-seal"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="32"/><path d="M30 43h40L50 29zM35 48v21M45 48v21M55 48v21M65 48v21M29 73h42"/></svg><span>23</span></div>
+                                </div>
+                            </div>
+                            <div class="constitution-route" aria-label="Порядок работы с разделом">
+                                <article><span>01</span><div><strong>Прочитать</strong><small>основные статьи и положения</small></div></article>
+                                <article><span>02</span><div><strong>Повторить</strong><small>формулировки для задания № 23</small></div></article>
+                                <article><span>03</span><div><strong>Проверить себя</strong><small>в тренажёре с объяснениями</small></div></article>
                             </div>
                             <div class="constitution-files">
-                                <a class="constitution-file" href="Конституция РФ.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h10"/></svg></span><strong>Конституция Российской Федерации</strong><small>PDF · открыть документ</small></a>
-                                <a class="constitution-file" href="Конституция РФ - положения для 23 задания.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><strong>Положения для задания № 23</strong><small>PDF · шпаргалка</small></a>
-                                <article class="constitution-file is-pending"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><strong>Часто встречающиеся задания</strong><small>Файл будет подключён после загрузки</small></article>
+                                <a class="constitution-file constitution-file--document" href="Конституция РФ.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h10"/></svg></span><em>Документ</em><strong>Конституция Российской Федерации</strong><small>Открыть полный текст · PDF</small><b aria-hidden="true">↗</b></a>
+                                <a class="constitution-file constitution-file--notes" href="Конституция РФ - положения для 23 задания.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><em>Шпаргалка</em><strong>Положения для задания № 23</strong><small>Повторить ключевые формулировки · PDF</small><b aria-hidden="true">↗</b></a>
+                                <button class="constitution-file constitution-file--training" type="button" data-game-mode="task23"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"/><path d="m13 11 8 5-8 5z"/></svg></span><em>Тренажёр</em><strong>Практика задания № 23</strong><small>Вопросы в формате ЕГЭ с объяснениями</small><b aria-hidden="true">→</b></button>
                             </div>
                         </div>
 

@@ -28,6 +28,10 @@
     --landing-solid-navy: #163d70;
     --landing-solid-wine: #812b40;
     --landing-solid-ink: #ffffff;
+    --landing-sage: #397064;
+    --landing-sage-soft: #dfeee9;
+    --landing-violet: #625b8f;
+    --landing-violet-soft: #e9e7f3;
     display: block;
     width: 100%;
     max-width: none;
@@ -60,6 +64,10 @@ html[data-theme="dark"] #welcomeView.landing {
     --landing-solid-navy: #173a66;
     --landing-solid-wine: #70263a;
     --landing-solid-ink: #ffffff;
+    --landing-sage: #91c1b4;
+    --landing-sage-soft: #1a3432;
+    --landing-violet: #b9b2df;
+    --landing-violet-soft: #2a2942;
 }
 
 #welcomeView.landing::before {
@@ -485,6 +493,8 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border: 1px solid color-mix(in srgb, var(--landing-navy) 25%, var(--landing-line));
     border-radius: 44px 44px 126px 44px;
     background:
+        radial-gradient(circle at 91% 13%, var(--landing-violet-soft) 0 15%, transparent 15.3%),
+        radial-gradient(circle at 13% 88%, var(--landing-sage-soft) 0 18%, transparent 18.3%),
         radial-gradient(color-mix(in srgb, var(--landing-navy) 18%, transparent) 1px, transparent 1.3px) 0 0 / 18px 18px,
         var(--landing-blue-soft);
 }
@@ -656,6 +666,97 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     transform: rotate(-8deg);
 }
 
+/* Stationery details: paperclips, tabs and tape keep the page tied to studying. */
+.landing-paperclip {
+    position: absolute;
+    z-index: 12;
+    display: block;
+    width: 25px;
+    height: 68px;
+    border: 3px solid currentColor;
+    border-radius: 16px;
+    color: var(--landing-sage);
+    pointer-events: none;
+}
+
+.landing-paperclip::after {
+    position: absolute;
+    top: 6px;
+    left: 5px;
+    width: 9px;
+    height: 48px;
+    border: 2px solid currentColor;
+    border-radius: 10px;
+    content: "";
+}
+
+.landing-paperclip--hero {
+    top: 19%;
+    right: 18%;
+    transform: rotate(23deg);
+}
+
+.landing-paperclip--photo {
+    top: -17px;
+    right: 44px;
+    color: var(--landing-violet);
+    transform: rotate(12deg);
+}
+
+.landing-paperclip--formats {
+    top: 100px;
+    right: 3%;
+    color: var(--landing-sage);
+    transform: rotate(31deg);
+}
+
+.landing-study-tabs {
+    position: absolute;
+    z-index: 4;
+    top: 83px;
+    right: 0;
+    display: flex;
+    gap: 7px;
+    align-items: flex-start;
+    pointer-events: none;
+    transform: rotate(2deg);
+}
+
+.landing-study-tabs span {
+    padding: 9px 14px 8px;
+    border-radius: 9px 9px 3px 3px;
+    background: var(--landing-sage);
+    color: #ffffff;
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--landing-sage) 20%, transparent);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.landing-study-tabs span:last-child {
+    margin-top: 13px;
+    background: var(--landing-violet);
+}
+
+.landing-tape {
+    position: absolute;
+    z-index: 4;
+    display: block;
+    width: 112px;
+    height: 28px;
+    border: 1px solid rgba(255, 255, 255, .28);
+    background: color-mix(in srgb, var(--landing-sage) 72%, transparent);
+    opacity: .88;
+    pointer-events: none;
+}
+
+.landing-tape--platform {
+    top: -9px;
+    right: 12%;
+    transform: rotate(5deg);
+}
+
 .landing-exam-band {
     position: relative;
     width: calc(100% + 20px);
@@ -773,7 +874,7 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border-radius: 32px 74px 32px 32px;
     background:
         radial-gradient(color-mix(in srgb, var(--landing-wine) 18%, transparent) 1px, transparent 1.3px) right 34px top 34px / 18px 18px,
-        var(--landing-wine-soft);
+        linear-gradient(135deg, var(--landing-wine-soft), var(--landing-sage-soft));
 }
 
 .landing-about-index {
@@ -928,12 +1029,16 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 .landing-about-card--one {
     top: 20%;
     left: -28px;
+    border-color: color-mix(in srgb, var(--landing-violet) 36%, var(--landing-line));
+    background: var(--landing-violet-soft);
     transform: rotate(-4deg);
 }
 
 .landing-about-card--two {
     right: -18px;
     bottom: 15%;
+    border-color: color-mix(in srgb, var(--landing-sage) 36%, var(--landing-line));
+    background: var(--landing-sage-soft);
     transform: rotate(3deg);
 }
 
@@ -1005,12 +1110,14 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 
 .landing-program-card:nth-child(2) {
     grid-column: span 3;
-    background: var(--landing-blue-soft);
+    border-color: color-mix(in srgb, var(--landing-sage) 34%, var(--landing-line));
+    background: var(--landing-sage-soft);
 }
 
 .landing-program-card:nth-child(3) {
     grid-column: span 4;
-    background: var(--landing-card);
+    border-color: color-mix(in srgb, var(--landing-violet) 34%, var(--landing-line));
+    background: var(--landing-violet-soft);
 }
 
 .landing-program-card:nth-child(4) {
@@ -1077,6 +1184,17 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     border-color: color-mix(in srgb, var(--landing-solid-ink) 42%, transparent);
     background: color-mix(in srgb, var(--landing-solid-ink) 10%, transparent);
     color: var(--landing-solid-ink);
+}
+
+.landing-program-card:nth-child(2) .landing-program-icon {
+    border-color: color-mix(in srgb, var(--landing-sage) 48%, var(--landing-line));
+    color: var(--landing-sage);
+}
+
+.landing-program-card:nth-child(2) > span,
+.landing-program-card:nth-child(3) .landing-program-icon,
+.landing-program-card:nth-child(3) > span {
+    color: var(--landing-violet);
 }
 
 .landing-program-card:nth-child(1)::before,
@@ -1339,6 +1457,24 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     background: color-mix(in srgb, var(--landing-card) 72%, transparent);
 }
 
+.landing-benefit:nth-child(3) {
+    border-color: color-mix(in srgb, var(--landing-sage) 32%, var(--landing-line));
+    background: var(--landing-sage-soft);
+}
+
+.landing-benefit:nth-child(5) {
+    border-color: color-mix(in srgb, var(--landing-violet) 32%, var(--landing-line));
+    background: var(--landing-violet-soft);
+}
+
+.landing-benefit:nth-child(3) > b {
+    color: var(--landing-sage);
+}
+
+.landing-benefit:nth-child(5) > b {
+    color: var(--landing-violet);
+}
+
 .landing-benefit--lead {
     grid-row: span 2;
     min-height: 393px;
@@ -1456,12 +1592,14 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 
 .landing-format:nth-child(2) {
     grid-column: span 5;
-    background: var(--landing-card);
+    border-color: color-mix(in srgb, var(--landing-sage) 34%, var(--landing-line));
+    background: var(--landing-sage-soft);
 }
 
 .landing-format:nth-child(3) {
     grid-column: span 5;
-    background: var(--landing-blue-soft);
+    border-color: color-mix(in srgb, var(--landing-violet) 34%, var(--landing-line));
+    background: var(--landing-violet-soft);
 }
 
 .landing-format--featured {
@@ -1501,6 +1639,16 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 
 .landing-format--featured .landing-format-price {
     border-top-color: color-mix(in srgb, var(--landing-solid-ink) 24%, transparent);
+}
+
+.landing-format:nth-child(2) .landing-format-top > span,
+.landing-format:nth-child(2) .landing-format-price strong {
+    color: var(--landing-sage);
+}
+
+.landing-format:nth-child(3) .landing-format-top > span,
+.landing-format:nth-child(3) .landing-format-price strong {
+    color: var(--landing-violet);
 }
 
 .landing-format::after {
@@ -1625,6 +1773,25 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
     transition: transform .2s ease, box-shadow .2s ease;
 }
 
+.landing-document::before {
+    position: absolute;
+    z-index: 4;
+    top: -16px;
+    right: 28px;
+    width: 18px;
+    height: 48px;
+    border: 3px solid var(--landing-sage);
+    border-radius: 12px;
+    content: "";
+    pointer-events: none;
+    transform: rotate(9deg);
+}
+
+.landing-document:nth-child(even)::before {
+    border-color: var(--landing-violet);
+    transform: rotate(-8deg);
+}
+
 .landing-document--main {
     grid-row: span 2;
     min-height: 648px;
@@ -1723,7 +1890,8 @@ html[data-theme="dark"] .landing-theme-toggle .theme-toggle-sun {
 }
 
 .landing-review-grid article:nth-child(3) {
-    background: var(--landing-blue-soft);
+    border-color: color-mix(in srgb, var(--landing-sage) 40%, var(--landing-line));
+    background: var(--landing-sage-soft);
 }
 
 .landing-review-grid article:nth-child(2) > span,
@@ -2484,5 +2652,506 @@ html.landing-enhanced .reveal-on-scroll.is-visible {
     html.landing-enhanced .reveal-on-scroll {
         opacity: 1;
         transform: none;
+    }
+}
+
+/* Constitution workspace inside the student platform. */
+#practicePage #constitutionHub {
+    --constitution-sage: #397064;
+    --constitution-sage-soft: #e1eee9;
+    --constitution-violet: #625b8f;
+    --constitution-violet-soft: #ebe9f4;
+    --constitution-blue: #173f73;
+    --constitution-wine: #862f45;
+}
+
+#practicePage #constitutionHub .constitution-hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 310px;
+    min-height: 390px;
+    gap: 38px;
+    align-items: center;
+    margin-bottom: 18px;
+    padding: 50px 54px;
+    overflow: hidden;
+    border: 1px solid #294f80;
+    border-top: 0;
+    border-radius: 30px 76px 30px 30px;
+    background:
+        radial-gradient(circle at 88% 12%, rgba(137, 180, 168, .25) 0 17%, transparent 17.3%),
+        radial-gradient(circle at 5% 104%, rgba(134, 47, 69, .42) 0 22%, transparent 22.3%),
+        linear-gradient(135deg, #102f58, #1d4c82);
+    color: #ffffff;
+    box-shadow: 0 18px 38px rgba(16, 47, 88, .18);
+}
+
+#practicePage #constitutionHub .constitution-hero::before {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(rgba(255, 255, 255, .17) .75px, transparent .8px) 0 0 / 17px 17px;
+    content: "";
+    opacity: .55;
+    pointer-events: none;
+}
+
+#practicePage #constitutionHub .constitution-hero::after {
+    position: absolute;
+    right: 250px;
+    bottom: -29px;
+    color: rgba(255, 255, 255, .06);
+    content: "23";
+    font: 900 176px/.8 "Manrope", Arial, sans-serif;
+    letter-spacing: -.1em;
+    pointer-events: none;
+}
+
+#practicePage #constitutionHub .constitution-hero-copy,
+#practicePage #constitutionHub .constitution-hero-art {
+    position: relative;
+    z-index: 2;
+}
+
+#practicePage #constitutionHub .constitution-hero .eyebrow,
+#practicePage #constitutionHub .constitution-hero h1 {
+    color: #ffffff;
+}
+
+#practicePage #constitutionHub .constitution-hero .eyebrow {
+    margin-bottom: 12px;
+    opacity: .74;
+}
+
+#practicePage #constitutionHub .constitution-hero h1 {
+    max-width: 630px;
+    font-size: clamp(46px, 6vw, 74px);
+    line-height: .94;
+}
+
+#practicePage #constitutionHub .constitution-hero-text {
+    max-width: 590px;
+    margin: 22px 0 0;
+    color: rgba(255, 255, 255, .74);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+#practicePage #constitutionHub .constitution-hero .button {
+    margin-top: 27px;
+    border-color: #ffffff;
+    background: #ffffff;
+    color: #173f73;
+    box-shadow: 0 12px 27px rgba(6, 22, 43, .18);
+}
+
+#practicePage #constitutionHub .constitution-hero-tab {
+    position: absolute;
+    z-index: 5;
+    top: 24px;
+    right: -31px;
+    width: 155px;
+    padding: 10px 16px;
+    background: var(--constitution-sage);
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .09em;
+    text-align: center;
+    text-transform: uppercase;
+    transform: rotate(36deg);
+}
+
+#practicePage #constitutionHub .constitution-hero-art {
+    display: grid;
+    min-height: 275px;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 28px 28px 62px 28px;
+    background: rgba(255, 255, 255, .09);
+    box-shadow: 12px 13px 0 rgba(5, 21, 43, .13);
+    transform: rotate(2deg);
+}
+
+#practicePage #constitutionHub .constitution-hero-art img {
+    width: 245px;
+    max-height: 300px;
+    object-fit: contain;
+    filter: drop-shadow(0 18px 16px rgba(3, 15, 34, .28));
+    transform: rotate(-4deg);
+}
+
+#practicePage #constitutionHub .constitution-paperclip {
+    position: absolute;
+    z-index: 5;
+    top: -21px;
+    left: 26px;
+    width: 23px;
+    height: 66px;
+    border: 3px solid #a4cbbf;
+    border-radius: 15px;
+    transform: rotate(-12deg);
+}
+
+#practicePage #constitutionHub .constitution-paperclip::after {
+    position: absolute;
+    top: 6px;
+    left: 5px;
+    width: 8px;
+    height: 46px;
+    border: 2px solid #a4cbbf;
+    border-radius: 10px;
+    content: "";
+}
+
+#practicePage #constitutionHub .constitution-seal {
+    position: absolute;
+    right: 15px;
+    bottom: 13px;
+    display: grid;
+    width: 82px;
+    height: 82px;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--constitution-wine);
+    box-shadow: 0 10px 20px rgba(12, 24, 44, .2);
+    transform: rotate(7deg);
+}
+
+#practicePage #constitutionHub .constitution-seal svg {
+    position: absolute;
+    inset: 7px;
+    width: calc(100% - 14px);
+    stroke: rgba(255, 255, 255, .65);
+}
+
+#practicePage #constitutionHub .constitution-seal span {
+    color: #ffffff;
+    font-size: 18px;
+}
+
+#practicePage #constitutionHub .constitution-route {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 0 0 18px;
+}
+
+#practicePage #constitutionHub .constitution-route article {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 13px;
+    align-items: center;
+    min-height: 92px;
+    padding: 15px 17px;
+    border: 1px solid #cbd7e7;
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow: 0 8px 18px rgba(17, 47, 88, .055);
+}
+
+#practicePage #constitutionHub .constitution-route article:nth-child(2) {
+    border-color: color-mix(in srgb, var(--constitution-sage) 35%, #cbd7e7);
+    background: var(--constitution-sage-soft);
+}
+
+#practicePage #constitutionHub .constitution-route article:nth-child(3) {
+    border-color: color-mix(in srgb, var(--constitution-violet) 35%, #cbd7e7);
+    background: var(--constitution-violet-soft);
+}
+
+#practicePage #constitutionHub .constitution-route article > span {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 13px;
+    background: var(--constitution-blue);
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+#practicePage #constitutionHub .constitution-route article:nth-child(2) > span {
+    background: var(--constitution-sage);
+}
+
+#practicePage #constitutionHub .constitution-route article:nth-child(3) > span {
+    background: var(--constitution-violet);
+}
+
+#practicePage #constitutionHub .constitution-route strong,
+#practicePage #constitutionHub .constitution-route small {
+    display: block;
+}
+
+#practicePage #constitutionHub .constitution-route strong {
+    color: var(--blue-dark);
+    font-size: 13px;
+}
+
+#practicePage #constitutionHub .constitution-route small {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.35;
+}
+
+#practicePage #constitutionHub .constitution-files {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#practicePage #constitutionHub .constitution-file {
+    position: relative;
+    display: grid;
+    grid-template-rows: 58px auto auto 1fr;
+    min-height: 255px;
+    padding: 24px;
+    overflow: hidden;
+    border: 1px solid #c7d5e8;
+    border-top: 6px solid var(--constitution-blue);
+    border-radius: 22px 22px 42px 22px;
+    background: #ffffff;
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 12px 25px rgba(17, 47, 88, .07);
+}
+
+#practicePage #constitutionHub .constitution-file--notes {
+    border-color: color-mix(in srgb, var(--constitution-sage) 36%, #c7d5e8);
+    border-top-color: var(--constitution-sage);
+    background: var(--constitution-sage-soft);
+}
+
+#practicePage #constitutionHub .constitution-file--training {
+    border-color: var(--constitution-violet);
+    border-top-color: var(--constitution-wine);
+    background: var(--constitution-violet-soft);
+}
+
+#practicePage #constitutionHub .constitution-file::after {
+    position: absolute;
+    right: -30px;
+    bottom: -46px;
+    width: 118px;
+    height: 118px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    content: "";
+    opacity: .11;
+}
+
+#practicePage #constitutionHub .constitution-file:hover {
+    border-color: var(--constitution-blue);
+    box-shadow: 0 17px 32px rgba(17, 47, 88, .13);
+    transform: translateY(-4px);
+}
+
+#practicePage #constitutionHub .constitution-file > span {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    border: 1px solid color-mix(in srgb, var(--constitution-blue) 32%, transparent);
+    border-radius: 16px;
+    background: color-mix(in srgb, #ffffff 72%, transparent);
+    color: var(--constitution-blue);
+}
+
+#practicePage #constitutionHub .constitution-file--notes > span {
+    color: var(--constitution-sage);
+}
+
+#practicePage #constitutionHub .constitution-file--training > span {
+    color: var(--constitution-violet);
+}
+
+#practicePage #constitutionHub .constitution-file > em {
+    align-self: end;
+    margin-top: 15px;
+    color: var(--constitution-wine);
+    font-size: 9px;
+    font-style: normal;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+#practicePage #constitutionHub .constitution-file strong {
+    margin: 8px 0 7px;
+    color: var(--blue-dark);
+    font-size: 19px;
+}
+
+#practicePage #constitutionHub .constitution-file small {
+    max-width: 85%;
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1.45;
+}
+
+#practicePage #constitutionHub .constitution-file > b {
+    position: absolute;
+    z-index: 2;
+    right: 22px;
+    bottom: 18px;
+    color: var(--constitution-wine);
+    font-size: 20px;
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub {
+    --constitution-sage: #91c1b4;
+    --constitution-sage-soft: #173330;
+    --constitution-violet: #bab2df;
+    --constitution-violet-soft: #292841;
+    --constitution-blue: #8fb4e7;
+    --constitution-wine: #c8798e;
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-hero {
+    border-color: #385a85;
+    background:
+        radial-gradient(circle at 88% 12%, rgba(113, 164, 151, .2) 0 17%, transparent 17.3%),
+        radial-gradient(circle at 5% 104%, rgba(134, 47, 69, .42) 0 22%, transparent 22.3%),
+        linear-gradient(135deg, #0b1d35, #15365d);
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-route article,
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file {
+    border-color: #38506f;
+    background: #111f35;
+    color: var(--ink);
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-route article:nth-child(2),
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file--notes {
+    border-color: #42685f;
+    background: var(--constitution-sage-soft);
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-route article:nth-child(3),
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file--training {
+    border-color: #514d79;
+    background: var(--constitution-violet-soft);
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-route strong,
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file strong {
+    color: #f4f7ff;
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file > span {
+    border-color: #486388;
+    background: rgba(255, 255, 255, .06);
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-hero .button {
+    border-color: rgba(255, 255, 255, .72);
+    background: #ffffff;
+    color: #173f73;
+}
+
+@media (max-width: 900px) {
+    #practicePage #constitutionHub .constitution-hero {
+        grid-template-columns: minmax(0, 1fr) 230px;
+        min-height: 350px;
+        padding: 40px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero-art {
+        min-height: 235px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero-art img {
+        width: 205px;
+        max-height: 250px;
+    }
+
+    #practicePage #constitutionHub .constitution-files {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #practicePage #constitutionHub .constitution-file--training {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 680px) {
+    .landing-study-tabs {
+        top: 56px;
+        right: 7px;
+        transform: scale(.82) rotate(2deg);
+        transform-origin: top right;
+    }
+
+    .landing-paperclip--formats {
+        display: none;
+    }
+
+    .landing-paperclip--photo {
+        right: 25px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero {
+        grid-template-columns: 1fr;
+        gap: 23px;
+        padding: 35px 24px 27px;
+        border-radius: 25px 50px 25px 25px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero::after {
+        right: -5px;
+        bottom: 195px;
+        font-size: 118px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero h1 {
+        font-size: clamp(40px, 13vw, 56px);
+    }
+
+    #practicePage #constitutionHub .constitution-hero-art {
+        width: min(100%, 300px);
+        min-height: 225px;
+        margin: 0 auto;
+    }
+
+    #practicePage #constitutionHub .constitution-hero-art img {
+        width: 205px;
+        max-height: 230px;
+    }
+
+    #practicePage #constitutionHub .constitution-route,
+    #practicePage #constitutionHub .constitution-files {
+        grid-template-columns: 1fr;
+    }
+
+    #practicePage #constitutionHub .constitution-file--training {
+        grid-column: auto;
+    }
+}
+
+@media (max-width: 430px) {
+    .landing-study-tabs {
+        display: none;
+    }
+
+    .landing-paperclip--hero {
+        top: 18%;
+        right: 18%;
+        transform: scale(.78) rotate(23deg);
+    }
+
+    .landing-document::before {
+        right: 20px;
+    }
+
+    #practicePage #constitutionHub .constitution-hero-text {
+        font-size: 11px;
+    }
+
+    #practicePage #constitutionHub .constitution-route article {
+        min-height: 82px;
     }
 }
