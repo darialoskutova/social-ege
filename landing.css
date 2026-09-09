@@ -1150,7 +1150,7 @@
 .platform-showcase {
     position: relative;
 
-    min-height: 570px;
+    min-height: 545px;
 
     margin-top: 5px;
 }
@@ -1160,9 +1160,9 @@
     position: absolute;
 
     left: 50%;
-    top: 45px;
+    top: 32px;
 
-    width: 700px;
+    width: 820px;
 
     margin: 0;
 
@@ -1285,7 +1285,7 @@
 
 .platform-note--one {
     left: 0;
-    top: 45px;
+    top: 24px;
 
     background: #fff8ee;
 
@@ -1295,7 +1295,7 @@
 
 .platform-note--two {
     right: 2px;
-    top: 85px;
+    top: 64px;
 
     background: var(--rose);
 
@@ -1305,7 +1305,7 @@
 
 .platform-note--three {
     left: 13px;
-    bottom: 85px;
+    bottom: 48px;
 
     background: var(--sage);
 
@@ -1315,7 +1315,7 @@
 
 .platform-note--four {
     right: 6px;
-    bottom: 70px;
+    bottom: 34px;
 
     background: var(--blue-light);
 
@@ -1498,7 +1498,18 @@
 .material-desk {
     position: relative;
 
-    min-height: 550px;
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    align-items: stretch;
+
+    gap: 26px;
+
+    min-height: 0;
+
+    padding: 70px 56px 55px;
 
     margin-top: 10px;
 }
@@ -1506,6 +1517,8 @@
 
 .material-desk::before {
     position: absolute;
+
+    z-index: 0;
 
     inset: 30px 10px 15px;
 
@@ -1525,7 +1538,7 @@
 
 
 .material-paper {
-    position: absolute;
+    position: relative;
 
     z-index: 3;
 
@@ -1566,26 +1579,24 @@
     display: block;
 
     width: 100%;
+
+    aspect-ratio: 16 / 9;
+
+    object-fit: cover;
 }
 
 
 .material-paper--notes {
-    left: 7%;
-    top: 72px;
-
-    width: 58%;
+    align-self: stretch;
 
     transform: rotate(-2deg);
 }
 
 
 .material-paper--homework {
-    right: 7%;
-    top: 118px;
+    align-self: stretch;
 
-    width: 36%;
-
-    transform: rotate(3deg);
+    transform: rotate(2deg);
 }
 
 
@@ -1599,8 +1610,18 @@
 
     z-index: 7;
 
-    right: 4%;
-    bottom: 17px;
+    top: 16px;
+    right: 50px;
+
+    padding: 8px 12px;
+
+    border: 1px solid #e2d4cf;
+
+    background: #fffaf2;
+
+    box-shadow:
+        4px 5px 14px
+        rgba(60, 42, 47, .08);
 
     color: var(--wine);
 
@@ -1609,16 +1630,7 @@
 
     line-height: 1.55;
 
-    transform: rotate(-3deg);
-}
-
-
-.materials-hand-note span {
-    margin-left: 7px;
-
-    color: var(--blue);
-
-    font-size: 22px;
+    transform: rotate(2deg);
 }
 
 
@@ -1627,15 +1639,7 @@
 ========================================================= */
 
 .landing-advantages {
-    display: grid;
-
-    grid-template-columns:
-        minmax(0, .92fr)
-        minmax(0, 1.08fr);
-
-    align-items: center;
-
-    gap: 80px;
+    display: block;
 
     padding-top: 100px;
     padding-bottom: 110px;
@@ -1644,8 +1648,30 @@
 }
 
 
+.advantages-main {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(300px, .7fr);
+
+    align-items: end;
+
+    gap: 18px 60px;
+
+    margin-bottom: 42px;
+}
+
+
+.advantages-main .landing-kicker {
+    grid-column: 1 / -1;
+
+    margin-bottom: 0;
+}
+
+
 .advantages-main h2 {
-    margin: 0 0 23px;
+    margin: 0;
 
     font-family: "Manrope", sans-serif;
 
@@ -1673,7 +1699,7 @@
     display: grid;
 
     grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+        repeat(4, minmax(0, 1fr));
 
     gap: 12px;
 }
@@ -1682,7 +1708,7 @@
 .advantage {
     position: relative;
 
-    min-height: 175px;
+    min-height: 190px;
 
     padding: 22px;
 
@@ -1783,13 +1809,19 @@
         repeat(2, minmax(0, 1fr));
 
     gap: 14px;
+
+    grid-auto-rows: 1fr;
 }
 
 
 .format-card {
     position: relative;
 
-    min-height: 285px;
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 310px;
 
     padding: 28px;
 
@@ -1882,7 +1914,7 @@
 
 
 .format-card--group {
-    min-height: 235px;
+    min-height: 310px;
 
     background:
         linear-gradient(
@@ -1894,9 +1926,7 @@
 
 
 .format-card--support {
-    grid-column: 1 / -1;
-
-    min-height: 280px;
+    min-height: 310px;
 
     background:
         linear-gradient(
@@ -1904,6 +1934,26 @@
             #eee8f5,
             #faf6ef
         );
+}
+
+
+.format-support-mark {
+    position: absolute;
+
+    right: 25px;
+    bottom: 25px;
+
+    padding: 9px 12px;
+
+    border: 1px solid #cfc4db;
+    border-radius: 999px;
+
+    background: rgba(255,255,255,.56);
+
+    color: #6c5984;
+
+    font-size: 9px;
+    font-weight: 700;
 }
 
 
@@ -2075,9 +2125,18 @@
 .documents-desk {
     position: relative;
 
-    min-height: 680px;
+    display: grid;
 
-    padding: 55px;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    grid-auto-rows: 1fr;
+
+    gap: 24px;
+
+    min-height: 0;
+
+    padding: 45px;
 
     overflow: hidden;
 
@@ -2110,15 +2169,26 @@
     content: "";
 
     opacity: .5;
+
+    pointer-events: none;
 }
 
 
 .document-paper {
-    position: absolute;
+    position: relative;
 
     z-index: 2;
 
-    padding: 8px 8px 33px;
+    display: grid;
+
+    grid-template-rows:
+        minmax(0, 1fr)
+        auto;
+
+    width: 100%;
+    height: 370px;
+
+    padding: 10px;
 
     border: 1px solid #d4d8df;
 
@@ -2137,6 +2207,8 @@
 
 
 .document-paper:hover {
+    transform: translateY(-5px);
+
     box-shadow:
         0 24px 45px
         rgba(24, 40, 72, .17);
@@ -2149,20 +2221,26 @@
     width: 100%;
     height: 100%;
 
-    object-fit: cover;
+    border-radius: 10px;
+
+    background: #f7f9fc;
+
+    object-fit: contain;
 }
 
 
 .document-paper > span {
-    position: absolute;
+    display: grid;
 
-    right: 8px;
-    bottom: 9px;
-    left: 8px;
+    min-height: 37px;
+
+    place-items: center;
+
+    padding: 10px 6px 1px;
 
     color: var(--text);
 
-    font-size: 8px;
+    font-size: 9px;
     font-weight: 700;
 
     text-align: center;
@@ -2170,102 +2248,42 @@
 
 
 .document-paper--diploma {
-    left: 7%;
-    top: 65px;
-
-    width: 36%;
-    height: 500px;
-
-    transform: rotate(-2deg);
+    transform: none;
 }
 
 
 .document-paper--diploma:hover {
-    transform:
-        rotate(-2deg)
-        translateY(-7px);
+    transform: translateY(-5px);
 }
 
 
 .document-paper--grades {
-    left: 43%;
-    top: 60px;
-
-    width: 25%;
-    height: 320px;
-
-    transform: rotate(2deg);
+    transform: none;
 }
 
 
 .document-paper--grades:hover {
-    transform:
-        rotate(2deg)
-        translateY(-7px);
+    transform: translateY(-5px);
 }
 
 
 .document-paper--certificate-one {
-    right: 7%;
-    top: 75px;
-
-    width: 23%;
-    height: 245px;
-
-    transform: rotate(-2deg);
+    transform: none;
 }
 
 
 .document-paper--certificate-one:hover {
-    transform:
-        rotate(-2deg)
-        translateY(-7px);
+    transform: translateY(-5px);
 }
 
 
 .document-paper--certificate-two {
-    right: 9%;
-    bottom: 55px;
-
-    width: 26%;
-    height: 270px;
-
-    transform: rotate(3deg);
+    transform: none;
 }
 
 
 .document-paper--certificate-two:hover {
-    transform:
-        rotate(3deg)
-        translateY(-7px);
-}
-
-
-.documents-note {
-    position: absolute;
-
-    z-index: 5;
-
-    left: 46%;
-    bottom: 95px;
-
-    color: var(--wine);
-
-    font-size: 11px;
-    font-weight: 700;
-
-    line-height: 1.5;
-
-    transform: rotate(-4deg);
-}
-
-
-.documents-note span {
-    margin-left: 8px;
-
-    color: var(--blue);
-
-    font-size: 22px;
+    transform: translateY(-5px);
 }
 
 
@@ -2713,6 +2731,22 @@
 }
 
 
+.landing-platform-shot.reveal-on-scroll {
+    transform:
+        translateX(-50%)
+        translateY(18px)
+        rotate(-.7deg);
+}
+
+
+.landing-platform-shot.reveal-on-scroll.is-visible {
+    transform:
+        translateX(-50%)
+        translateY(0)
+        rotate(-.7deg);
+}
+
+
 /* =========================================================
    TABLET
 ========================================================= */
@@ -2763,7 +2797,7 @@
 
 
     .landing-platform-shot {
-        width: 620px;
+        width: 700px;
     }
 
 
@@ -2901,14 +2935,14 @@
 
 
     .platform-showcase {
-        min-height: 700px;
+        min-height: 640px;
     }
 
 
     .landing-platform-shot {
-        top: 95px;
+        top: 80px;
 
-        width: min(610px, 78%);
+        width: min(660px, 82%);
     }
 
 
@@ -2955,14 +2989,30 @@
 
 
     .landing-advantages {
+        display: block;
+    }
+
+
+    .advantages-main {
         grid-template-columns: 1fr;
 
-        gap: 45px;
+        gap: 15px;
+    }
+
+
+    .advantages-main .landing-kicker {
+        grid-column: auto;
+    }
+
+
+    .advantages-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
     }
 
 
     .documents-desk {
-        min-height: 630px;
+        min-height: 0;
     }
 
 
@@ -3192,6 +3242,20 @@
     }
 
 
+    .landing-platform-shot.reveal-on-scroll {
+        transform:
+            translateY(18px)
+            rotate(-.6deg);
+    }
+
+
+    .landing-platform-shot.reveal-on-scroll.is-visible {
+        transform:
+            translateY(0)
+            rotate(-.6deg);
+    }
+
+
     .platform-note {
         position: relative;
 
@@ -3287,28 +3351,33 @@
 
 
     .material-desk {
-        min-height: 560px;
+        grid-template-columns: 1fr;
+
+        min-height: 0;
+
+        gap: 28px;
+
+        padding: 62px 18px 32px;
     }
 
 
     .material-paper--notes {
-        left: 3%;
+        width: auto;
 
-        width: 82%;
+        transform: none;
     }
 
 
     .material-paper--homework {
-        right: 3%;
-        top: 270px;
+        width: auto;
 
-        width: 66%;
+        transform: none;
     }
 
 
     .materials-hand-note {
-        right: 4%;
-        bottom: 15px;
+        top: 16px;
+        right: 24px;
     }
 
 
@@ -3342,6 +3411,11 @@
     }
 
 
+    .format-card {
+        min-height: 280px;
+    }
+
+
     .support-heading {
         display: block;
     }
@@ -3364,6 +3438,8 @@
     .documents-desk {
         display: grid;
 
+        grid-template-columns: 1fr;
+
         min-height: 0;
 
         gap: 14px;
@@ -3383,30 +3459,17 @@
         left: auto !important;
 
         width: 100% !important;
-        height: auto !important;
+        height: 330px !important;
 
         transform: none !important;
     }
 
 
     .document-paper img {
-        max-height: 440px;
+        max-height: none;
 
         object-fit: contain;
     }
-
-
-    .documents-note {
-        position: relative;
-
-        left: auto;
-        bottom: auto;
-
-        margin: 12px 0;
-
-        transform: none;
-    }
-
 
     .landing-diagnostics {
         grid-template-columns: 1fr;
