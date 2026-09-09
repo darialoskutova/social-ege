@@ -3155,3 +3155,178 @@ html[data-theme="dark"] #practicePage #constitutionHub .constitution-hero .butto
         min-height: 82px;
     }
 }
+
+/* Readable type scale for informational copy and secondary labels. */
+#welcomeView.landing {
+    --landing-muted: #566276;
+}
+
+html[data-theme="dark"] #welcomeView.landing {
+    --landing-muted: #c5cedb;
+}
+
+.landing-brand small {
+    font-size: 11px;
+}
+
+.landing-navigation a {
+    font-size: 12px;
+}
+
+.landing-kicker {
+    font-size: 12px;
+}
+
+.landing-hero-note p {
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.landing-hero-year span,
+.landing-exam-band span {
+    font-size: 11px;
+}
+
+.landing-study-tabs span {
+    font-size: 11px;
+}
+
+.landing-section-heading > p {
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.landing-about-text p {
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.landing-facts dd {
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+.landing-about-card {
+    font-size: 12px;
+}
+
+.landing-program-card {
+    min-height: 325px;
+}
+
+.landing-program-card > span,
+.landing-program-card > small {
+    font-size: 11px;
+}
+
+.landing-program-card p {
+    margin-bottom: 36px;
+    font-size: 13px;
+    line-height: 1.62;
+}
+
+.landing-platform-main > span,
+.landing-platform-detail > span {
+    font-size: 11px;
+}
+
+.landing-platform-list b {
+    font-size: 11px;
+}
+
+.landing-platform-list span {
+    color: rgba(255, 255, 255, .82);
+    font-size: 12px;
+    line-height: 1.55;
+}
+
+.landing-platform-list strong {
+    font-size: 13px;
+}
+
+.landing-benefit > b,
+.landing-benefit--lead > span {
+    font-size: 11px;
+}
+
+.landing-benefit p {
+    font-size: 13px;
+    line-height: 1.58;
+}
+
+.landing-benefit--lead p {
+    color: rgba(255, 255, 255, .84);
+    font-size: 14px;
+}
+
+.landing-format-top > span {
+    font-size: 11px;
+}
+
+.landing-format-top small {
+    font-size: 11px;
+}
+
+.landing-format > p {
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.landing-format-price span {
+    font-size: 12px;
+}
+
+.landing-document > span {
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.landing-document > span b {
+    font-size: 11px;
+}
+
+.landing-review-grid article > span,
+.landing-review-grid small {
+    font-size: 11px;
+}
+
+.landing-review-grid article:nth-child(2) small {
+    opacity: .84;
+}
+
+.landing-footer-brand span,
+.landing-footer > p,
+.landing-footer nav a,
+.landing-footer nav button {
+    font-size: 11px;
+}
+
+#practicePage #constitutionHub .constitution-hero-text {
+    color: rgba(255, 255, 255, .86);
+    font-size: 15px;
+}
+
+#practicePage #constitutionHub .constitution-route strong {
+    font-size: 15px;
+}
+
+#practicePage #constitutionHub .constitution-route small {
+    color: #566276;
+    font-size: 11px;
+    line-height: 1.45;
+}
+
+#practicePage #constitutionHub .constitution-file > em {
+    font-size: 11px;
+}
+
+#practicePage #constitutionHub .constitution-file small {
+    color: #566276;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-route small,
+html[data-theme="dark"] #practicePage #constitutionHub .constitution-file small {
+    color: #c5cedb;
+}
