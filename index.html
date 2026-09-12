@@ -5664,7 +5664,7 @@
 
         .practice-paths {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 16px;
         }
 
@@ -5714,6 +5714,12 @@
             --path-accent: #477e52;
             --path-soft: #e7f1e4;
             border-color: #c8dac9;
+        }
+
+        .practice-path-card--variants {
+            --path-accent: #9a641c;
+            --path-soft: #fff4df;
+            border-color: #e5cfaa;
         }
 
         .practice-path-number {
@@ -7551,6 +7557,11 @@
         #practicePage .practice-path-card--books {
             --path-accent: var(--wine);
             --path-soft: var(--wine-soft);
+        }
+
+        #practicePage .practice-path-card--variants {
+            --path-accent: #9a641c;
+            --path-soft: #fff4df;
         }
 
         #practicePage .practice-path-icon {
@@ -11990,6 +12001,12 @@
                                     <span><strong>Конституция РФ</strong><small>Файлы и тренировка задания № 23</small></span>
                                     <b aria-hidden="true">→</b>
                                 </button>
+                                <button class="practice-path-card practice-path-card--variants" type="button" data-practice-view="materialsHub" data-scroll-target="practiceVariantsShelf">
+                                    <span class="practice-path-number">04</span>
+                                    <span class="practice-path-icon"><img src="ege.webp" alt=""></span>
+                                    <span><strong>Пробные варианты</strong><small>19 вариантов Word по разделам и два общих пробника</small></span>
+                                    <b aria-hidden="true">→</b>
+                                </button>
                             </div>
                         </div>
 
@@ -12039,7 +12056,7 @@
                         <div class="practice-panel" id="materialsHub" hidden>
                             <button class="back-button practice-back" type="button" data-practice-home>← Дополнительная практика</button>
                             <div class="library-hero">
-                                <div><p class="eyebrow">Дополнительные материалы</p><h1>Библиотека</h1></div>
+                                <div><p class="eyebrow">Дополнительные материалы</p><h1>Библиотека</h1><button class="button button--small" type="button" data-scroll-target="practiceVariantsShelf">Перейти к пробным вариантам ↓</button></div>
                                 <div class="library-hero-icon" aria-hidden="true"><img src="картинки/book.png" alt=""></div>
                             </div>
                             <div class="library-sections">
@@ -12098,7 +12115,7 @@
                                     </section>
                                 </div>
 
-                                <section class="library-shelf practice-variants-shelf">
+                                <section class="library-shelf practice-variants-shelf" id="practiceVariantsShelf">
                                     <header class="library-shelf-heading">
                                         <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M11 6h25l7 7v33H11zM36 6v9h9M17 22h20M17 29h20M17 36h13"/><path d="m31 39 4 4 8-10"/></svg></span>
                                         <div><p class="eyebrow">Раздел 05</p><h2>Пробные варианты</h2><small>Word · 25 заданий · ответы и критерии внутри</small></div>
@@ -13988,6 +14005,15 @@
             const practiceViewButton = event.target.closest("[data-practice-view]");
             if (practiceViewButton) {
                 showPracticePanel(practiceViewButton.dataset.practiceView);
+                if (practiceViewButton.dataset.scrollTarget) {
+                    requestAnimationFrame(() => document.getElementById(practiceViewButton.dataset.scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+                }
+                return;
+            }
+
+            const scrollTargetButton = event.target.closest("[data-scroll-target]");
+            if (scrollTargetButton) {
+                document.getElementById(scrollTargetButton.dataset.scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
                 return;
             }
 
