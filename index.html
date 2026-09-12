@@ -11695,6 +11695,7 @@
                     <button class="nav-button" type="button" data-page="subjects"><span class="nav-number">02</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5c1.2 0 1.5.6 1.5 1.5v13c0-1.2-.7-2-2-2H4zM20 5.5h-6.5c-1.2 0-1.5.6-1.5 1.5v13c0-1.2.7-2 2-2h6z"/></svg></span><span class="nav-label">Все темы</span></button>
                     <button class="nav-button" type="button" data-page="works"><span class="nav-number">03</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h6"/></svg></span><span class="nav-label">Мои работы</span></button>
                     <button class="nav-button" type="button" data-page="practice"><span class="nav-number">04</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.3 4.7 5.2.8-3.8 3.7.9 5.3-4.6-2.5L7.4 17l.9-5.3-3.8-3.7 5.2-.8z"/></svg></span><span class="nav-label">Доп. практика</span></button>
+                    <button class="nav-button" type="button" data-open-variants><span class="nav-number">05</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l4 4v14H5zM16 3v5h5M9 12h7M9 16h7"/></svg></span><span class="nav-label">Пробники</span></button>
                 </nav>
 
                 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Включить тёмную тему" title="Включить тёмную тему">
@@ -13990,6 +13991,15 @@
         }
 
         document.addEventListener("click", (event) => {
+            const variantsButton = event.target.closest("[data-open-variants]");
+            if (variantsButton) {
+                showPage("practice");
+                showPracticePanel("materialsHub");
+                document.querySelectorAll(".nav-button").forEach((button) => button.classList.toggle("is-active", button === variantsButton));
+                requestAnimationFrame(() => document.getElementById("practiceVariantsShelf")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+                return;
+            }
+
             const openButton = event.target.closest("[data-open]");
             if (openButton) {
                 showView(openButton.dataset.open);
