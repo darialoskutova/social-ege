@@ -8593,6 +8593,34 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
         }
 
+        .practice-variants-shelf {
+            border-top-color: #2f7d5a;
+        }
+
+        .practice-variants-groups {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .practice-variants-group {
+            padding: 16px;
+            border: 1px solid #d4deef;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        .practice-variants-group h3 {
+            margin: 0 0 10px;
+            color: var(--blue-dark);
+            font-size: 15px;
+        }
+
+        .practice-variants-group--general {
+            border-color: #b8d9c8;
+            background: #f2faf6;
+        }
+
         .library-file {
             display: grid;
             grid-template-columns: 43px minmax(0, 1fr) 18px;
@@ -9020,7 +9048,8 @@
             }
 
             .library-file-grid--wide,
-            .library-shelf-grid {
+            .library-shelf-grid,
+            .practice-variants-groups {
                 grid-template-columns: 1fr;
             }
 
@@ -12068,6 +12097,69 @@
                                         </div>
                                     </section>
                                 </div>
+
+                                <section class="library-shelf practice-variants-shelf">
+                                    <header class="library-shelf-heading">
+                                        <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M11 6h25l7 7v33H11zM36 6v9h9M17 22h20M17 29h20M17 36h13"/><path d="m31 39 4 4 8-10"/></svg></span>
+                                        <div><p class="eyebrow">Раздел 05</p><h2>Пробные варианты</h2><small>Word · 25 заданий · ответы и критерии внутри</small></div>
+                                    </header>
+                                    <div class="practice-variants-groups">
+                                        <div class="practice-variants-group">
+                                            <h3>Человек и общество</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group">
+                                            <h3>Экономика</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 1</strong><small>Только экономика</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 2</strong><small>Только экономика</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 3</strong><small>Экономика + социология</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group">
+                                            <h3>Социология</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group">
+                                            <h3>Политика</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 1</strong><small>Только политика</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 2</strong><small>Только политика</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 3</strong><small>Политика + социология + экономика</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group">
+                                            <h3>Конституция</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group">
+                                            <h3>Право</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/pravo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Право · вариант № 1</strong><small>Только право</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/pravo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Право · вариант № 2</strong><small>Только право</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                        <div class="practice-variants-group practice-variants-group--general">
+                                            <h3>Общие варианты</h3>
+                                            <div class="library-file-grid">
+                                                <a class="library-file" href="доп материалы/пробные варианты/obschiy_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Полный вариант № 1</strong><small>Все разделы · стандартные позиции ЕГЭ</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/obschiy_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Полный вариант № 2</strong><small>Все разделы · стандартные позиции ЕГЭ</small></span><b>↓</b></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
                             </div>
                         </div>
 
