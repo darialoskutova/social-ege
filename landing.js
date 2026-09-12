@@ -23,7 +23,7 @@
         });
 
         navigation.addEventListener("click", (event) => {
-            if (event.target instanceof Element && event.target.closest("a")) closeMenu();
+            if (event.target instanceof Element && event.target.closest("a, button")) closeMenu();
         });
 
         document.addEventListener("click", (event) => {
@@ -31,6 +31,10 @@
             if (!navigation.contains(event.target) && !menuButton.contains(event.target)) closeMenu();
         });
     }
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 1120) closeMenu();
+    });
 
     function closeLightbox() {
         if (!lightbox || lightbox.hidden) return;

@@ -5717,9 +5717,9 @@
         }
 
         .practice-path-card--variants {
-            --path-accent: #9a641c;
-            --path-soft: #fff4df;
-            border-color: #e5cfaa;
+            --path-accent: var(--wine);
+            --path-soft: var(--wine-soft);
+            border-color: #dcc4c8;
         }
 
         .practice-path-number {
@@ -7560,8 +7560,8 @@
         }
 
         #practicePage .practice-path-card--variants {
-            --path-accent: #9a641c;
-            --path-soft: #fff4df;
+            --path-accent: var(--wine);
+            --path-soft: var(--wine-soft);
         }
 
         #practicePage .practice-path-icon {
@@ -8174,6 +8174,14 @@
             transform: scale(1.04);
         }
 
+        #practicePage .practice-path-card--variants .practice-path-icon img {
+            width: calc(100% + 18px);
+            height: calc(100% + 18px);
+            max-width: none;
+            object-fit: cover;
+            object-position: 50% 55%;
+        }
+
         #practicePage .game-mode-grid {
             gap: 18px;
         }
@@ -8443,6 +8451,77 @@
             mix-blend-mode: multiply;
         }
 
+        .variants-hero {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 220px;
+            gap: 28px;
+            align-items: center;
+            min-height: 230px;
+            margin-bottom: 22px;
+            padding: 34px 38px;
+            overflow: hidden;
+            border: 1px solid #b8c6df;
+            border-top: 6px solid var(--wine);
+            border-radius: 28px;
+            background:
+                radial-gradient(rgba(23, 70, 162, 0.11) 0.7px, transparent 0.7px),
+                #ffffff;
+            background-size: 15px 15px, auto;
+        }
+
+        .variants-hero::after {
+            position: absolute;
+            right: 115px;
+            bottom: -78px;
+            width: 210px;
+            height: 145px;
+            border: 2px solid var(--blue);
+            border-radius: 50%;
+            content: "";
+            opacity: 0.12;
+            transform: rotate(-9deg);
+        }
+
+        .variants-hero h1 {
+            margin: 5px 0 12px;
+            color: var(--blue-dark);
+            font-size: clamp(43px, 6vw, 72px);
+            line-height: 0.95;
+            letter-spacing: -0.05em;
+        }
+
+        .variants-hero p:not(.eyebrow) {
+            max-width: 590px;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .variants-hero-art {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            width: 200px;
+            height: 165px;
+            place-items: center;
+            justify-self: end;
+            border: 2px solid var(--blue);
+            border-radius: 25px;
+            background: #ffffff;
+            box-shadow: 9px 10px 0 var(--wine-soft);
+            transform: rotate(2deg);
+        }
+
+        .variants-hero-art img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 21px;
+            object-fit: cover;
+            object-position: 50% 54%;
+        }
+
         .library-hero-book {
             position: absolute;
             display: flex;
@@ -8605,7 +8684,7 @@
         }
 
         .practice-variants-shelf {
-            border-top-color: #2f7d5a;
+            border-top-color: var(--blue);
         }
 
         .practice-variants-groups {
@@ -8628,8 +8707,8 @@
         }
 
         .practice-variants-group--general {
-            border-color: #b8d9c8;
-            background: #f2faf6;
+            border-color: #b8c9e8;
+            background: var(--blue-soft);
         }
 
         .library-file {
@@ -9067,6 +9146,16 @@
             .library-shelf--extras {
                 grid-column: auto;
             }
+
+            .variants-hero {
+                grid-template-columns: minmax(0, 1fr) 170px;
+                padding: 30px;
+            }
+
+            .variants-hero-art {
+                width: 160px;
+                height: 145px;
+            }
         }
 
         @media (max-width: 1050px) {
@@ -9108,6 +9197,16 @@
         }
 
         @media (max-width: 720px) {
+            .variants-hero {
+                grid-template-columns: 1fr;
+                padding: 26px;
+            }
+
+            .variants-hero-art {
+                width: 145px;
+                height: 120px;
+                justify-self: start;
+            }
             .dashboard-study-grid,
             .subject-selector-grid {
                 grid-template-columns: 1fr;
@@ -9874,6 +9973,7 @@
         html[data-theme="dark"] #practicePage .practice-heading,
         html[data-theme="dark"] #practicePage .games-hero,
         html[data-theme="dark"] #practicePage .library-hero,
+        html[data-theme="dark"] #practicePage .variants-hero,
         html[data-theme="dark"] #practicePage .constitution-hero,
         html[data-theme="dark"] .game-sections-hero {
             border-color: #385173;
@@ -9942,6 +10042,7 @@
         html[data-theme="dark"] .matching-card,
         html[data-theme="dark"] .dual-case-group,
         html[data-theme="dark"] .library-shelf,
+        html[data-theme="dark"] .practice-variants-group,
         html[data-theme="dark"] .library-file,
         html[data-theme="dark"] #lessonPage .topic-progress-panel,
         html[data-theme="dark"] .topic-progress-check,
@@ -9966,6 +10067,7 @@
         html[data-theme="dark"] .lesson-header-character,
         html[data-theme="dark"] .topic-progress-mood > span,
         html[data-theme="dark"] .game-sections-image,
+        html[data-theme="dark"] .variants-hero-art,
         html[data-theme="dark"] .library-hero-book,
         html[data-theme="dark"] .oral-slot-character {
             border-color: #405575;
@@ -10543,7 +10645,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="landing.css?v=20260910-1">
+    <link rel="stylesheet" href="landing.css?v=20260913-clean1">
 </head>
 <body>
 
@@ -10555,11 +10657,9 @@
 
     <header class="landing-header">
         <a class="landing-brand" href="#top" aria-label="На начало страницы">
-            <span class="landing-brand-mark">ЕГЭ</span>
-
             <span class="landing-brand-copy">
                 <strong>С Дарьей</strong>
-                <small>обществознание</small>
+                <small>обществознание · ЕГЭ</small>
             </span>
         </a>
 
@@ -10859,26 +10959,6 @@
 
             <div class="platform-showcase">
 
-                <div class="platform-note platform-note--one">
-                    <strong>План на день</strong>
-                    <span>понятно, что делать дальше</span>
-                </div>
-
-                <div class="platform-note platform-note--two">
-                    <strong>Личный прогресс</strong>
-                    <span>видно, что уже пройдено</span>
-                </div>
-
-                <div class="platform-note platform-note--three">
-                    <strong>Темы курса</strong>
-                    <span>всё в понятном порядке</span>
-                </div>
-
-                <div class="platform-note platform-note--four">
-                    <strong>Первая и вторая части</strong>
-                    <span>теория, тест и развёрнутый ответ</span>
-                </div>
-
 
                 <figure class="landing-platform-shot reveal-on-scroll">
 
@@ -10894,9 +10974,6 @@
                         >
                     </button>
 
-                    <figcaption>
-                        Интерфейс личного кабинета ученика
-                    </figcaption>
 
                 </figure>
 
@@ -10914,366 +10991,104 @@
             id="process"
             data-analytics-view="program_view"
         >
-
-            <div class="process-wave-top" aria-hidden="true"></div>
-
             <div class="landing-section-heading landing-section-heading--light reveal-on-scroll">
-
                 <div>
-                    <p class="landing-kicker landing-kicker--light">
-                        КАК ПРОХОДИТ ПОДГОТОВКА
-                    </p>
-
-                    <h2>
-                        От темы — к проверенной работе
-                    </h2>
+                    <p class="landing-kicker landing-kicker--light">КАК ПРОХОДИТ ПОДГОТОВКА</p>
+                    <h2>От темы — к проверенной работе</h2>
                 </div>
-
-                <p>
-                    После занятия ученик не остаётся один
-                    с папкой материалов: каждая тема проходит
-                    несколько понятных этапов.
-                </p>
-
+                <p>Каждая тема проходит один и тот же понятный цикл: разобрали, закрепили, написали вторую часть, получили проверку и увидели результат.</p>
             </div>
 
-
             <ol class="landing-route">
-
                 <li class="reveal-on-scroll">
                     <span class="route-number">01</span>
-
-                    <div class="route-icon">
-                        ✓
-                    </div>
-
                     <h3>Разбираем тему</h3>
-
-                    <p>
-                        Логика темы, сложные места
-                        и типовые ловушки ЕГЭ.
-                    </p>
+                    <p>Логика темы, сложные места и типовые ловушки ЕГЭ.</p>
                 </li>
-
-
                 <li class="reveal-on-scroll">
                     <span class="route-number">02</span>
-
-                    <div class="route-icon">
-                        □
-                    </div>
-
                     <h3>Закрепляем первую часть</h3>
-
-                    <p>
-                        После темы ученик проходит
-                        тематический тест.
-                    </p>
+                    <p>После темы — тематический тест.</p>
                 </li>
-
-
                 <li class="reveal-on-scroll">
                     <span class="route-number">03</span>
-
-                    <div class="route-icon">
-                        ✎
-                    </div>
-
-                    <h3>Делаем вторую часть</h3>
-
-                    <p>
-                        К каждой теме есть задания
-                        с развёрнутым ответом.
-                    </p>
+                    <h3>Пишем вторую часть</h3>
+                    <p>Задания с развёрнутым ответом по пройденной теме.</p>
                 </li>
-
-
                 <li class="reveal-on-scroll">
                     <span class="route-number">04</span>
-
-                    <div class="route-icon">
-                        ✓
-                    </div>
-
-                    <h3>Я проверяю работу</h3>
-
-                    <p>
-                        Ошибки разбираются
-                        по критериям экзамена.
-                    </p>
+                    <h3>Получаем проверку</h3>
+                    <p>Я разбираю ошибки по критериям экзамена.</p>
                 </li>
-
-
                 <li class="reveal-on-scroll">
                     <span class="route-number">05</span>
-
-                    <div class="route-icon">
-                        ↗
-                    </div>
-
-                    <h3>Фиксируем прогресс</h3>
-
-                    <p>
-                        В кабинете видно,
-                        к чему нужно вернуться.
-                    </p>
+                    <h3>Видим прогресс</h3>
+                    <p>В кабинете понятно, что уже получается и к чему вернуться.</p>
                 </li>
-
             </ol>
-
         </section>
-
 
         <!-- =====================================================
              MATERIALS
         ====================================================== -->
 
         <section class="landing-materials landing-content-section">
-
             <div class="landing-section-heading reveal-on-scroll">
-
                 <div>
-                    <p class="landing-kicker">
-                        ВНУТРИ ТЕМЫ
-                    </p>
-
-                    <h2>
-                        Теория и практика
-                    </h2>
+                    <p class="landing-kicker">ВНУТРИ ТЕМЫ</p>
+                    <h2>Теория и практика</h2>
                 </div>
-
-                <p>
-                    После занятия ученик возвращается к теме:
-                    открывает конспект, проходит тест первой части,
-                    выполняет вторую часть и отправляет работу
-                    на проверку.
-                </p>
-
+                <p>После занятия остаются материалы, к которым можно вернуться: конспект, тесты и задания второй части.</p>
             </div>
-
 
             <div class="material-desk">
-
-                <figure class="material-paper material-paper--notes reveal-on-scroll">
-                    <span>КОНСПЕКТ + ПРАКТИКА</span>
-
-                    <img
-                        src="assets/landing/profi-notes.jpg"
-                        alt="Конспекты и практические задания"
-                        loading="lazy"
-                    >
+                <figure class="material-paper reveal-on-scroll">
+                    <img src="assets/landing/profi-notes.jpg" alt="Конспекты и практические задания" loading="lazy">
+                    <figcaption>Конспекты и практика</figcaption>
                 </figure>
-
-
-                <figure class="material-paper material-paper--homework reveal-on-scroll">
-                    <span>ТЕСТ + ВТОРАЯ ЧАСТЬ</span>
-
-                    <img
-                        src="assets/landing/homework.jpg"
-                        alt="Домашняя работа и тест"
-                        loading="lazy"
-                    >
+                <figure class="material-paper reveal-on-scroll">
+                    <img src="assets/landing/homework.jpg" alt="Домашняя работа и тест" loading="lazy">
+                    <figcaption>Домашние задания и тесты</figcaption>
                 </figure>
-
-
-                <div class="materials-hand-note">
-                    материалы
-                </div>
-
             </div>
-
         </section>
-
-
-        <!-- =====================================================
-             ADVANTAGES
-        ====================================================== -->
-
-        <section class="landing-advantages landing-content-section">
-
-            <div class="advantages-main reveal-on-scroll">
-
-                <p class="landing-kicker">
-                    КАК Я РАБОТАЮ
-                </p>
-
-                <h2>
-                    Занятия, проверка<br>
-                    и прогресс
-                </h2>
-
-                <p>
-                    Я сама веду занятия, проверяю вторую часть,
-                    отвечаю на вопросы и слежу за прогрессом
-                    ученика в личном кабинете.
-                </p>
-
-            </div>
-
-
-            <div class="advantages-grid">
-
-                <article class="advantage advantage--blue">
-                    <span>01</span>
-                    <h3>Занятия</h3>
-                    <p>Я веду их сама</p>
-                </article>
-
-                <article class="advantage advantage--wine">
-                    <span>02</span>
-                    <h3>Вторая часть</h3>
-                    <p>Я сама проверяю работы</p>
-                </article>
-
-                <article class="advantage advantage--sage">
-                    <span>03</span>
-                    <h3>Прогресс</h3>
-                    <p>Виден в одном месте</p>
-                </article>
-
-                <article class="advantage advantage--violet">
-                    <span>04</span>
-                    <h3>Вопросы</h3>
-                    <p>Можно задать преподавателю</p>
-                </article>
-
-            </div>
-
-        </section>
-
 
         <!-- =====================================================
              FORMATS
         ====================================================== -->
 
-        <section
-            class="landing-formats landing-content-section"
-            id="formats"
-        >
-
+        <section class="landing-formats landing-content-section" id="formats">
             <div class="landing-section-heading reveal-on-scroll">
-
                 <div>
-                    <p class="landing-kicker">
-                        ФОРМАТЫ
-                    </p>
-
-                    <h2>
-                        Как можно заниматься
-                    </h2>
+                    <p class="landing-kicker">ФОРМАТЫ</p>
+                    <h2>Как можно заниматься</h2>
                 </div>
-
-                <p>
-                    Можно выбрать формат под свой темп,
-                    стартовый уровень и необходимую
-                    степень поддержки.
-                </p>
-
+                <p>Четыре формата — от индивидуальных занятий до сопровождения между уроками.</p>
             </div>
 
-
-            <div class="formats-bento">
-
-                <article class="format-card format-card--individual reveal-on-scroll">
-                    <span class="format-index">01</span>
-
-                    <div>
-                        <p>Индивидуально</p>
-
-                        <h3>
-                            3 000 ₽
-                            <small>/ 60 минут</small>
-                        </h3>
-                    </div>
-
-                    <p class="format-description">
-                        Занятие один на один. Личный темп
-                        и возможность подробно разбирать
-                        индивидуальные пробелы.
-                    </p>
-
-                    <div class="format-decoration">
-                        1 × 1
-                    </div>
+            <div class="formats-list">
+                <article class="format-row reveal-on-scroll">
+                    <div class="format-name"><span>01</span><h3>Индивидуально</h3></div>
+                    <div class="format-price"><strong>3 000 ₽</strong><small>60 минут</small></div>
+                    <p>Занятие один на один: личный темп и подробный разбор пробелов.</p>
                 </article>
-
-
-                <article class="format-card format-card--pair reveal-on-scroll">
-                    <span class="format-index">02</span>
-
-                    <div>
-                        <p>В паре</p>
-
-                        <h3>
-                            2 000 ₽
-                            <small>/ занятие</small>
-                        </h3>
-                    </div>
-
-                    <p class="format-description">
-                        Два ученика примерно одного уровня.
-                        Больше взаимодействия, но внимание
-                        сохраняется у каждого.
-                    </p>
-
-                    <div class="format-pair-dots">
-                        <i></i>
-                        <i></i>
-                    </div>
+                <article class="format-row reveal-on-scroll">
+                    <div class="format-name"><span>02</span><h3>В паре</h3></div>
+                    <div class="format-price"><strong>2 000 ₽</strong><small>с ученика · 60 минут</small></div>
+                    <p>Два ученика близкого уровня. Совместная работа при сохранении индивидуальной проверки.</p>
                 </article>
-
-
-                <article class="format-card format-card--group reveal-on-scroll">
-                    <span class="format-index">03</span>
-
-                    <div>
-                        <p>Мини-группа</p>
-
-                        <h3>
-                            1 500 ₽
-                            <small>/ занятие</small>
-                        </h3>
-                    </div>
-
-                    <p class="format-description">
-                        До 6 человек. Общая программа,
-                        личный кабинет и индивидуальная
-                        проверка второй части.
-                    </p>
-
-                    <div class="format-six">
-                        до 6
-                    </div>
+                <article class="format-row reveal-on-scroll">
+                    <div class="format-name"><span>03</span><h3>Мини-группа</h3></div>
+                    <div class="format-price"><strong>1 200 ₽</strong><small>с ученика · 60 минут</small></div>
+                    <p>До 6 человек, общая программа, личный кабинет и проверка второй части.</p>
                 </article>
-
-
-                <article class="format-card format-card--support reveal-on-scroll">
-                    <span class="format-index">04</span>
-
-                    <div>
-                        <p>Сопровождение</p>
-
-                        <h3>
-                            4 000 ₽
-                            <small>/ месяц</small>
-                        </h3>
-                    </div>
-
-                    <p class="format-description">
-                        Конспекты и практика, проверка домашних заданий,
-                        обратная связь и одно итоговое занятие в конце месяца.
-                    </p>
-
-                    <div class="format-support-mark">
-                        материалы + проверка
-                    </div>
-
+                <article class="format-row reveal-on-scroll">
+                    <div class="format-name"><span>04</span><h3>Сопровождение</h3></div>
+                    <div class="format-price"><strong>3 000 ₽</strong><small>календарный месяц</small></div>
+                    <p>Конспекты и практика, проверка домашних заданий, обратная связь и итоговое занятие.</p>
                 </article>
-
             </div>
-
         </section>
-
 
         <!-- =====================================================
              DOCUMENTS
@@ -11695,7 +11510,6 @@
                     <button class="nav-button" type="button" data-page="subjects"><span class="nav-number">02</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5c1.2 0 1.5.6 1.5 1.5v13c0-1.2-.7-2-2-2H4zM20 5.5h-6.5c-1.2 0-1.5.6-1.5 1.5v13c0-1.2.7-2 2-2h6z"/></svg></span><span class="nav-label">Все темы</span></button>
                     <button class="nav-button" type="button" data-page="works"><span class="nav-number">03</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h6"/></svg></span><span class="nav-label">Мои работы</span></button>
                     <button class="nav-button" type="button" data-page="practice"><span class="nav-number">04</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.3 4.7 5.2.8-3.8 3.7.9 5.3-4.6-2.5L7.4 17l.9-5.3-3.8-3.7 5.2-.8z"/></svg></span><span class="nav-label">Доп. практика</span></button>
-                    <button class="nav-button" type="button" data-open-variants><span class="nav-number">05</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h11l4 4v14H5zM16 3v5h5M9 12h7M9 16h7"/></svg></span><span class="nav-label">Пробники</span></button>
                 </nav>
 
                 <button class="theme-toggle" type="button" data-theme-toggle aria-label="Включить тёмную тему" title="Включить тёмную тему">
@@ -11978,7 +11792,6 @@
                         <div class="practice-panel" id="practiceHome">
                             <div class="practice-heading">
                                 <div>
-                                    <p class="eyebrow">Необязательная практика</p>
                                     <h1>Дополнительная практика</h1>
                                 </div>
                                 <div class="practice-heading-character" aria-hidden="true"><img src="cleverdog.jpg" alt=""></div>
@@ -12002,10 +11815,10 @@
                                     <span><strong>Конституция РФ</strong><small>Файлы и тренировка задания № 23</small></span>
                                     <b aria-hidden="true">→</b>
                                 </button>
-                                <button class="practice-path-card practice-path-card--variants" type="button" data-practice-view="materialsHub" data-scroll-target="practiceVariantsShelf">
+                                <button class="practice-path-card practice-path-card--variants" type="button" data-practice-view="variantsHub">
                                     <span class="practice-path-number">04</span>
-                                    <span class="practice-path-icon"><img src="ege.webp" alt=""></span>
-                                    <span><strong>Пробные варианты</strong><small>19 вариантов Word по разделам и два общих пробника</small></span>
+                                    <span class="practice-path-icon"><img src="eva.JPG" alt=""></span>
+                                    <span><strong>Пробники</strong><small>Тематические и общие варианты в формате ЕГЭ</small></span>
                                     <b aria-hidden="true">→</b>
                                 </button>
                             </div>
@@ -12057,7 +11870,7 @@
                         <div class="practice-panel" id="materialsHub" hidden>
                             <button class="back-button practice-back" type="button" data-practice-home>← Дополнительная практика</button>
                             <div class="library-hero">
-                                <div><p class="eyebrow">Дополнительные материалы</p><h1>Библиотека</h1><button class="button button--small" type="button" data-scroll-target="practiceVariantsShelf">Перейти к пробным вариантам ↓</button></div>
+                                <div><p class="eyebrow">Дополнительные материалы</p><h1>Библиотека</h1></div>
                                 <div class="library-hero-icon" aria-hidden="true"><img src="картинки/book.png" alt=""></div>
                             </div>
                             <div class="library-sections">
@@ -12089,7 +11902,7 @@
                                             <a class="library-file" href="учебники/Демоверсия ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Демоверсия ЕГЭ 2027</strong><small>Официальный документ · 708 КБ</small></span><b>↗</b></a>
                                             <a class="library-file" href="учебники/Кодификатор ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Кодификатор ЕГЭ 2027</strong><small>Официальный документ · 456 КБ</small></span><b>↗</b></a>
                                             <a class="library-file" href="учебники/Спецификация ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Спецификация ЕГЭ 2027</strong><small>Официальный документ · 512 КБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/Метод. рекомендации для самостоятельной подготовки ЕГЭ 2026.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Методические рекомендации</strong><small>Самостоятельная подготовка · 704 КБ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/Метод. рекомендации для самостоятельной подготовки ЕГЭ 2026.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Методические рекомендации</strong><small>Самостоятельная подготовка · 704 КБ</small></span><b>↗</b></a>
                                         </div>
                                     </section>
 
@@ -12116,18 +11929,31 @@
                                     </section>
                                 </div>
 
-                                <section class="library-shelf practice-variants-shelf" id="practiceVariantsShelf">
+                            </div>
+                        </div>
+
+                        <div class="practice-panel" id="variantsHub" hidden>
+                            <button class="back-button practice-back" type="button" data-practice-home>← Дополнительная практика</button>
+                            <div class="variants-hero">
+                                <div>
+                                    <p class="eyebrow">Тренировка полного формата</p>
+                                    <h1>Пробники</h1>
+                                    <p>Выберите тематический или общий вариант и выполните его в удобное время.</p>
+                                </div>
+                                <div class="variants-hero-art" aria-hidden="true"><img src="eva.JPG" alt=""></div>
+                            </div>
+                            <section class="library-shelf practice-variants-shelf" id="practiceVariantsShelf">
                                     <header class="library-shelf-heading">
                                         <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M11 6h25l7 7v33H11zM36 6v9h9M17 22h20M17 29h20M17 36h13"/><path d="m31 39 4 4 8-10"/></svg></span>
-                                        <div><p class="eyebrow">Раздел 05</p><h2>Пробные варианты</h2><small>Word · 25 заданий · ответы и критерии внутри</small></div>
+                                        <div><p class="eyebrow">Тематические и общие варианты</p><h2>Пробные варианты</h2><small>Word · 25 заданий · ученические версии без ответов</small></div>
                                     </header>
                                     <div class="practice-variants-groups">
                                         <div class="practice-variants-group">
                                             <h3>Человек и общество</h3>
                                             <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
@@ -12141,9 +11967,9 @@
                                         <div class="practice-variants-group">
                                             <h3>Социология</h3>
                                             <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
@@ -12157,9 +11983,9 @@
                                         <div class="practice-variants-group">
                                             <h3>Конституция</h3>
                                             <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 1</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 2</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 3</strong><small>58 первичных баллов · с ответами</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
@@ -12177,8 +12003,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </section>
-                            </div>
+                            </section>
                         </div>
 
                         <div class="practice-panel" id="constitutionHub" hidden>
@@ -12261,7 +12086,7 @@
     <div class="toast" id="toast" role="status" hidden></div>
 
     <script src="analytics.js"></script>
-    <script src="landing.js?v=20260908"></script>
+    <script src="landing.js?v=20260913-clean1"></script>
     <script src="data/tests-public.js?v=20260904"></script>
     <script src="data/tests-score-hashes.js?v=20260904-2"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
@@ -13991,15 +13816,6 @@
         }
 
         document.addEventListener("click", (event) => {
-            const variantsButton = event.target.closest("[data-open-variants]");
-            if (variantsButton) {
-                showPage("practice");
-                showPracticePanel("materialsHub");
-                document.querySelectorAll(".nav-button").forEach((button) => button.classList.toggle("is-active", button === variantsButton));
-                requestAnimationFrame(() => document.getElementById("practiceVariantsShelf")?.scrollIntoView({ behavior: "smooth", block: "start" }));
-                return;
-            }
-
             const openButton = event.target.closest("[data-open]");
             if (openButton) {
                 showView(openButton.dataset.open);
@@ -14015,15 +13831,6 @@
             const practiceViewButton = event.target.closest("[data-practice-view]");
             if (practiceViewButton) {
                 showPracticePanel(practiceViewButton.dataset.practiceView);
-                if (practiceViewButton.dataset.scrollTarget) {
-                    requestAnimationFrame(() => document.getElementById(practiceViewButton.dataset.scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" }));
-                }
-                return;
-            }
-
-            const scrollTargetButton = event.target.closest("[data-scroll-target]");
-            if (scrollTargetButton) {
-                document.getElementById(scrollTargetButton.dataset.scrollTarget)?.scrollIntoView({ behavior: "smooth", block: "start" });
                 return;
             }
 
