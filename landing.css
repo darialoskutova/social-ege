@@ -10,14 +10,11 @@
     --wine: #8d2536;
     --wine-deep: #6f1929;
     --cream: #fffdf8;
-    --paper: #f8f5ef;
     --ink: #152440;
     --text: #35415a;
     --muted: #667085;
     --line: #d8dee8;
     --blue-light: #edf3ff;
-    --rose: #f7e7e9;
-    --sage: #e5eee2;
 
     position: relative;
     min-height: 100vh;
@@ -74,14 +71,13 @@
     z-index: 80;
     top: 0;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     width: min(1240px, calc(100% - 48px));
     min-height: 78px;
     margin: 0 auto;
     border-bottom: 1px solid rgba(23, 70, 162, 0.12);
-    background: rgba(255, 253, 248, 0.96);
-    backdrop-filter: blur(12px);
+    background: var(--cream);
 }
 
 .landing-brand {
@@ -103,14 +99,14 @@
 
 .landing-brand-copy small {
     color: var(--muted);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
 }
 
 .landing-navigation {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: clamp(18px, 2.2vw, 32px);
     min-width: 0;
     font-size: 14px;
@@ -142,14 +138,25 @@
     transform: scaleX(1);
 }
 
-.landing-navigation-cabinet {
-    display: none;
+.landing .landing-navigation-cabinet {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 4px;
+    padding: 0 16px;
+    border: 1px solid var(--blue);
+    border-radius: 4px;
+    background: var(--blue);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    transition: background .16s ease, border-color .16s ease;
 }
 
-.landing-header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+.landing .landing-navigation-cabinet:hover {
+    border-color: var(--blue-deep);
+    background: var(--blue-deep);
 }
 
 .landing-menu-button {
@@ -195,12 +202,6 @@
     transform: translateY(-1px);
 }
 
-.landing-button--compact {
-    min-height: 42px;
-    padding: 0 16px;
-    font-size: 13px;
-}
-
 .landing-button--secondary {
     border-color: #b8c5db;
     background: transparent;
@@ -234,10 +235,15 @@
     padding: 96px 0;
 }
 
+.landing :where(a, button):focus-visible {
+    outline: 3px solid rgba(141, 37, 54, .42);
+    outline-offset: 3px;
+}
+
 .landing-kicker {
     margin: 0 0 13px;
     color: var(--wine);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: .09em;
     text-transform: uppercase;
@@ -374,7 +380,7 @@
     width: 410px;
     height: 430px;
     border-radius: 47% 53% 30% 70% / 34% 34% 66% 66%;
-    background: linear-gradient(145deg, #d9e5fb, #ecf2fb);
+    background: #e3eafb;
     transform: rotate(4deg);
 }
 
@@ -434,7 +440,7 @@
 .hero-paper-note span,
 .hero-paper-note strong,
 .hero-paper-note small { display: block; }
-.hero-paper-note span { color: var(--muted); font-size: 11px; }
+.hero-paper-note span { color: var(--muted); font-size: 12px; }
 .hero-paper-note strong { margin-top: 3px; color: var(--wine); font-size: 14px; }
 .hero-paper-note small { margin-top: 2px; font-size: 12px; }
 .hero-paper-note svg { width: 80px; height: 22px; margin-top: 5px; fill: none; stroke: var(--blue); stroke-width: 1.5; }
@@ -452,14 +458,9 @@
     transform: rotate(-4deg);
 }
 
-.hero-answer-card strong { display: block; margin-bottom: 11px; color: var(--blue); font-size: 10px; letter-spacing: .05em; }
-.hero-answer-card span { display: inline-block; width: 22px; color: var(--muted); font-size: 10px; font-weight: 700; }
+.hero-answer-card strong { display: block; margin-bottom: 11px; color: var(--blue); font-size: 12px; letter-spacing: .05em; }
+.hero-answer-card span { display: inline-block; width: 22px; color: var(--muted); font-size: 12px; font-weight: 700; }
 .hero-answer-card i { display: inline-block; width: 60px; height: 9px; margin-bottom: 4px; border-bottom: 1px solid #bdc5d2; }
-
-.hero-doodle { position: absolute; pointer-events: none; }
-.hero-doodle--left { left: -85px; top: 180px; width: 100px; opacity: .28; }
-.hero-doodle svg { fill: none; stroke: var(--blue); stroke-width: 1.3; }
-.hero-dots { position: absolute; right: -34px; top: 190px; width: 75px; height: 110px; opacity: .17; background-image: radial-gradient(var(--blue) 1.2px, transparent 1.2px); background-size: 10px 10px; }
 
 /* =========================================================
    ABOUT — keep the strong band, remove extra wave
@@ -475,17 +476,13 @@
     min-height: 500px;
     padding: 80px max(45px, calc((100vw - 1180px) / 2));
     overflow: hidden;
-    background: linear-gradient(135deg, #0f3d93, #1746a2 62%, #265eb3);
+    background: var(--blue);
     color: #fff;
 }
 
-.about-wave { display: none; }
-
 .landing-about-photo { position: relative; z-index: 3; }
-.about-photo-paper { width: 250px; padding: 9px 9px 34px; background: var(--cream); box-shadow: 10px 12px 0 rgba(11, 37, 90, .20); transform: rotate(-2deg); }
+.about-photo-paper { width: 250px; padding: 9px 9px 34px; border: 1px solid rgba(255,255,255,.55); background: var(--cream); box-shadow: 10px 12px 0 rgba(11, 37, 90, .20); }
 .about-photo-paper img { display: block; width: 100%; height: 300px; object-fit: cover; object-position: center top; }
-.about-sticker { position: absolute; right: -32px; bottom: -22px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.5); background: #fff9ef; color: var(--blue-deep); font-size: 12px; font-weight: 600; line-height: 1.4; box-shadow: 4px 5px 14px rgba(6,25,70,.15); transform: rotate(3deg); }
-.about-sticker span { display: inline-block; margin-left: 4px; color: var(--wine); font-size: 17px; }
 
 .landing-about-copy { position: relative; z-index: 4; }
 .landing-about-copy h2 { margin: 0 0 21px; color: white; font-size: clamp(37px, 4.5vw, 55px); font-weight: 700; letter-spacing: -.045em; line-height: 1.04; }
@@ -499,14 +496,13 @@
 .landing-about-facts small { display: block; }
 .landing-about-facts strong { color: white; font-size: 28px; letter-spacing: -.035em; }
 .landing-about-facts span { color: #d7e2ff; font-size: 13px; font-weight: 600; }
-.landing-about-facts small { margin-top: 4px; color: rgba(255,255,255,.68); font-size: 12px; line-height: 1.45; }
+.landing-about-facts small { margin-top: 4px; color: rgba(255,255,255,.75); font-size: 13px; line-height: 1.45; }
 
 /* =========================================================
    PLATFORM — screenshot first, no floating cards
 ========================================================= */
 
 .landing-platform { padding-top: 108px; padding-bottom: 118px; }
-.platform-grid-pattern { display: none; }
 .platform-showcase { position: relative; min-height: 0; margin-top: 4px; }
 
 .landing-platform-shot {
@@ -723,12 +719,7 @@
 .diagnostics-link { display: inline-flex; min-height: 48px; align-items: center; padding: 0 10px; color: #d8e4ff !important; font-size: 14px; font-weight: 600; }
 
 .diagnostics-visual { position: relative; min-height: 315px; }
-.diagnostics-visual img { position: absolute; z-index: 3; right: -20px; bottom: -70px; width: 250px; }
-.diagnostic-sheet { position: absolute; z-index: 2; left: 0; top: 10px; width: 180px; padding: 20px; border: 1px solid rgba(255,255,255,.35); border-radius: 2px; background: white; color: var(--ink); box-shadow: 10px 12px 0 rgba(141,37,54,.38); transform: rotate(-4deg); }
-.diagnostic-sheet > span { display: block; margin-bottom: 16px; color: var(--wine); font-size: 11px; font-weight: 700; letter-spacing: .06em; }
-.diagnostic-sheet strong { display: inline-block; width: 30px; color: var(--blue); font-size: 12px; }
-.diagnostic-sheet i { display: inline-block; width: 94px; height: 15px; border-bottom: 1px solid #cbd1dc; }
-.diagnostics-dots { display: none; }
+.diagnostics-visual img { position: absolute; z-index: 3; right: 10px; bottom: -70px; width: 285px; }
 
 /* =========================================================
    FAQ
@@ -775,21 +766,21 @@
 }
 
 .landing-footer > div { display: grid; gap: 3px; }
-.landing-footer strong { color: var(--ink); font-size: 14px; }
-.landing-footer > div span { color: var(--muted); font-size: 12px; }
+.landing-footer strong { color: var(--ink); font-size: 15px; }
+.landing-footer > div span { color: var(--muted); font-size: 14px; }
 .landing-footer nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 18px; }
 .landing-footer nav a,
-.landing-footer nav button { padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 13px; font-weight: 500; }
+.landing-footer nav button { padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 14px; font-weight: 500; }
 
 /* =========================================================
    LIGHTBOX
 ========================================================= */
 
 .landing-lightbox[hidden] { display: none; }
-.landing-lightbox { position: fixed; z-index: 300; inset: 0; display: grid; place-items: center; padding: 40px; background: rgba(8,19,44,.84); backdrop-filter: blur(8px); }
+.landing-lightbox { position: fixed; z-index: 300; inset: 0; display: grid; place-items: center; padding: 40px; background: rgba(8,19,44,.88); }
 .landing-lightbox img { max-width: min(850px, 90vw); max-height: 82vh; object-fit: contain; box-shadow: 0 25px 80px rgba(0,0,0,.35); }
 .landing-lightbox p { position: absolute; bottom: 14px; color: white; font-size: 13px; }
-.landing-lightbox-close { position: absolute; top: 22px; right: 28px; width: 46px; height: 46px; border: 0; border-radius: 50%; background: white; color: var(--ink); font-size: 26px; }
+.landing-lightbox-close { position: absolute; top: 22px; right: 28px; width: 46px; height: 46px; border: 0; border-radius: 4px; background: white; color: var(--ink); font-size: 26px; }
 
 /* =========================================================
    REVEAL
@@ -806,23 +797,16 @@
 
 @media (max-width: 1120px) {
     .landing-header {
-        grid-template-columns: 1fr auto auto;
+        grid-template-columns: 1fr auto;
         width: calc(100% - 40px);
         column-gap: 8px;
     }
 
-    .landing-menu-button {
-        display: block;
-        order: 2;
-    }
-
-    .landing-header-actions {
-        order: 3;
-    }
+    .landing-menu-button { display: block; }
 
     .landing-navigation {
         position: absolute;
-        top: 70px;
+        top: 100%;
         right: 0;
         left: 0;
         display: none;
@@ -840,7 +824,7 @@
     }
 
     .landing-navigation a,
-    .landing-navigation-cabinet {
+    .landing-navigation .landing-navigation-cabinet {
         display: block;
         width: 100%;
         padding: 12px 18px;
@@ -850,6 +834,8 @@
         font-size: 14px;
         text-align: left;
     }
+
+    .landing-navigation .landing-navigation-cabinet { margin-left: 0; }
 
     .landing-navigation a::after { display: none; }
 
@@ -926,8 +912,6 @@
 
     .landing-brand { min-width: 0; }
     .landing-brand-copy small { display: none; }
-    .landing-button--compact { min-height: 38px; padding: 0 10px; font-size: 12px; }
-
     .landing-content-section { width: calc(100% - 32px); padding: 74px 0; }
     .landing-section-heading { margin-bottom: 34px; }
     .landing-section-heading h2 { font-size: 36px; }
@@ -998,7 +982,7 @@
     .landing-diagnostics { grid-template-columns: 1fr; padding: 70px 23px 0; }
     .landing-diagnostics-copy > p:not(.landing-kicker) { font-size: 15px; }
     .diagnostics-visual { width: 300px; max-width: 100%; min-height: 320px; margin: 0 auto; }
-    .diagnostics-visual img { right: -8px; }
+    .diagnostics-visual img { right: 5px; }
 
     .landing-faq-item h3 button { grid-template-columns: 34px minmax(0,1fr) 25px; font-size: 15px; }
     .landing-faq-item > div { padding: 0 30px 22px 44px; }
@@ -1081,7 +1065,7 @@
         right: 8px;
         bottom: 8px;
         padding: 6px 8px;
-        font-size: 11px;
+        font-size: 12px;
         opacity: 1;
         transform: none;
     }
