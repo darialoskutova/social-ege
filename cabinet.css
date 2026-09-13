@@ -1,1003 +1,466 @@
-/* CABINET VISUAL CLEANUP — editorial / academic direction */
+/* Targeted cabinet cleanup. Public landing styles are intentionally untouched. */
 
+/* Readability */
 #appView {
-    padding: 0;
-    background: #f7f6f2;
-    font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-#appView .app-shell {
-    width: 100%;
-    max-width: none;
-    min-height: 100vh;
-    margin: 0;
-    border: 0;
-    border-radius: 0;
-    background: #fbfaf7;
-    box-shadow: none;
-    overflow: visible;
-}
-
-#appView .sidebar {
-    min-height: 68px;
-    gap: 28px;
-    padding: 0 34px;
-    border-bottom: 1px solid #d8dde6;
-    background: rgba(251, 250, 247, 0.97);
-    box-shadow: none;
-    backdrop-filter: blur(12px);
-}
-
-#appView .sidebar .brand {
-    gap: 0;
-    color: #172036;
-    font-family: "Onest", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-}
-
-#appView .sidebar .brand-mark {
-    display: none;
-}
-
-#appView .nav {
-    gap: 28px;
-}
-
-#appView .nav-button {
-    display: flex;
-    width: auto;
-    min-height: 68px;
-    align-items: center;
-    gap: 0;
-    padding: 0;
-    border: 0;
-    border-bottom: 2px solid transparent;
-    border-radius: 0;
-    background: transparent;
-    color: #667089;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-#appView .nav-icon,
-#appView .nav-number {
-    display: none;
-}
-
-#appView .nav-button:hover,
-#appView .nav-button.is-active {
-    border-color: #1746a2;
-    background: transparent;
-    color: #1746a2;
-}
-
-#appView .theme-toggle {
-    min-height: 40px;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #667089;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#appView .theme-toggle:hover {
-    color: #1746a2;
-    transform: none;
-}
-
-#appView .sidebar-user {
-    min-width: 96px;
-}
-
-#appView .sidebar-user strong {
-    color: #172036;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#appView .sidebar-user .text-button {
-    color: #8d2536;
-    font-size: 12px;
-}
-
-#appView .page {
-    width: min(1160px, calc(100% - 64px));
-    padding: 54px 0 86px;
+    font-size: 16px;
 }
 
 #appView .eyebrow {
-    margin-bottom: 10px;
-    color: #8d2536;
-    font-size: 11px;
-    letter-spacing: .08em;
-}
-
-#appView .eyebrow::before {
-    width: 18px;
-    height: 1px;
-}
-
-/* Dashboard */
-#appView .dashboard-intro {
-    min-height: 0;
-    margin: 0 0 30px;
-    padding: 0 0 30px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    color: #172036;
-    box-shadow: none;
-}
-
-#appView .dashboard-intro::after,
-#appView .dashboard-exam-visual {
-    display: none;
-}
-
-#appView .dashboard-intro h1 {
-    max-width: none;
-    margin: 0;
-    color: #172036;
-    font-size: clamp(42px, 5vw, 62px);
-    font-weight: 650;
-    letter-spacing: -.045em;
-    line-height: 1;
-}
-
-#appView .dashboard-intro h1 span {
-    color: #8d2536;
-}
-
-#appView .dashboard-progress-overview--compact {
-    margin: 0;
-    padding: 28px 0 34px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    color: #172036;
-    box-shadow: none;
-}
-
-#appView .dashboard-progress-overview--compact::before,
-#appView .dashboard-progress-overview--compact::after,
-#appView .dashboard-progress-character {
-    display: none;
-}
-
-#appView .dashboard-progress-overview--compact .dashboard-progress-layout {
-    grid-template-columns: 132px minmax(0, 1fr);
-    gap: 38px;
-}
-
-#appView .dashboard-progress-overview--compact h2 {
-    color: #172036;
-    font-size: 30px;
-    font-weight: 650;
-    letter-spacing: -.03em;
-}
-
-#appView .dashboard-progress-overview--compact .eyebrow,
-#appView .dashboard-progress-stats span,
-#appView .dashboard-progress-stats strong,
-#appView .course-donut strong,
-#appView .course-donut span {
-    color: #172036;
-}
-
-#appView .course-donut {
-    box-shadow: none;
-}
-
-#appView .dashboard-progress-stats > div {
-    min-height: 44px;
-    padding: 9px 0;
-    border: 0;
-    border-bottom: 1px solid #e1e4ea;
-    border-radius: 0;
-    background: transparent;
-}
-
-#appView .dashboard-study-grid {
-    gap: 28px;
-    margin-top: 34px;
-}
-
-#appView .study-checklist,
-#appView .course-schedule {
-    padding: 0;
-    border: 0;
-    border-top: 3px solid #1746a2;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView .course-schedule {
-    border-top-color: #8d2536;
-}
-
-#appView .study-card-heading {
-    margin: 0;
-    padding: 24px 0 18px;
-}
-
-#appView .study-card-heading h2 {
-    color: #172036;
-    font-size: 28px;
-    font-weight: 650;
-}
-
-#appView .study-current-topic,
-#appView .daily-plan-summary,
-#appView .schedule-list button {
-    border-radius: 0;
-    box-shadow: none;
-}
-
-#appView .study-current-topic {
-    border: 1px solid #d8dde6;
-    background: #fff;
-}
-
-#appView .daily-plan-summary {
-    border: 1px solid #d8dde6;
-    background: #fff;
-}
-
-#appView .schedule-list {
-    gap: 0;
-    border-top: 1px solid #d8dde6;
-}
-
-#appView .schedule-list button {
-    min-height: 58px;
-    padding: 12px 4px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    background: transparent;
-}
-
-#appView .schedule-list button > span {
-    width: 28px;
-    height: 28px;
-    border-radius: 2px;
-    background: #eef3ff;
-}
-
-#appView .schedule-list button strong {
-    font-size: 14px;
-}
-
-#appView .schedule-list button small {
     font-size: 12px;
 }
 
-#appView .oral-slot {
-    grid-template-columns: minmax(260px, .8fr) minmax(320px, 1.2fr);
-    gap: 38px;
-    margin-top: 42px;
-    padding: 30px 0 0;
-    overflow: visible;
-    border: 0;
-    border-top: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    color: #172036;
-    box-shadow: none;
-}
-
-#appView .oral-slot::after,
-#appView .oral-slot-character {
-    display: none;
-}
-
-#appView .oral-slot .eyebrow,
-#appView .oral-slot h2 {
-    color: #172036;
-}
-
-#appView .oral-slot h2 {
-    font-size: 34px;
-    font-weight: 650;
-}
-
-#appView .slot-reels {
-    max-width: 330px;
-    border: 1px solid #d8dde6;
-    border-radius: 0;
-    background: #fff;
-}
-
-#appView .slot-reels span {
-    min-height: 42px;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-#appView .slot-question {
-    border: 1px solid #d8dde6;
-    border-radius: 0;
-    background: #fff;
-    color: #172036;
-    box-shadow: none;
-}
-
-/* Subjects */
-#appView .subjects-hero {
-    min-height: 0;
-    margin-bottom: 24px;
-    padding: 0 0 28px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView .subjects-hero::before,
-#appView .subjects-hero-visual {
-    display: none;
-}
-
-#appView .subjects-hero .page-heading {
-    margin: 0;
-}
-
-#appView .subjects-hero h1,
-#appView .page-heading h1 {
-    color: #172036;
-    font-size: clamp(42px, 5vw, 58px);
-    font-weight: 650;
-    letter-spacing: -.045em;
-}
-
-#appView .subject-selector-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0;
-    margin-bottom: 38px;
-    border-top: 1px solid #d8dde6;
-    border-bottom: 1px solid #d8dde6;
-}
-
-#appView .subject-selector-card {
-    min-height: 88px;
-    grid-template-columns: 30px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    gap: 2px 10px;
-    padding: 16px 18px;
-    border: 0;
-    border-right: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    color: #172036;
-    box-shadow: none;
-    transform: none;
-}
-
-#appView .subject-selector-card:last-child {
-    border-right: 0;
-}
-
-#appView .subject-selector-card::after,
-#appView .subject-selector-icon,
-#appView .subject-selector-card > svg,
-#appView .subject-selector-card > b {
-    display: none;
-}
-
-#appView .subject-selector-number {
-    width: auto;
-    height: auto;
-    grid-row: 1 / 3;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #8d2536;
-    font-size: 12px;
-}
-
-#appView .subject-selector-card > strong {
-    align-self: end;
-    color: #172036;
-    font-size: 17px;
-    font-weight: 650;
-}
-
-#appView .subject-selector-card > small {
-    color: #788195;
-    font-size: 12px;
-}
-
-#appView .subject-selector-card:hover,
-#appView .subject-selector-card.is-active {
-    border-color: #d8dde6;
-    background: #f1f4fb;
-    color: #1746a2;
-    box-shadow: inset 0 -3px 0 #1746a2;
-    transform: none;
-}
-
-#appView .subject-selector-card.is-active .subject-selector-number,
-#appView .subject-selector-card.is-active > strong,
-#appView .subject-selector-card.is-active > small {
-    color: #1746a2;
-}
-
-#appView .selected-subject-heading {
-    margin-bottom: 0;
-    padding: 0 0 16px;
-    border-bottom: 1px solid #8d2536;
-}
-
-#appView .selected-subject-heading .eyebrow {
-    display: none;
-}
-
-#appView .selected-subject-heading h2 {
-    color: #172036;
-    font-size: 30px;
-    font-weight: 650;
-}
-
-#appView .topic-list {
-    border-top: 0;
-}
-
-#appView .topic-row {
-    margin: 0;
-    min-height: 72px;
-    padding: 15px 4px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView .topic-row:hover {
-    border-color: #d8dde6;
-    background: #f6f7fa;
-}
-
-#appView .topic-row-number {
-    color: #8d2536;
-    font-size: 13px;
-    font-weight: 700;
-}
-
-#appView .topic-row h3 {
+#appView .topic-row h3,
+#appView .work-card h3,
+#appView .admin-card h3 {
     font-size: 16px;
-    font-weight: 650;
+    line-height: 1.35;
 }
 
-#appView .topic-row p {
-    margin-top: 4px;
+#appView .topic-row-status,
+#appView .topic-section-meta,
+#appView .work-card small,
+#appView .student-message-card small,
+#appView .admin-message-card small,
+#appView .prototype-warning {
     font-size: 12px;
+    line-height: 1.45;
 }
 
-#appView .topic-row-status {
-    padding: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #667089;
-    font-size: 12px;
+#appView .practice-path-card small,
+#appView .game-mode-card > small,
+#appView .library-card small,
+#appView .constitution-file small,
+#appView .game-section-card small {
+    font-size: 13px;
+    line-height: 1.45;
 }
 
-/* Lesson */
-#appView #lessonPage .back-button {
-    margin-bottom: 30px;
-    color: #1746a2;
-    font-size: 14px;
+#appView .practice-path-card strong,
+#appView .game-mode-card > strong,
+#appView .library-card strong,
+#appView .constitution-file strong,
+#appView .game-section-card > strong {
+    line-height: 1.25;
 }
 
-#appView #lessonPage .lesson-header {
-    max-width: none;
-    margin-bottom: 26px;
-    padding: 0 0 30px;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
+#appView .dashboard-sheet > span,
+#appView .course-donut span,
+#appView .dashboard-progress-stats > div > span:not(.dashboard-legend),
+#appView .daily-plan-copy > span,
+#appView .daily-plan-copy > small,
+#appView .daily-plan-action,
+#appView .study-week-day > span,
+#appView .study-week-day > strong,
+#appView .study-week-day > small,
+#appView .schedule-list button > span,
+#appView .slot-reels span,
+#appView .slot-question > span,
+#appView .subject-selector-number,
+#appView #practicePage .game-mode-label {
+    font-size: 11px;
 }
 
-#appView #lessonPage .lesson-header::before,
-#appView #lessonPage .lesson-header::after,
-#appView .lesson-header-character,
-#appView .lesson-header-icon {
-    display: none;
-}
-
-#appView #lessonPage .lesson-header h1 {
-    max-width: 980px;
-    color: #172036;
-    font-size: clamp(44px, 5.5vw, 64px);
-    font-weight: 650;
-    letter-spacing: -.045em;
-}
-
+/* Theme checklist: two real navigation controls and one mood illustration. */
 #appView #lessonPage .topic-progress-panel {
-    grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr);
-    gap: 40px;
-    margin-bottom: 32px;
-    padding: 24px 0;
-    border: 0;
-    border-top: 1px solid #d8dde6;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView #lessonPage .topic-progress-panel::after,
-#appView .topic-progress-mood {
-    display: none;
+    grid-template-columns: minmax(220px, .72fr) minmax(360px, 1.28fr) 138px;
+    gap: 24px;
+    padding: 24px 26px;
+    border-radius: 18px;
 }
 
 #appView #lessonPage .topic-progress-copy h2 {
-    color: #172036;
-    font-size: 24px;
-    font-weight: 650;
+    font-size: 25px;
 }
 
 #appView .topic-progress-copy > p:last-child {
     font-size: 13px;
+    line-height: 1.5;
 }
 
 #appView .topic-progress-checklist {
-    gap: 0;
-    border-top: 1px solid #d8dde6;
+    gap: 9px;
 }
 
 #appView .topic-progress-check {
-    min-height: 58px;
-    grid-template-columns: 24px minmax(0, 1fr);
-    padding: 12px 0;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-}
-
-#appView .topic-progress-check > b {
-    display: none;
-}
-
-#appView .topic-progress-check-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 2px;
+    min-height: 66px;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 12px;
+    padding: 11px 13px;
+    border-radius: 12px;
 }
 
 #appView .topic-progress-check strong {
     font-size: 14px;
+    line-height: 1.3;
 }
 
 #appView .topic-progress-check small {
+    margin-top: 3px;
     font-size: 12px;
-}
-
-#appView .lesson-section-tabs {
-    gap: 28px;
-    margin-bottom: 28px;
-    padding: 0;
-    border: 0;
-    border-bottom: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView .lesson-section-tab {
-    min-height: 54px;
-    padding: 0 2px;
-    border: 0;
-    border-bottom: 3px solid transparent;
-    border-radius: 0;
-    background: transparent;
-    color: #667089;
-    font-size: 15px;
-}
-
-#appView .lesson-section-tab-icon {
-    display: none;
-}
-
-#appView .lesson-section-tab.is-active {
-    border-color: #1746a2;
-    background: transparent;
-    color: #1746a2;
-    box-shadow: none;
-}
-
-#appView .lesson-section-tab i {
-    width: auto;
-    height: auto;
-    margin-left: 6px;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-}
-
-#appView .material-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 22px;
-}
-
-#appView .material-card {
-    min-height: 170px;
-    padding: 22px;
-    border: 1px solid #d8dde6;
-    border-top: 3px solid #1746a2;
-    border-radius: 0;
-    background: #fff !important;
-    box-shadow: none;
-    transform: none;
-}
-
-#appView .material-card:hover:not(.is-unavailable) {
-    border-color: #aebbd1;
-    box-shadow: none;
-    transform: none;
-}
-
-#appView .material-index {
-    width: auto;
-    height: auto;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    color: #8d2536;
-    font-size: 12px;
-}
-
-#appView .material-icon {
-    display: none;
-}
-
-#appView .material-card h2 {
-    margin-top: auto;
-    font-size: 22px;
-    font-weight: 650;
-}
-
-#appView .material-card p {
-    min-height: 0;
-    font-size: 13px;
-}
-
-#appView .material-link {
-    font-size: 13px;
-}
-
-#appView .submission-panel,
-#appView .teacher-message-panel {
-    border-radius: 0;
-    box-shadow: none;
-}
-
-#appView .works-heading-character,
-#appView .practice-heading-character {
-    display: none;
-}
-
-/* Practice stays a little more playful, but removes excessive pills/shadows. */
-#appView .practice-path-card,
-#appView .game-mode-card,
-#appView .library-file,
-#appView .constitution-file {
-    border-radius: 4px;
-    box-shadow: none;
-}
-
-#appView .practice-path-card:hover,
-#appView .game-mode-card:hover {
-    transform: translateY(-1px);
-    box-shadow: none;
-}
-
-/* Shared controls */
-#appView .button,
-#appView input,
-#appView textarea,
-#appView select,
-#appView .file-drop,
-#appView .upload-form,
-#appView .test-question,
-#appView .test-answer-option,
-#appView .test-submit-panel,
-#appView .work-card,
-#appView .teacher-comment,
-#appView .admin-card,
-#appView .admin-banner {
-    border-radius: 4px;
-}
-
-#appView .button {
-    min-height: 44px;
-    padding: 0 18px;
-    box-shadow: none;
-}
-
-#appView .button:hover {
-    transform: none;
-    box-shadow: none;
-}
-
-@media (max-width: 980px) {
-    #appView .sidebar {
-        gap: 14px;
-        padding: 0 18px;
-    }
-    #appView .nav { gap: 18px; }
-    #appView .page { width: min(100% - 40px, 1160px); }
-    #appView .subject-selector-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #appView .subject-selector-card:nth-child(2) { border-right: 0; }
-    #appView .subject-selector-card:nth-child(-n+2) { border-bottom: 1px solid #d8dde6; }
-    #appView .dashboard-study-grid { grid-template-columns: 1fr; }
-    #appView .oral-slot { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 720px) {
-    #appView .sidebar,
-    #appView body.menu-open .sidebar {
-        padding: 8px 14px 0;
-        gap: 4px 10px;
-    }
-    #appView .sidebar .brand { font-size: 13px; }
-    #appView .sidebar-user strong { font-size: 11px; }
-    #appView .nav {
-        width: 100%;
-        gap: 20px;
-        border-top: 1px solid #e1e4ea;
-    }
-    #appView .nav-button {
-        min-height: 46px;
-        font-size: 13px;
-    }
-    #appView .theme-toggle { display: none; }
-    #appView .page {
-        width: min(100% - 28px, 1160px);
-        padding-top: 34px;
-    }
-    #appView .dashboard-intro h1,
-    #appView .subjects-hero h1,
-    #appView #lessonPage .lesson-header h1 {
-        font-size: 39px;
-    }
-    #appView .dashboard-progress-overview--compact .dashboard-progress-layout {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
-    #appView .course-donut { justify-self: start; }
-    #appView .subject-selector-grid { grid-template-columns: 1fr; }
-    #appView .subject-selector-card,
-    #appView .subject-selector-card:nth-child(2),
-    #appView .subject-selector-card:nth-child(-n+2) {
-        border-right: 0;
-        border-bottom: 1px solid #d8dde6;
-    }
-    #appView #lessonPage .topic-progress-panel,
-    #appView .material-grid {
-        grid-template-columns: 1fr;
-    }
-    #appView .lesson-section-tabs {
-        gap: 18px;
-        overflow-x: auto;
-    }
-    #appView .lesson-section-tab { min-width: max-content; }
-}
-
-/* =========================================================
-   CHARACTER ART — KEEP AS PART OF THE PLATFORM IDENTITY
-   The characters are intentional brand elements. Keep them visible,
-   while avoiding oversized rounded promo-card treatment.
-========================================================= */
-
-/* Dashboard progress character */
-#appView .dashboard-progress-overview--compact .dashboard-progress-layout {
-    grid-template-columns: 132px minmax(0, 1fr) 150px;
-    align-items: center;
-}
-
-#appView .dashboard-progress-character {
-    display: block;
-    width: 138px;
-    justify-self: end;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    border: 0;
-    border-radius: 3px;
-    background: transparent;
-    box-shadow: none;
-    transform: none;
-}
-
-#appView .dashboard-progress-character .isaac-panel-outline {
-    display: none;
-}
-
-#appView .dashboard-progress-character img {
-    display: block;
-    width: 100%;
-    height: 118px;
-    border-radius: 3px;
-    object-fit: cover;
-}
-
-/* Question-machine character */
-#appView .oral-slot {
-    grid-template-columns: 126px minmax(240px, .75fr) minmax(320px, 1.25fr);
-    align-items: center;
-}
-
-#appView .oral-slot-character {
-    display: block;
-    width: 118px;
-    padding: 0;
-    overflow: hidden;
-    border: 0;
-    border-radius: 3px;
-    background: transparent;
-    box-shadow: none;
-    transform: none;
-}
-
-#appView .oral-slot-character img {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 3px;
-    object-fit: contain;
-    image-rendering: pixelated;
-}
-
-/* Lesson progress mood is a functional character/state indicator */
-#appView #lessonPage .topic-progress-panel {
-    grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr) 128px;
-    align-items: center;
-}
-
-#appView .topic-progress-mood {
-    display: grid;
-    justify-items: center;
-    gap: 7px;
-    margin: 0;
-    text-align: center;
-}
-
-#appView .topic-progress-mood > span {
-    display: block;
-    width: 88px;
-    height: 88px;
-    overflow: hidden;
-    border: 0;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: none;
-}
-
-#appView .topic-progress-mood img {
-    display: block;
-    width: 120%;
-    height: 120%;
-    object-fit: cover;
-    transform: translate(-8.3%, -8.3%);
-}
-
-#appView .topic-progress-mood figcaption {
-    max-width: 120px;
-    color: #667089;
-    font-size: 12px;
-    font-weight: 600;
     line-height: 1.35;
 }
 
-/* Characters on Works and Practice headings */
-#appView .works-heading,
-#appView .practice-heading {
-    align-items: center;
+#appView .topic-progress-check .topic-progress-action {
+    display: block;
+    color: var(--wine);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0;
+    text-transform: none;
+    white-space: nowrap;
 }
 
-#appView .works-heading-character,
-#appView .practice-heading-character {
-    display: block;
+#appView .topic-progress-check--link:hover:not(:disabled) {
+    border-color: var(--blue);
+    box-shadow: 0 7px 16px rgba(17, 47, 108, .09);
+    transform: translateY(-1px);
+}
+
+#appView .topic-progress-check--link:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--blue) 25%, transparent);
+    outline-offset: 2px;
+}
+
+#appView .topic-progress-check--link:disabled {
+    opacity: .62;
+}
+
+#appView .topic-progress-mood figcaption {
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+/* Navigation within a theme. */
+#appView #lessonPage .lesson-section-tabs {
+    top: 84px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    padding: 7px;
+    border-radius: 16px;
+}
+
+#appView #lessonPage .lesson-section-tab {
+    min-height: 62px;
+    gap: 10px;
+    padding: 8px 15px;
+    border-radius: 11px;
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+#appView #lessonPage .lesson-section-tab-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    border-radius: 8px;
+}
+
+#appView #lessonPage .lesson-section-tab i {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    font-size: 11px;
+}
+
+#appView #topicTestSection,
+#appView #uploadForm {
+    scroll-margin-top: 172px;
+}
+
+/* Test: compact instructions and an ordinary, non-pinned autosave row. */
+#appView #lessonPage .test-instructions {
+    margin-bottom: 22px;
+    padding: 15px 18px;
+    border: 1px solid #c8d4ea;
+    border-left: 4px solid var(--wine);
+    border-radius: 12px;
+    background: var(--blue-soft);
+    box-shadow: none;
+}
+
+#appView #lessonPage .test-instructions strong {
+    margin-bottom: 5px;
+    font-size: 15px;
+}
+
+#appView #lessonPage .test-instructions p {
+    max-width: 900px;
+    font-size: 14px;
+    line-height: 1.55;
+}
+
+#appView #lessonPage .test-question,
+#appView #lessonPage .test-result-card {
+    border-radius: 16px;
+}
+
+#appView #lessonPage .test-question-title,
+#appView #lessonPage .test-answer-option,
+#appView #lessonPage .test-text-answer,
+#appView #lessonPage .test-select-answer {
+    font-size: 15px;
+}
+
+#appView #lessonPage .test-question-points,
+#appView #lessonPage .test-answer-review,
+#appView #lessonPage .test-result-card small {
+    font-size: 13px;
+}
+
+#appView #lessonPage .test-submit-panel {
+    position: static !important;
+    inset: auto !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 24px;
+    padding: 16px 0 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#appView #lessonPage .test-submit-panel p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+/* Moderate rounding in the requested cabinet areas. */
+#appView .submission-panel,
+#appView .teacher-message-panel,
+#appView .work-card,
+#appView .practice-path-card,
+#appView .game-mode-card,
+#appView .library-shelf,
+#appView .library-file,
+#appView .constitution-file {
+    border-radius: 16px;
+}
+
+/* Library keeps useful authors/source notes but loses file-format badges. */
+#appView .library-shelf-heading h2 {
+    font-size: 26px;
+}
+
+#appView .library-shelf-heading small {
+    font-size: 12px;
+}
+
+#appView .library-file {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 14px;
+    min-height: 72px;
+    padding: 13px 15px;
+}
+
+#appView .library-file strong {
+    font-size: 14px;
+    line-height: 1.35;
+}
+
+#appView .library-file small {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+#appView .library-file > b {
+    font-size: 17px;
+    white-space: nowrap;
+}
+
+/* Trial variants: a calm editorial list, without nested mini-cards. */
+#appView #variantsHub .variants-hero {
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 32px;
+    min-height: 0;
+    margin-bottom: 30px;
+    padding: 28px 0 30px;
+    overflow: visible;
+    border: 0;
+    border-bottom: 1px solid #b8c6df;
+    border-radius: 0;
+    background: transparent;
+}
+
+#appView #variantsHub .variants-hero::after {
+    display: none;
+}
+
+#appView #variantsHub .variants-hero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(48px, 6vw, 70px);
+    line-height: .98;
+}
+
+#appView #variantsHub .variants-hero p {
+    max-width: 620px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+#appView #variantsHub .variants-hero-art {
+    display: grid;
+    width: 180px;
+    height: 156px;
+    max-width: 100%;
+    place-items: center;
     justify-self: end;
     overflow: hidden;
+    border: 1px solid #b8c6df;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: none;
+    transform: none;
+}
+
+#appView #variantsHub .variants-hero-art img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    object-fit: contain;
+}
+
+#appView #practiceVariantsShelf {
+    padding: 0;
+    overflow: visible;
     border: 0;
-    border-radius: 3px;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#appView #practiceVariantsShelf .practice-variants-groups {
+    display: block;
+}
+
+#appView #practiceVariantsShelf .practice-variants-group,
+#appView #practiceVariantsShelf .practice-variants-group--general {
+    padding: 27px 0 24px;
+    border: 0;
+    border-top: 1px solid #c9d5ed;
+    border-radius: 0;
+    background: transparent;
+}
+
+#appView #practiceVariantsShelf .practice-variants-group:first-child {
+    border-top: 0;
+}
+
+#appView #practiceVariantsShelf .practice-variants-group h3 {
+    margin: 0 0 11px;
+    color: var(--blue-dark);
+    font-size: 23px;
+    line-height: 1.2;
+}
+
+#appView #practiceVariantsShelf .variant-list {
+    gap: 0;
+}
+
+#appView #practiceVariantsShelf .variant-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    min-height: 66px;
+    padding: 14px 2px;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+    border-radius: 0;
     background: transparent;
     box-shadow: none;
     transform: none;
 }
 
-#appView .works-heading-character {
-    width: 126px;
-    height: 118px;
+#appView #practiceVariantsShelf .variant-row:first-child {
+    border-top-color: transparent;
 }
 
-#appView .practice-heading-character {
-    width: 170px;
-    height: 120px;
-    flex: 0 0 170px;
+#appView #practiceVariantsShelf .variant-row:hover {
+    padding-right: 8px;
+    padding-left: 8px;
+    border-color: color-mix(in srgb, var(--blue) 28%, transparent);
+    background: var(--blue-soft);
+    box-shadow: none;
+    transform: none;
 }
 
-#appView .works-heading-character img,
-#appView .practice-heading-character img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    border-radius: 3px;
-    object-fit: cover;
+#appView #practiceVariantsShelf .variant-row strong {
+    font-size: 16px;
 }
 
-#appView .works-heading-character img {
-    transform: scale(1.34);
-    transform-origin: 50% 47%;
+#appView #practiceVariantsShelf .variant-row > b {
+    color: var(--wine);
+    font-size: 14px;
+    font-weight: 800;
 }
 
-/* Responsive character placement */
-@media (max-width: 980px) {
-    #appView .dashboard-progress-overview--compact .dashboard-progress-layout {
-        grid-template-columns: 120px minmax(0, 1fr) 120px;
-        gap: 22px;
-    }
-
-    #appView .dashboard-progress-character {
-        width: 110px;
-    }
-
-    #appView .dashboard-progress-character img {
-        height: 100px;
-    }
-
-    #appView .oral-slot {
-        grid-template-columns: 96px minmax(210px, .8fr) minmax(260px, 1.2fr);
-        gap: 24px;
-    }
-
-    #appView .oral-slot-character {
-        width: 90px;
-    }
+/* Dark theme corrections for the newly simplified surfaces. */
+html[data-theme="dark"] #appView #lessonPage .test-instructions {
+    border-color: #405575;
+    border-left-color: var(--wine);
+    background: #172b49;
+    color: var(--ink);
 }
 
-@media (max-width: 760px) {
-    #appView .dashboard-progress-overview--compact .dashboard-progress-layout {
-        grid-template-columns: 96px minmax(0, 1fr);
-    }
+html[data-theme="dark"] #appView #lessonPage .test-submit-panel {
+    border-top-color: #405575;
+    background: transparent;
+}
 
-    #appView .dashboard-progress-character {
-        grid-column: 1 / -1;
-        justify-self: start;
-        width: 96px;
-        margin-top: 4px;
-    }
+html[data-theme="dark"] #appView #variantsHub .variants-hero {
+    border-bottom-color: #405575;
+    background: transparent;
+}
 
-    #appView .dashboard-progress-character img {
-        height: 90px;
-    }
+html[data-theme="dark"] #appView #variantsHub .variants-hero-art {
+    border-color: #405575;
+    background: #182944;
+}
 
-    #appView .oral-slot {
-        grid-template-columns: 82px minmax(0, 1fr);
-    }
+html[data-theme="dark"] #appView #practiceVariantsShelf,
+html[data-theme="dark"] #appView #practiceVariantsShelf .practice-variants-group,
+html[data-theme="dark"] #appView #practiceVariantsShelf .variant-row {
+    background: transparent;
+    box-shadow: none;
+}
 
-    #appView .oral-slot-character {
-        width: 76px;
-    }
+html[data-theme="dark"] #appView #practiceVariantsShelf .practice-variants-group {
+    border-top-color: #344b6b;
+}
 
-    #appView .slot-question {
-        grid-column: 1 / -1;
-    }
+html[data-theme="dark"] #appView #practiceVariantsShelf .variant-row {
+    border-top-color: #2c405e;
+}
 
+html[data-theme="dark"] #appView #practiceVariantsShelf .variant-row:hover {
+    background: #1b3155;
+}
+
+@media (max-width: 1024px) {
     #appView #lessonPage .topic-progress-panel {
-        grid-template-columns: 1fr 90px;
+        grid-template-columns: minmax(210px, .75fr) minmax(320px, 1.25fr) 112px;
+        gap: 19px;
+        padding: 22px;
+    }
+
+    #appView .topic-progress-mood > span {
+        width: 92px;
+        height: 92px;
+    }
+}
+
+@media (max-width: 768px) {
+    #appView #lessonPage .topic-progress-panel {
+        grid-template-columns: minmax(0, 1fr) 100px;
     }
 
     #appView .topic-progress-checklist {
@@ -1009,228 +472,115 @@
         grid-row: 1;
     }
 
-    #appView .works-heading-character {
-        width: 96px;
-        height: 92px;
+    #appView #lessonPage .lesson-section-tab {
+        min-width: 0;
+        padding: 8px 10px;
+        font-size: 14px;
     }
 
-    #appView .practice-heading-character {
-        width: 118px;
-        height: 90px;
-        flex-basis: 118px;
+    #appView #lessonPage .lesson-section-tab-icon {
+        display: none;
+    }
+
+    #appView #variantsHub .variants-hero {
+        grid-template-columns: minmax(0, 1fr) 150px;
+        gap: 22px;
+    }
+
+    #appView #variantsHub .variants-hero-art {
+        width: 145px;
+        height: 132px;
     }
 }
 
-@media (max-width: 520px) {
-    #appView .works-heading-character,
-    #appView .practice-heading-character {
-        width: 86px;
-        height: 78px;
-        flex-basis: 86px;
-    }
-
+@media (max-width: 560px) {
     #appView #lessonPage .topic-progress-panel {
         grid-template-columns: 1fr;
+        padding: 20px;
     }
 
     #appView .topic-progress-mood {
         grid-column: 1;
         grid-row: auto;
+        grid-template-columns: 76px minmax(0, 1fr);
+        align-items: center;
         justify-items: start;
         text-align: left;
     }
-}
 
-
-/* =========================================================
-   LESSON UX — CHECKLIST NAVIGATION + TEST CLARITY
-========================================================= */
-
-/* The checklist is also the quickest way to jump to the required step. */
-#appView .topic-progress-check.topic-progress-check--link {
-    width: 100%;
-    grid-template-columns: 24px minmax(0, 1fr) auto;
-    font: inherit;
-    color: inherit;
-    text-align: left;
-    cursor: pointer;
-    transition: background .15s ease, border-color .15s ease;
-}
-
-#appView .topic-progress-check.topic-progress-check--link:hover:not(:disabled),
-#appView .topic-progress-check.topic-progress-check--link:focus-visible {
-    background: #eef3ff;
-    outline: none;
-}
-
-#appView .topic-progress-check.topic-progress-check--link:focus-visible {
-    box-shadow: inset 3px 0 0 #1746a2;
-}
-
-#appView .topic-progress-check.topic-progress-check--link:disabled {
-    cursor: default;
-    opacity: .55;
-}
-
-#appView .topic-progress-check .topic-progress-action {
-    display: block;
-    color: #1746a2;
-    font-size: 12px;
-    font-weight: 650;
-    letter-spacing: 0;
-    text-transform: none;
-    white-space: nowrap;
-}
-
-/* Keep the progress icon itself obviously clickable as part of the row. */
-#appView .topic-progress-check--link .topic-progress-check-icon {
-    pointer-events: none;
-}
-
-#appView .topic-progress-check--link.is-done .topic-progress-action {
-    color: #667089;
-}
-
-/* Replace the old dark horizontal strip with explicit, readable section tabs. */
-#appView #lessonPage .lesson-section-tabs {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0;
-    margin: 0 0 30px;
-    overflow: visible;
-    border: 1px solid #d8dde6;
-    border-radius: 0;
-    background: #ffffff;
-}
-
-#appView #lessonPage .lesson-section-tab {
-    position: relative;
-    min-height: 58px;
-    justify-content: center;
-    padding: 0 16px;
-    border: 0;
-    border-right: 1px solid #d8dde6;
-    border-bottom: 3px solid transparent;
-    background: #ffffff;
-    color: #4f5a72;
-    font-size: 15px;
-    font-weight: 650;
-}
-
-#appView #lessonPage .lesson-section-tab:last-child {
-    border-right: 0;
-}
-
-#appView #lessonPage .lesson-section-tab:hover {
-    background: #f7f9fd;
-    color: #1746a2;
-}
-
-#appView #lessonPage .lesson-section-tab.is-active {
-    border-bottom-color: #1746a2;
-    background: #eef3ff;
-    color: #1746a2;
-}
-
-#appView #lessonPage .lesson-section-tab i {
-    display: inline-grid;
-    min-width: 20px;
-    height: 20px;
-    place-items: center;
-    margin-left: 7px;
-    border: 1px solid #b8c3d5;
-    border-radius: 50%;
-    color: #667089;
-    font-size: 11px;
-    font-style: normal;
-    line-height: 1;
-}
-
-#appView #lessonPage .lesson-section-tab i.is-done {
-    border-color: #1746a2;
-    background: #1746a2;
-    color: #ffffff;
-}
-
-/* Short instruction shown before every embedded test. */
-#appView .test-instructions {
-    margin: 0 0 22px;
-    padding: 16px 18px;
-    border-left: 3px solid #1746a2;
-    background: #f2f5fb;
-    color: #26324a;
-}
-
-#appView .test-instructions strong {
-    display: block;
-    margin-bottom: 5px;
-    color: #172036;
-    font-size: 14px;
-}
-
-#appView .test-instructions p {
-    max-width: 900px;
-    margin: 0;
-    color: #566178;
-    font-size: 14px;
-    line-height: 1.55;
-}
-
-/* Autosave/submit block belongs at the end of the test, never pinned over questions. */
-#appView #lessonPage .test-submit-panel {
-    position: static;
-    bottom: auto;
-    margin-top: 24px;
-    padding: 16px 0 0;
-    border: 0;
-    border-top: 1px solid #d8dde6;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-#appView #lessonPage .test-submit-panel p {
-    color: #70798b;
-    font-size: 12px;
-    line-height: 1.45;
-}
-
-@media (max-width: 720px) {
-    #appView #lessonPage .lesson-section-tabs {
-        grid-template-columns: 1fr;
-        overflow: visible;
+    #appView .topic-progress-mood > span {
+        width: 72px;
+        height: 72px;
     }
 
-    #appView #lessonPage .lesson-section-tab {
-        justify-content: flex-start;
-        min-width: 0;
-        min-height: 50px;
-        border-right: 0;
-        border-bottom: 1px solid #d8dde6;
-        border-left: 3px solid transparent;
-        padding: 0 14px;
+    #appView .topic-progress-mood figcaption {
+        max-width: none;
     }
 
-    #appView #lessonPage .lesson-section-tab:last-child {
-        border-bottom: 0;
-    }
-
-    #appView #lessonPage .lesson-section-tab.is-active {
-        border-left-color: #1746a2;
-        border-bottom-color: #d8dde6;
-    }
-
-    #appView .topic-progress-check.topic-progress-check--link {
-        grid-template-columns: 24px minmax(0, 1fr);
+    #appView .topic-progress-check {
+        grid-template-columns: 34px minmax(0, 1fr);
     }
 
     #appView .topic-progress-check .topic-progress-action {
         grid-column: 2;
-        margin-top: 2px;
+    }
+
+    #appView #lessonPage .lesson-section-tabs {
+        top: 70px;
+        gap: 4px;
+        padding: 5px;
+    }
+
+    #appView #lessonPage .lesson-section-tab {
+        min-height: 58px;
+        padding: 7px 6px;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    #appView #lessonPage .lesson-section-tab i {
+        display: none;
+    }
+
+    #appView #topicTestSection,
+    #appView #uploadForm {
+        scroll-margin-top: 146px;
     }
 
     #appView #lessonPage .test-submit-panel {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    #appView #variantsHub .variants-hero {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding-top: 22px;
+    }
+
+    #appView #variantsHub .variants-hero h1 {
+        font-size: 46px;
+    }
+
+    #appView #variantsHub .variants-hero-art {
+        width: 140px;
+        height: 126px;
+        justify-self: start;
+    }
+
+    #appView #practiceVariantsShelf .practice-variants-group h3 {
+        font-size: 20px;
+    }
+
+    #appView #practiceVariantsShelf .variant-row {
+        gap: 12px;
+    }
+
+    #appView #practiceVariantsShelf .variant-row strong {
+        font-size: 15px;
+    }
+
+    #appView #practiceVariantsShelf .variant-row > b {
+        font-size: 13px;
     }
 }

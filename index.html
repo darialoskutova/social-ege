@@ -10703,6 +10703,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260913-clean2">
+    <link rel="stylesheet" href="cabinet.css?v=20260913-clean1">
 </head>
 <body>
 
@@ -11555,7 +11556,6 @@
                     <section class="page app-page" id="dashboardPage">
                         <div class="dashboard-intro">
                             <div class="dashboard-intro-copy">
-                                <p class="eyebrow">Личный кабинет</p>
                                 <h1>Привет, <span id="dashboardName">ученик</span>.</h1>
                             </div>
                             <div class="dashboard-exam-visual" aria-hidden="true">
@@ -11569,7 +11569,6 @@
 
                         <section class="dashboard-progress-overview dashboard-progress-overview--compact" aria-labelledby="dashboardProgressTitle">
                             <div class="dashboard-progress-copy">
-                                <p class="eyebrow">Личный прогресс</p>
                                 <h2 id="dashboardProgressTitle">Прогресс по курсу</h2>
                                 <div class="dashboard-progress-layout">
                                     <div class="course-donut" id="courseDonut" style="--course-progress: 0deg">
@@ -11608,7 +11607,7 @@
                             </section>
 
                             <section class="course-schedule" aria-labelledby="courseScheduleTitle">
-                                <header class="study-card-heading"><div><p class="eyebrow">Порядок прохождения</p><h2 id="courseScheduleTitle">Расписание курса</h2></div></header>
+                                <header class="study-card-heading"><div><h2 id="courseScheduleTitle">Расписание курса</h2></div></header>
                                 <div class="schedule-list">
                                     <button type="button" data-subject="soc"><span>01</span><strong>Социология</strong><small>Темы 01–14</small><b>→</b></button>
                                     <button type="button" data-subject="eco"><span>02</span><strong>Экономика</strong><small>Темы 15–28</small><b>→</b></button>
@@ -11644,7 +11643,6 @@
                         <div class="subjects-hero">
                             <div class="page-heading">
                                 <div>
-                                    <p class="eyebrow">Учебные материалы</p>
                                     <h1>Темы курса</h1>
                                 </div>
                             </div>
@@ -11667,7 +11665,7 @@
                                 <span class="subject-selector-number">04</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7z"/><path d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7zm50 0H38c-3 0-5 2-5 5v39c0-4 3-6 7-6h17zM15 22h11m-11 7h11m12-7h11m-11 7h11"/></svg></span><strong>Право</strong><small>Будет добавлено</small><b>→</b>
                             </button>
                         </div>
-                        <div class="selected-subject-heading" id="selectedSubjectHeading" tabindex="-1"><p class="eyebrow">Выбранный раздел</p><h2 id="selectedSubjectTitle">Социология</h2><span id="selectedSubjectCount">14 тем</span></div>
+                        <div class="selected-subject-heading" id="selectedSubjectHeading" tabindex="-1"><h2 id="selectedSubjectTitle">Социология</h2><span id="selectedSubjectCount">14 тем</span></div>
                         <div class="topic-list" id="topicList"></div>
                     </section>
 
@@ -11682,19 +11680,18 @@
 
                         <section class="topic-progress-panel" aria-labelledby="topicProgressTitle">
                             <div class="topic-progress-copy">
-                                <p class="eyebrow">Прогресс темы</p>
                                 <h2 id="topicProgressTitle"><span id="topicProgressValue">0 из 2</span> шагов выполнено</h2>
                                 <p id="topicProgressMessage">Начни с теста или задания второй части.</p>
                             </div>
                             <div class="topic-progress-checklist" aria-label="Чек-лист темы и быстрые переходы">
                                 <button class="topic-progress-check topic-progress-check--link" id="topicTestCheck" type="button" data-lesson-progress-link="test">
                                     <span class="topic-progress-check-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg></span>
-                                    <span><strong>Тест по теме</strong><small id="topicTestStep">Не отправлен — перейти к тесту</small></span>
+                                    <span><strong>Тест по теме</strong><small id="topicTestStep">Не отправлен</small></span>
                                     <b class="topic-progress-action" id="topicTestAction">Перейти →</b>
                                 </button>
                                 <button class="topic-progress-check topic-progress-check--link" id="topicHomeworkCheck" type="button" data-lesson-progress-link="homework">
                                     <span class="topic-progress-check-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-9"/></svg></span>
-                                    <span><strong>Задание второй части</strong><small id="topicHomeworkStep">Не прикреплено — перейти к заданию</small></span>
+                                    <span><strong>Задание второй части</strong><small id="topicHomeworkStep">Не прикреплено</small></span>
                                     <b class="topic-progress-action" id="topicHomeworkAction">Перейти →</b>
                                 </button>
                             </div>
@@ -11752,7 +11749,7 @@
                                 <div class="test-form" id="testQuestions"></div>
                                 <div class="test-result-card" id="testResultCard" aria-live="polite" hidden>
                                     <div class="test-result-score"><strong id="testResultPoints">0 / 0</strong><span id="testResultPercent">0%</span></div>
-                                    <div><p class="eyebrow">Результат теста</p><h3 id="testResultTitle">Результат сохранён</h3><small id="testResultNote"></small></div>
+                                    <div><h3 id="testResultTitle">Результат сохранён</h3><small id="testResultNote"></small></div>
                                 </div>
                                 <div class="test-submit-panel">
                                     <p id="testAnswerStatus">После отправки сразу появятся балл, процент и разбор ответов.</p>
@@ -11789,7 +11786,6 @@
                     <section class="page app-page" id="worksPage" hidden>
                         <div class="page-heading works-heading">
                             <div class="works-heading-copy">
-                                <p class="eyebrow">Обратная связь</p>
                                 <h1>Мои работы</h1>
                             </div>
                             <div class="works-heading-character" aria-hidden="true">
@@ -11799,7 +11795,6 @@
                         <div class="work-list" id="studentWorkList"></div>
                         <section class="teacher-message-panel" aria-labelledby="teacherMessageTitle">
                             <div class="teacher-message-copy">
-                                <p class="eyebrow">Связь с преподавателем</p>
                                 <h2 id="teacherMessageTitle">Задать вопрос</h2>
                                 <p>Можно написать по теме, тесту, домашней работе или организации курса.</p>
                             </div>
@@ -11901,18 +11896,18 @@
                                 <section class="library-shelf library-shelf--textbooks">
                                     <header class="library-shelf-heading">
                                         <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M7 9h17c4 0 6 2 6 6v31c0-4-3-6-7-6H7zm38 0H34c-3 0-5 2-5 6v31c0-4 3-6 7-6h9zM13 18h10m-10 7h10m12-7h5m-5 7h5"/></svg></span>
-                                        <div><p class="eyebrow">Раздел 01</p><h2>Учебники и пособия</h2></div>
+                                        <div><h2>Учебники и пособия</h2></div>
                                     </header>
                                     <div class="library-file-grid library-file-grid--wide">
-                                        <a class="library-file" href="учебники/6 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 6 класс</strong><small>Боголюбов Л. Н. · 13 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file" href="учебники/7 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 7 класс</strong><small>Боголюбов Л. Н. · 31 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file" href="учебники/8 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 8 класс</strong><small>Боголюбов Л. Н. · 14 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file" href="учебники/9 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 9 класс</strong><small>Боголюбов Л. Н. · 17 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file library-file--large" href="учебники/10 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 10 класс</strong><small>Боголюбов Л. Н. · 136 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file library-file--large" href="учебники/11 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 11 класс</strong><small>Боголюбов Л. Н. · 135 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file" href="учебники/Обществознание 9 класс. Гос. учебник.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 9 класс</strong><small>Государственный учебник · 40 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file" href="учебники/Обществознание 10 класс. Гос. учебник.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Обществознание. 10 класс</strong><small>Государственный учебник · 21 МБ</small></span><b>↗</b></a>
-                                        <a class="library-file library-file--large" href="учебники/Котова, Лискова. Учебник для СПО.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Учебник для СПО</strong><small>Котова О. А., Лискова Т. Е. · 230 МБ</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/6 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 6 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/7 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 7 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/8 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 8 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/9 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 9 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file library-file--large" href="учебники/10 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 10 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file library-file--large" href="учебники/11 кл Боголюбов ЛН.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 11 класс</strong><small>Боголюбов Л. Н.</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/Обществознание 9 класс. Гос. учебник.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 9 класс</strong><small>Государственный учебник</small></span><b>↗</b></a>
+                                        <a class="library-file" href="учебники/Обществознание 10 класс. Гос. учебник.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Обществознание. 10 класс</strong><small>Государственный учебник</small></span><b>↗</b></a>
+                                        <a class="library-file library-file--large" href="учебники/Котова, Лискова. Учебник для СПО.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Учебник для СПО</strong><small>Котова О. А., Лискова Т. Е.</small></span><b>↗</b></a>
                                     </div>
                                 </section>
 
@@ -11920,35 +11915,35 @@
                                     <section class="library-shelf">
                                         <header class="library-shelf-heading">
                                             <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M12 5h21l8 8v34H12zM33 5v10h10M18 23h17M18 30h17M18 37h11"/></svg></span>
-                                            <div><p class="eyebrow">Раздел 02</p><h2>Документы ЕГЭ</h2></div>
+                                            <div><h2>Документы ЕГЭ</h2></div>
                                         </header>
                                         <div class="library-file-grid">
-                                            <a class="library-file" href="учебники/Демоверсия ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Демоверсия ЕГЭ 2027</strong><small>Официальный документ · 708 КБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/Кодификатор ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Кодификатор ЕГЭ 2027</strong><small>Официальный документ · 456 КБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/Спецификация ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Спецификация ЕГЭ 2027</strong><small>Официальный документ · 512 КБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/Метод. рекомендации для самостоятельной подготовки ЕГЭ 2026.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Методические рекомендации</strong><small>Самостоятельная подготовка · 704 КБ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/Демоверсия ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Демоверсия ЕГЭ 2027</strong><small>Официальный документ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/Кодификатор ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Кодификатор ЕГЭ 2027</strong><small>Официальный документ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/Спецификация ОБЩ 2027.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Спецификация ЕГЭ 2027</strong><small>Официальный документ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/Метод. рекомендации для самостоятельной подготовки ЕГЭ 2026.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Методические рекомендации</strong><small>Самостоятельная подготовка</small></span><b>↗</b></a>
                                         </div>
                                     </section>
 
                                     <section class="library-shelf library-shelf--collections">
                                         <header class="library-shelf-heading">
                                             <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M9 8h28v35H9zM15 15h16M15 22h16M15 29h11M37 15l7 4-7 4M14 47h29V14"/></svg></span>
-                                            <div><p class="eyebrow">Раздел 03</p><h2>Сборники заданий</h2><small>Задания от разработчиков ЕГЭ</small></div>
+                                            <div><h2>Сборники заданий</h2><small>Задания от разработчиков ЕГЭ</small></div>
                                         </header>
                                         <div class="library-file-grid">
-                                            <a class="library-file" href="учебники/сборники от составителей/10 вариантов Котова Лискова 2025.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>10 вариантов. 2025</strong><small>Котова О. А., Лискова Т. Е. · 31 МБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/сборники от составителей/30 вариантов 2025 Котова Лискова.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>30 вариантов. 2025</strong><small>Котова О. А., Лискова Т. Е. · 81 МБ</small></span><b>↗</b></a>
-                                            <a class="library-file" href="учебники/сборники от составителей/30 вариантов 2026 Котова Лискова.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>30 вариантов. 2026</strong><small>Котова О. А., Лискова Т. Е. · 81 МБ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/сборники от составителей/10 вариантов Котова Лискова 2025.pdf" target="_blank" rel="noopener noreferrer"><span><strong>10 вариантов. 2025</strong><small>Котова О. А., Лискова Т. Е.</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/сборники от составителей/30 вариантов 2025 Котова Лискова.pdf" target="_blank" rel="noopener noreferrer"><span><strong>30 вариантов. 2025</strong><small>Котова О. А., Лискова Т. Е.</small></span><b>↗</b></a>
+                                            <a class="library-file" href="учебники/сборники от составителей/30 вариантов 2026 Котова Лискова.pdf" target="_blank" rel="noopener noreferrer"><span><strong>30 вариантов. 2026</strong><small>Котова О. А., Лискова Т. Е.</small></span><b>↗</b></a>
                                         </div>
                                     </section>
 
                                     <section class="library-shelf library-shelf--extras">
                                         <header class="library-shelf-heading">
                                             <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 10h30v33H8zM14 17h18M14 24h18M14 31h12M38 20h7v27H15v-4"/></svg></span>
-                                            <div><p class="eyebrow">Раздел 04</p><h2>Дополнительные файлы</h2></div>
+                                            <div><h2>Дополнительные файлы</h2></div>
                                         </header>
                                         <div class="library-file-grid">
-                                            <a class="library-file" href="доп материалы/Планы по социологии из ЕГЭ.pdf" target="_blank" rel="noopener noreferrer"><span class="library-file-type">PDF</span><span><strong>Планы по социологии</strong><small>Задание № 24 · 936 КБ</small></span><b>↗</b></a>
+                                            <a class="library-file" href="доп материалы/Планы по социологии из ЕГЭ.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по социологии</strong><small>Задание № 24</small></span><b>↗</b></a>
                                         </div>
                                     </section>
                                 </div>
@@ -11960,70 +11955,65 @@
                             <button class="back-button practice-back" type="button" data-practice-home>← Дополнительная практика</button>
                             <div class="variants-hero">
                                 <div>
-                                    <p class="eyebrow">Тренировка полного формата</p>
                                     <h1>Пробники</h1>
-                                    <p>Выберите тематический или общий вариант и выполните его в удобное время.</p>
+                                    <p>Проверь знания в формате ЕГЭ.</p>
                                 </div>
                                 <div class="variants-hero-art" aria-hidden="true"><img src="eva.JPG" alt=""></div>
                             </div>
                             <section class="library-shelf practice-variants-shelf" id="practiceVariantsShelf">
-                                    <header class="library-shelf-heading">
-                                        <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M11 6h25l7 7v33H11zM36 6v9h9M17 22h20M17 29h20M17 36h13"/><path d="m31 39 4 4 8-10"/></svg></span>
-                                        <div><p class="eyebrow">Тематические и общие варианты</p><h2>Пробные варианты</h2><small>Word · 25 заданий · ученические версии без ответов</small></div>
-                                    </header>
                                     <div class="practice-variants-groups">
                                         <div class="practice-variants-group">
                                             <h3>Человек и общество</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Тематический вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/chelovek-i-obschestvo_variant_3.docx" download><span><strong>Вариант № 3</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
                                             <h3>Экономика</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 1</strong><small>Только экономика</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 2</strong><small>Только экономика</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/ekonomika_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Экономика · вариант № 3</strong><small>Экономика + социология</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/ekonomika_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/ekonomika_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/ekonomika_variant_3.docx" download><span><strong>Вариант № 3</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
                                             <h3>Социология</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/sotsiologiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Социология · вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/sotsiologiya_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/sotsiologiya_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/sotsiologiya_variant_3.docx" download><span><strong>Вариант № 3</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
                                             <h3>Политика</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 1</strong><small>Только политика</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 2</strong><small>Только политика</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/politika_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Политика · вариант № 3</strong><small>Политика + социология + экономика</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/politika_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/politika_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/politika_variant_3.docx" download><span><strong>Вариант № 3</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
                                             <h3>Конституция</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 1</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 2</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/konstitutsiya_variant_3.docx" download><span class="library-file-type">DOCX</span><span><strong>Конституция · вариант № 3</strong><small>58 первичных баллов · без ответов</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/konstitutsiya_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/konstitutsiya_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/konstitutsiya_variant_3.docx" download><span><strong>Вариант № 3</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group">
                                             <h3>Право</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/pravo_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Право · вариант № 1</strong><small>Только право</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/pravo_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Право · вариант № 2</strong><small>Только право</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/pravo_variant_1.docx" download><span><strong>Вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/pravo_variant_2.docx" download><span><strong>Вариант № 2</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                         <div class="practice-variants-group practice-variants-group--general">
                                             <h3>Общие варианты</h3>
-                                            <div class="library-file-grid">
-                                                <a class="library-file" href="доп материалы/пробные варианты/obschiy_variant_1.docx" download><span class="library-file-type">DOCX</span><span><strong>Полный вариант № 1</strong><small>Все разделы · стандартные позиции ЕГЭ</small></span><b>↓</b></a>
-                                                <a class="library-file" href="доп материалы/пробные варианты/obschiy_variant_2.docx" download><span class="library-file-type">DOCX</span><span><strong>Полный вариант № 2</strong><small>Все разделы · стандартные позиции ЕГЭ</small></span><b>↓</b></a>
+                                            <div class="library-file-grid variant-list">
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/obschiy_variant_1.docx" download><span><strong>Полный вариант № 1</strong></span><b>Скачать →</b></a>
+                                                <a class="library-file variant-row" href="доп материалы/пробные варианты/obschiy_variant_2.docx" download><span><strong>Полный вариант № 2</strong></span><b>Скачать →</b></a>
                                             </div>
                                         </div>
                                     </div>
@@ -12052,8 +12042,8 @@
                                 <article><span>03</span><div><strong>Проверить себя</strong><small>в тренажёре с объяснениями</small></div></article>
                             </div>
                             <div class="constitution-files">
-                                <a class="constitution-file constitution-file--document" href="Конституция РФ.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h10"/></svg></span><em>Документ</em><strong>Конституция Российской Федерации</strong><small>Открыть полный текст · PDF</small><b aria-hidden="true">↗</b></a>
-                                <a class="constitution-file constitution-file--notes" href="Конституция РФ - положения для 23 задания.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><em>Шпаргалка</em><strong>Положения для задания № 23</strong><small>Повторить ключевые формулировки · PDF</small><b aria-hidden="true">↗</b></a>
+                                <a class="constitution-file constitution-file--document" href="Конституция РФ.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h10"/></svg></span><em>Документ</em><strong>Конституция Российской Федерации</strong><small>Открыть полный текст</small><b aria-hidden="true">↗</b></a>
+                                <a class="constitution-file constitution-file--notes" href="Конституция РФ - положения для 23 задания.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><em>Шпаргалка</em><strong>Положения для задания № 23</strong><small>Повторить ключевые формулировки</small><b aria-hidden="true">↗</b></a>
                                 <button class="constitution-file constitution-file--training" type="button" data-game-mode="task23"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"/><path d="m13 11 8 5-8 5z"/></svg></span><em>Тренажёр</em><strong>Практика задания № 23</strong><small>30 вопросов в формате ЕГЭ с объяснениями</small><b aria-hidden="true">→</b></button>
                             </div>
                         </div>
@@ -13174,7 +13164,6 @@
                         <span class="topic-row-number">${topic.lesson}</span>
                         <span>
                             <h3>${escapeHtml(topic.title)}</h3>
-                            <p>Конспект · вторая часть · тест · доп. материалы</p>
                         </span>
                         <span class="topic-row-status ${state.completed === 2 ? "is-complete" : ""}">${state.completed === 2 ? "Тема завершена" : `${state.completed} / 2`}</span>
                         <span class="topic-row-arrow" aria-hidden="true">→</span>
@@ -13706,15 +13695,15 @@
             const topicHomeworkAction = document.getElementById("topicHomeworkAction");
 
             document.getElementById("topicTestStep").textContent = state.testSubmitted
-                ? "Отправлен — можно открыть результат"
+                ? "Отправлен"
                 : state.test
-                    ? "Не отправлен — перейти к тесту"
-                    : "Тест пока не добавлен";
+                    ? "Не отправлен"
+                    : "Пока не добавлен";
             document.getElementById("topicHomeworkStep").textContent = state.homeworkSubmitted
-                ? "Прикреплено — можно открыть раздел"
+                ? "Прикреплено"
                 : currentTopic.homework
-                    ? "Не прикреплено — перейти к заданию"
-                    : "Задание пока не добавлено";
+                    ? "Не прикреплено"
+                    : "Пока не добавлено";
 
             topicTestCheck.classList.toggle("is-done", state.testSubmitted);
             topicHomeworkCheck.classList.toggle("is-done", state.homeworkSubmitted);
@@ -13722,10 +13711,10 @@
             topicHomeworkCheck.disabled = !currentTopic.homework;
             topicTestAction.textContent = state.test
                 ? (state.testSubmitted ? "Открыть →" : "Перейти →")
-                : "Недоступно";
+                : "Пока недоступно";
             topicHomeworkAction.textContent = currentTopic.homework
                 ? (state.homeworkSubmitted ? "Открыть →" : "Перейти →")
-                : "Недоступно";
+                : "Пока недоступно";
             topicTestCheck.setAttribute("aria-label", state.test
                 ? (state.testSubmitted ? "Открыть тест по теме и результат" : "Перейти к тесту по теме")
                 : "Тест по теме пока не добавлен");
@@ -13992,7 +13981,14 @@
 
             const lessonProgressLink = event.target.closest("[data-lesson-progress-link]");
             if (lessonProgressLink && !lessonProgressLink.disabled) {
-                showLessonPanel(lessonProgressLink.dataset.lessonProgressLink, true);
+                const panelName = lessonProgressLink.dataset.lessonProgressLink;
+                showLessonPanel(panelName);
+                requestAnimationFrame(() => {
+                    const target = panelName === "test"
+                        ? document.getElementById("topicTestSection")
+                        : document.getElementById("uploadForm");
+                    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+                });
                 return;
             }
 
