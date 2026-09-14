@@ -10702,8 +10702,8 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="landing.css?v=20260913-clean2">
-    <link rel="stylesheet" href="cabinet.css?v=20260913-clean2">
+    <link rel="stylesheet" href="landing.css?v=20260914-final1">
+    <link rel="stylesheet" href="cabinet.css?v=20260914-final1">
 </head>
 <body>
 
@@ -10744,6 +10744,7 @@
             <a href="#process">Как проходит подготовка</a>
             <a href="#formats">Форматы</a>
             <a href="#documents">Документы</a>
+            <a href="#reviews">Отзывы</a>
 
             <button
                 class="landing-navigation-cabinet"
@@ -10800,16 +10801,6 @@
                     >
                         Посмотреть платформу
                     </a>
-                </div>
-
-                <div class="teacher-hand-note">
-                    <svg viewBox="0 0 95 28" aria-hidden="true">
-                        <path d="M3 20C26 3 50 31 92 7"/>
-                    </svg>
-
-                    <span>
-                        Проверка второй части — лично
-                    </span>
                 </div>
 
             </div>
@@ -10892,6 +10883,11 @@
                     >
                 </div>
 
+                <svg class="about-photo-heart" viewBox="0 0 96 86" aria-hidden="true">
+                    <path d="M47 75C37 67 13 51 13 31c0-11 7-19 18-19 8 0 14 5 17 12 4-7 10-12 18-12 11 0 18 8 18 19 0 20-25 36-37 44Z"/>
+                    <path d="M20 70c-5 2-9 5-12 9"/>
+                </svg>
+
             </div>
 
 
@@ -10912,7 +10908,8 @@
 
                 <p>
                     Окончила НИЯУ МИФИ в 2026 году по направлению
-                    «Международные отношения». Средний балл диплома — 4,83.
+                    «Международные отношения» (международное научно-технологическое
+                    и промышленное сотрудничество). Средний балл диплома — 4,83.
                 </p>
 
                 <p>
@@ -10941,8 +10938,8 @@
                 </div>
 
                 <div>
-                    <strong>4,83</strong>
-                    <small>средний балл<br>в университете</small>
+                    <strong>2026</strong>
+                    <small>выпускница<br>НИЯУ МИФИ</small>
                 </div>
 
                 <div>
@@ -11228,16 +11225,34 @@
 
         <!-- =====================================================
              REVIEWS
-             Сейчас скрываем до добавления реальных скриншотов
         ====================================================== -->
 
-        <!--
-        Когда будут готовы отзывы, этот блок можно включить.
-
         <section class="landing-reviews landing-content-section" id="reviews">
-            ...
+
+            <div class="landing-section-heading reveal-on-scroll">
+                <div>
+                    <p class="landing-kicker">ОТЗЫВЫ</p>
+                    <h2>Что говорят ученики</h2>
+                </div>
+
+                <a class="reviews-more-link" href="https://profi.ru/profile/LoskutovaDS4/" target="_blank" rel="noopener noreferrer">
+                    Больше отзывов на Профи.ру ↗
+                </a>
+            </div>
+
+            <div class="reviews-board">
+                <button class="review-paper review-paper--large reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №1.png" data-lightbox-alt="Отзыв № 1">
+                    <img src="assets/landing/reviews/Отзыв №1.png" alt="Отзыв ученика № 1" loading="lazy">
+                </button>
+                <button class="review-paper reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №2.png" data-lightbox-alt="Отзыв № 2">
+                    <img src="assets/landing/reviews/Отзыв №2.png" alt="Отзыв ученика № 2" loading="lazy">
+                </button>
+                <button class="review-paper reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №3.png" data-lightbox-alt="Отзыв № 3">
+                    <img src="assets/landing/reviews/Отзыв №3.png" alt="Отзыв ученика № 3" loading="lazy">
+                </button>
+            </div>
+
         </section>
-        -->
 
 
         <!-- =====================================================
@@ -11274,18 +11289,20 @@
 
                 <div class="landing-actions">
 
-                    <!-- TODO: вставить реальную ссылку Telegram -->
-
                     <a
                         class="landing-button landing-button--cream"
-                        href="YOUR_TELEGRAM_LINK"
+                        href="https://t.me/darialoskutovaa"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         Записаться на диагностику
                     </a>
 
                     <a
                         class="diagnostics-link"
-                        href="YOUR_TELEGRAM_LINK"
+                        href="https://t.me/darialoskutovaa"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         Написать в Telegram →
                     </a>
@@ -11307,107 +11324,6 @@
         </section>
 
 
-        <!-- =====================================================
-             FAQ
-        ====================================================== -->
-
-        <section class="landing-faq landing-content-section">
-
-            <div class="landing-section-heading reveal-on-scroll">
-
-                <div>
-                    <p class="landing-kicker">
-                        ВОПРОСЫ
-                    </p>
-
-                    <h2>
-                        Перед началом занятий
-                    </h2>
-                </div>
-
-            </div>
-
-
-            <div class="landing-accordion">
-
-                <article class="landing-faq-item">
-
-                    <h3>
-                        <button
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="faqAnswer1"
-                        >
-                            <span>01</span>
-                            Можно ли прийти с нуля?
-                            <b aria-hidden="true">+</b>
-                        </button>
-                    </h3>
-
-                    <div id="faqAnswer1" hidden>
-                        <p>
-                            Да. На диагностике определяется стартовый
-                            уровень, после чего выстраивается порядок
-                            тем и объём практики.
-                        </p>
-                    </div>
-
-                </article>
-
-
-                <article class="landing-faq-item">
-
-                    <h3>
-                        <button
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="faqAnswer2"
-                        >
-                            <span>02</span>
-                            Сколько домашней работы?
-                            <b aria-hidden="true">+</b>
-                        </button>
-                    </h3>
-
-                    <div id="faqAnswer2" hidden>
-                        <p>
-                            Зависит от цели и текущего уровня,
-                            но после каждой темы есть практика
-                            первой и второй частей.
-                        </p>
-                    </div>
-
-                </article>
-
-
-                <article class="landing-faq-item">
-
-                    <h3>
-                        <button
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="faqAnswer3"
-                        >
-                            <span>03</span>
-                            Как проверяется вторая часть?
-                            <b aria-hidden="true">+</b>
-                        </button>
-                    </h3>
-
-                    <div id="faqAnswer3" hidden>
-                        <p>
-                            Работа отправляется через личный кабинет.
-                            Я проверяю её по критериям ЕГЭ
-                            и возвращаю комментарии.
-                        </p>
-                    </div>
-
-                </article>
-
-            </div>
-
-        </section>
-
     </main>
 
 
@@ -11424,10 +11340,12 @@
 
         <nav aria-label="Ссылки в подвале">
 
-            <!-- TODO: вставить реальную ссылку Telegram -->
-
-            <a href="YOUR_TELEGRAM_LINK">
+            <a href="https://t.me/darialoskutovaa" target="_blank" rel="noopener noreferrer">
                 Telegram
+            </a>
+
+            <a href="https://profi.ru/profile/LoskutovaDS4/" target="_blank" rel="noopener noreferrer">
+                Профи.ру
             </a>
 
             <button
@@ -12031,9 +11949,7 @@
                                     <button class="button button--small" type="button" data-game-mode="task23">Перейти к тренировке</button>
                                 </div>
                                 <div class="constitution-hero-art" aria-hidden="true">
-                                    <span class="constitution-paperclip"></span>
                                     <img src="constitution.webp" alt="">
-                                    <div class="constitution-seal"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42"/><circle cx="50" cy="50" r="32"/><path d="M30 43h40L50 29zM35 48v21M45 48v21M55 48v21M65 48v21M29 73h42"/></svg><span>23</span></div>
                                 </div>
                             </div>
                             <div class="constitution-route" aria-label="Порядок работы с разделом">
@@ -12101,8 +12017,8 @@
 
     <script src="analytics.js"></script>
     <script src="landing.js?v=20260913-clean2"></script>
-    <script src="data/tests-public.js?v=20260904"></script>
-    <script src="data/tests-score-hashes.js?v=20260904-2"></script>
+    <script src="data/tests-public.js?v=20260914-final1"></script>
+    <script src="data/tests-score-hashes.js?v=20260914-final1"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
     <script>
         const topics = [
@@ -13350,6 +13266,32 @@
             document.getElementById("testResultCard").hidden = true;
         }
 
+        function getTestAnswerExplanation(questionId, review) {
+            const question = currentTest?.questions?.find((item) => item.id === questionId);
+            const prompt = (question?.prompt || "").toLowerCase();
+            const topic = currentTest?.title ? ` по теме «${currentTest.title}»` : "";
+
+            if (/установите соответствие|соответствующ/.test(prompt)) {
+                return "Сопоставляй каждый признак отдельно, а затем записывай цифры строго в порядке букв: одна перестановка меняет весь ответ.";
+            }
+            if (/за исключением|выпада/.test(prompt)) {
+                return `Здесь нужно найти именно два пункта из другой группы. Сначала назови общий признак ряда${topic}, затем проверь каждый вариант по нему.`;
+            }
+            if (/выберите верные суждения|верные суждения/.test(prompt)) {
+                return `Проверяй каждое суждение отдельно по определениям и признакам${topic}: одно верное положение не делает верными соседние.`;
+            }
+            if (/найдите в привед[её]нном.*признак|какие.*признак|свидетельству/.test(prompt)) {
+                return `Сначала выдели факты из условия, затем связывай каждый выбранный пункт с конкретным признаком${topic}.`;
+            }
+            if (question?.type === "checkbox") {
+                return `В ответ должны войти все верные варианты и ни одного лишнего. Сверь каждый выбор с признаками${topic}.`;
+            }
+            if (review.acceptedAnswers.length === 1 && /^\d+$/.test(normalizeTestAnswer(review.acceptedAnswers[0]))) {
+                return "В заданиях с последовательностью важны и выбранные цифры, и их порядок. Сверь каждую позицию с формулировкой задания.";
+            }
+            return `Вернись к определению и ключевым признакам${topic}, затем проверь, какой из них прямо подтверждается условием.`;
+        }
+
         function renderTestReview(result) {
             const form = document.getElementById("authorTestForm");
             Object.entries(result.questionResults).forEach(([questionId, review]) => {
@@ -13370,10 +13312,11 @@
                 });
 
                 const answerText = review.acceptedAnswers.join(review.acceptedAnswers.length > 1 ? "; " : "");
+                const explanation = getTestAnswerExplanation(questionId, review);
                 article.insertAdjacentHTML("beforeend", `
                     <div class="test-answer-review ${review.isCorrect ? "is-correct" : "is-wrong"}">
                         <strong>${review.isCorrect ? "Верно" : "Неверно"}</strong>
-                        ${review.isCorrect ? "" : `<span>Правильный ответ: ${escapeHtml(answerText)}</span>`}
+                        ${review.isCorrect ? "" : `<div><span class="test-correct-answer">Правильный ответ: ${escapeHtml(answerText)}</span><small>${escapeHtml(explanation)}</small></div>`}
                     </div>`);
             });
 

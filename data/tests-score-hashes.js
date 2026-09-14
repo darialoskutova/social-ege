@@ -1,7 +1,7 @@
 // Generated scoring data. Correct answers are revealed by the interface after submission.
 window.EGE_TEST_SCORE_HASHES = {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-04T10:12:19Z",
+  "generatedAt": "2026-09-14T07:22:45Z",
   "normalization": "nfkc-trim-lowercase-yo-whitespace",
   "tests": {
     "test-01": {

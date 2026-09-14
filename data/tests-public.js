@@ -1,7 +1,7 @@
-// Generated from Google Forms. Correct answers are intentionally excluded.
+// Refreshed from the current public Google Form. Correct answers are intentionally excluded.
 window.EGE_TESTS_PUBLIC = {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-01T00:56:17.233Z",
+  "generatedAt": "2026-09-14T07:22:45Z",
   "testCount": 35,
   "questionCount": 847,
   "unavailableTests": [
