@@ -13,6 +13,7 @@
     <meta property="og:image" content="https://darialoskutova.github.io/social-ege/assets/landing/profi-platform.jpg">
     <meta property="og:image:alt" content="Личный кабинет для подготовки к ЕГЭ по обществознанию">
     <meta name="theme-color" content="#1746a2">
+    <link rel="icon" href="ege.webp" type="image/webp">
     <title>ЕГЭ по обществознанию — подготовка, конспекты и практика</title>
     <script>
         try {
@@ -10703,7 +10704,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260914-final1">
-    <link rel="stylesheet" href="cabinet.css?v=20260914-final1">
+    <link rel="stylesheet" href="cabinet.css?v=20260915-legal-corrections">
 </head>
 <body>
 
@@ -11232,7 +11233,7 @@
             <div class="landing-section-heading reveal-on-scroll">
                 <div>
                     <p class="landing-kicker">ОТЗЫВЫ</p>
-                    <h2>Что говорят ученики</h2>
+                    <h2>Отзывы учеников и родителей</h2>
                 </div>
 
                 <a class="reviews-more-link" href="https://profi.ru/profile/LoskutovaDS4/" target="_blank" rel="noopener noreferrer">
@@ -11242,13 +11243,13 @@
 
             <div class="reviews-board">
                 <button class="review-paper review-paper--large reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №1.png" data-lightbox-alt="Отзыв № 1">
-                    <img src="assets/landing/reviews/Отзыв №1.png" alt="Отзыв ученика № 1" loading="lazy">
+                    <img src="assets/landing/reviews/Отзыв №1.png" alt="Отзыв № 1" loading="lazy">
                 </button>
                 <button class="review-paper reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №2.png" data-lightbox-alt="Отзыв № 2">
-                    <img src="assets/landing/reviews/Отзыв №2.png" alt="Отзыв ученика № 2" loading="lazy">
+                    <img src="assets/landing/reviews/Отзыв №2.png" alt="Отзыв № 2" loading="lazy">
                 </button>
                 <button class="review-paper reveal-on-scroll" type="button" data-lightbox-src="assets/landing/reviews/Отзыв №3.png" data-lightbox-alt="Отзыв № 3">
-                    <img src="assets/landing/reviews/Отзыв №3.png" alt="Отзыв ученика № 3" loading="lazy">
+                    <img src="assets/landing/reviews/Отзыв №3.png" alt="Отзыв № 3" loading="lazy">
                 </button>
             </div>
 
@@ -11360,6 +11361,14 @@
                 Политика обработки персональных данных
             </a>
 
+            <a href="consent-personal-data.html">
+                Согласие на обработку данных
+            </a>
+
+            <a href="offer.html">
+                Публичная оферта
+            </a>
+
             <button
                 type="button"
                 data-cookie-settings
@@ -11427,12 +11436,29 @@
                 </label>
                 <label class="field">
                     <span>Логин</span>
-                    <input id="studentLogin" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Например, maria_ivanova" pattern="[A-Za-z0-9._-]{3,32}" title="От 3 до 32 латинских букв, цифр, точек, дефисов или знаков подчёркивания" required>
+                    <input id="studentLogin" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Например, maria_ivanova" pattern="[A-Za-z0-9._\-]{3,32}" title="От 3 до 32 латинских букв, цифр, точек, дефисов или знаков подчёркивания" required>
                 </label>
+                <div class="login-consent-panel">
+                    <label class="login-check">
+                        <input id="rememberStudent" type="checkbox" checked>
+                        <span>Запомнить меня</span>
+                    </label>
+                    <label class="login-check">
+                        <input id="personalDataConsent" type="checkbox" required>
+                        <span>Согласен (-а) на <a href="consent-personal-data.html" target="_blank" rel="noopener noreferrer">обработку персональных данных</a></span>
+                    </label>
+                </div>
                 <div class="login-actions">
                     <button class="button" type="submit">Войти как ученик <span aria-hidden="true">→</span></button>
                 </div>
             </form>
+            <div class="cabinet-legal cabinet-legal--login" aria-label="Юридическая информация">
+                <strong>Юридическая информация</strong>
+                <a href="privacy.html" target="_blank" rel="noopener noreferrer">Политика обработки данных</a>
+                <a href="consent-personal-data.html" target="_blank" rel="noopener noreferrer">Согласие на обработку данных</a>
+                <a href="offer.html" target="_blank" rel="noopener noreferrer">Публичная оферта</a>
+                <a href="mailto:darialoskutova2004@gmail.com">Контакт оператора</a>
+            </div>
         </main>
     </section>
 
@@ -11530,7 +11556,7 @@
                                     <button type="button" data-subject="soc"><span>01</span><strong>Социология</strong><small>Темы 01–14</small><b>→</b></button>
                                     <button type="button" data-subject="eco"><span>02</span><strong>Экономика</strong><small>Темы 15–28</small><b>→</b></button>
                                     <button type="button" data-subject="pol"><span>03</span><strong>Политика</strong><small>Темы 29–42</small><b>→</b></button>
-                                    <button type="button" data-subject="law"><span>04</span><strong>Право</strong><small>Будет добавлено</small><b>→</b></button>
+                                    <button type="button" data-subject="law"><span>04</span><strong>Право</strong><small>Темы 43–56</small><b>→</b></button>
                                 </div>
                             </section>
                         </div>
@@ -11580,7 +11606,7 @@
                                 <span class="subject-selector-number">03</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="m32 6 26 13H6z"/><path d="m32 6 26 13H6zM10 23h44M13 27v20m12-20v20m14-20v20m12-20v20M8 51h48v7H8z"/><circle cx="32" cy="15" r="3"/></svg></span><strong>Политика</strong><small>14 тем</small><b>→</b>
                             </button>
                             <button class="subject-selector-card" type="button" data-subject-tab="law">
-                                <span class="subject-selector-number">04</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7z"/><path d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7zm50 0H38c-3 0-5 2-5 5v39c0-4 3-6 7-6h17zM15 22h11m-11 7h11m12-7h11m-11 7h11"/></svg></span><strong>Право</strong><small>Будет добавлено</small><b>→</b>
+                                <span class="subject-selector-number">04</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7z"/><path d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7zm50 0H38c-3 0-5 2-5 5v39c0-4 3-6 7-6h17zM15 22h11m-11 7h11m12-7h11m-11 7h11"/></svg></span><strong>Право</strong><small>14 тем</small><b>→</b>
                             </button>
                         </div>
                         <div class="selected-subject-heading" id="selectedSubjectHeading" tabindex="-1"><h2 id="selectedSubjectTitle">Социология</h2><span id="selectedSubjectCount">14 тем</span></div>
@@ -11673,6 +11699,15 @@
                                     <p id="testAnswerStatus">После отправки сразу появятся балл, процент и разбор ответов.</p>
                                     <button class="button" type="submit">Отправить тест</button>
                                 </div>
+                                <section class="test-corrections" id="testCorrections" aria-labelledby="testCorrectionsTitle" hidden>
+                                    <header class="test-corrections-heading">
+                                        <img src="wtf.jpg" alt="" aria-hidden="true">
+                                        <div><p class="eyebrow">После теста</p><h3 id="testCorrectionsTitle">Работа над ошибками</h3><p>Реши заново только те задания, где была ошибка.</p></div>
+                                    </header>
+                                    <div class="test-correction-list" id="testCorrectionList"></div>
+                                    <label class="field test-correction-comment"><span>Комментарий</span><textarea id="testCorrectionComment" placeholder="Напиши, что было непонятно или какое правило нужно повторить"></textarea></label>
+                                    <div class="test-correction-actions"><button class="button button--small" id="checkCorrectionsButton" type="button">Проверить исправления</button><span id="testCorrectionStatus" aria-live="polite"></span></div>
+                                </section>
                             </form>
                         </section>
 
@@ -11955,12 +11990,12 @@
                             <div class="constitution-route" aria-label="Порядок работы с разделом">
                                 <article><span>01</span><div><strong>Прочитать</strong><small>основные статьи и положения</small></div></article>
                                 <article><span>02</span><div><strong>Повторить</strong><small>формулировки для задания № 23</small></div></article>
-                                <article><span>03</span><div><strong>Проверить себя</strong><small>в тренажёре с объяснениями</small></div></article>
+                                <article><span>03</span><div><strong>Проверить себя</strong><small>в тренажёре с проверкой ответов</small></div></article>
                             </div>
                             <div class="constitution-files">
                                 <a class="constitution-file constitution-file--document" href="Конституция РФ.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h10"/></svg></span><em>Документ</em><strong>Конституция Российской Федерации</strong><small>Открыть полный текст</small><b aria-hidden="true">↗</b></a>
                                 <a class="constitution-file constitution-file--notes" href="Конституция РФ - положения для 23 задания.pdf" target="_blank" rel="noopener noreferrer"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 4h13l5 5v19H7zM20 4v6h6M11 16h10M11 21h7"/></svg></span><em>Шпаргалка</em><strong>Положения для задания № 23</strong><small>Повторить ключевые формулировки</small><b aria-hidden="true">↗</b></a>
-                                <button class="constitution-file constitution-file--training" type="button" data-game-mode="task23"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"/><path d="m13 11 8 5-8 5z"/></svg></span><em>Тренажёр</em><strong>Практика задания № 23</strong><small>30 вопросов в формате ЕГЭ с объяснениями</small><b aria-hidden="true">→</b></button>
+                                <button class="constitution-file constitution-file--training" type="button" data-game-mode="task23"><span><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 4a12 12 0 1 0 12 12A12 12 0 0 0 16 4Z"/><path d="m13 11 8 5-8 5z"/></svg></span><em>Тренажёр</em><strong>Практика задания № 23</strong><small>30 вопросов в формате ЕГЭ с проверкой ответов</small><b aria-hidden="true">→</b></button>
                             </div>
                         </div>
 
@@ -11997,6 +12032,13 @@
                         </section>
                     </section>
                 </main>
+                <footer class="cabinet-legal" aria-label="Юридическая информация">
+                    <strong>Юридическая информация</strong>
+                    <a href="privacy.html" target="_blank" rel="noopener noreferrer">Политика обработки данных</a>
+                    <a href="consent-personal-data.html" target="_blank" rel="noopener noreferrer">Согласие на обработку данных</a>
+                    <a href="offer.html" target="_blank" rel="noopener noreferrer">Публичная оферта</a>
+                    <a href="mailto:darialoskutova2004@gmail.com">Контакт оператора</a>
+                </footer>
             </div>
         </div>
     </section>
@@ -12017,8 +12059,8 @@
 
     <script src="analytics.js"></script>
     <script src="landing.js?v=20260913-clean2"></script>
-    <script src="data/tests-public.js?v=20260914-final1"></script>
-    <script src="data/tests-score-hashes.js?v=20260914-final1"></script>
+    <script src="data/tests-public.js?v=20260914-law-tests"></script>
+    <script src="data/tests-score-hashes.js?v=20260914-law-tests"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
     <script>
         const topics = [
@@ -12269,6 +12311,62 @@
                 id: "pol42", subject: "pol", lesson: "42", title: "Политическая культура",
                 notes: "politics/42. Политическая культура.pdf",
                 homework: "hw-politics/ДЗ 42. Политическая культура.docx"
+            },
+            {
+                id: "law43", subject: "law", lesson: "43", title: "Право в системе социальных норм. Источники права",
+                testLesson: 43
+            },
+            {
+                id: "law44", subject: "law", lesson: "44", title: "Система права. Правоотношения",
+                testLesson: 44
+            },
+            {
+                id: "law45", subject: "law", lesson: "45", title: "Правонарушения. Юридическая ответственность",
+                testLesson: 45
+            },
+            {
+                id: "law46", subject: "law", lesson: "46", title: "Конституция. Права и обязанности",
+                testLesson: 46
+            },
+            {
+                id: "law47", subject: "law", lesson: "47", title: "Гражданство РФ. Воинская служба",
+                testLesson: 47
+            },
+            {
+                id: "law48", subject: "law", lesson: "48", title: "Правоохранительные органы",
+                testLesson: 48
+            },
+            {
+                id: "law49", subject: "law", lesson: "49", title: "Судопроизводство",
+                testLesson: 49
+            },
+            {
+                id: "law50", subject: "law", lesson: "50", title: "Административное и уголовное право",
+                testLesson: 50
+            },
+            {
+                id: "law51", subject: "law", lesson: "51", title: "Трудовое право",
+                testLesson: 51
+            },
+            {
+                id: "law52", subject: "law", lesson: "52", title: "Гражданское право №1. Субъекты гражданского права",
+                testLesson: 52
+            },
+            {
+                id: "law53", subject: "law", lesson: "53", title: "Гражданское право №2. Имущественные и неимущественные права",
+                testLesson: 53
+            },
+            {
+                id: "law54", subject: "law", lesson: "54", title: "Организационно-правовые формы предприятий",
+                testLesson: 54
+            },
+            {
+                id: "law55", subject: "law", lesson: "55", title: "Семейное право",
+                testLesson: 55
+            },
+            {
+                id: "law56", subject: "law", lesson: "56", title: "Экологическое право",
+                testLesson: 56
             }
         ];
 
@@ -12289,9 +12387,12 @@
             works: "daria-ege-demo-works",
             testAttempts: "daria-ege-test-attempts",
             testDrafts: "daria-ege-test-drafts",
+            testCorrections: "daria-ege-test-corrections",
             messages: "daria-ege-teacher-messages",
+            consent: "daria-ege-personal-data-consent",
             theme: "daria-ege-color-theme"
         };
+        const personalDataConsentVersion = "2026-09-12";
         const dailyCoursePlan = [
             { day: "Пн", short: "Повтор", title: "Повторить текущую тему", hint: "Просмотри конспект и основные понятия.", action: "materials", button: "Открыть конспект" },
             { day: "Вт", short: "Тест", title: "Дедлайн по тесту", hint: "Отправь тест по текущей теме до конца дня.", action: "test", button: "Открыть тест", deadline: true },
@@ -12688,12 +12789,31 @@
             }
         }
 
+        function readSessionJson(key, fallback) {
+            try {
+                return JSON.parse(sessionStorage.getItem(key)) ?? fallback;
+            } catch {
+                return fallback;
+            }
+        }
+
+        function getCurrentUser(fallback = { name: "Ученик", login: "" }) {
+            return readSessionJson(storage.user, null) || readJson(storage.user, fallback);
+        }
+
+        function scrollAppToTop() {
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+        }
+
         function showView(id) {
             views.forEach((view) => {
                 view.hidden = view.id !== id;
             });
             document.body.classList.remove("menu-open");
-            window.scrollTo({ top: 0, behavior: "instant" });
+            scrollAppToTop();
+            requestAnimationFrame(scrollAppToTop);
         }
 
         function showPage(name) {
@@ -12705,7 +12825,8 @@
                 button.classList.toggle("is-active", button.dataset.page === name);
             });
             document.body.classList.remove("menu-open");
-            window.scrollTo({ top: 0, behavior: "instant" });
+            scrollAppToTop();
+            requestAnimationFrame(scrollAppToTop);
 
             if (name === "dashboard") renderDashboardProgress();
             if (name === "works") {
@@ -12731,7 +12852,7 @@
             document.querySelectorAll("#practicePage .practice-panel").forEach((panel) => {
                 panel.hidden = panel.id !== panelId;
             });
-            window.scrollTo({ top: 0, behavior: "instant" });
+            scrollAppToTop();
         }
 
         function openPracticeGame(gameKey) {
@@ -13263,33 +13384,12 @@
                 option.classList.remove("is-correct-answer", "is-selected-wrong");
             });
             form.querySelectorAll(".test-answer-review").forEach((review) => review.remove());
+            const corrections = document.getElementById("testCorrections");
+            corrections.hidden = true;
+            document.getElementById("testCorrectionList").innerHTML = "";
+            document.getElementById("testCorrectionComment").value = "";
+            document.getElementById("testCorrectionStatus").textContent = "";
             document.getElementById("testResultCard").hidden = true;
-        }
-
-        function getTestAnswerExplanation(questionId, review) {
-            const question = currentTest?.questions?.find((item) => item.id === questionId);
-            const prompt = (question?.prompt || "").toLowerCase();
-            const topic = currentTest?.title ? ` по теме «${currentTest.title}»` : "";
-
-            if (/установите соответствие|соответствующ/.test(prompt)) {
-                return "Сопоставляй каждый признак отдельно, а затем записывай цифры строго в порядке букв: одна перестановка меняет весь ответ.";
-            }
-            if (/за исключением|выпада/.test(prompt)) {
-                return `Здесь нужно найти именно два пункта из другой группы. Сначала назови общий признак ряда${topic}, затем проверь каждый вариант по нему.`;
-            }
-            if (/выберите верные суждения|верные суждения/.test(prompt)) {
-                return `Проверяй каждое суждение отдельно по определениям и признакам${topic}: одно верное положение не делает верными соседние.`;
-            }
-            if (/найдите в привед[её]нном.*признак|какие.*признак|свидетельству/.test(prompt)) {
-                return `Сначала выдели факты из условия, затем связывай каждый выбранный пункт с конкретным признаком${topic}.`;
-            }
-            if (question?.type === "checkbox") {
-                return `В ответ должны войти все верные варианты и ни одного лишнего. Сверь каждый выбор с признаками${topic}.`;
-            }
-            if (review.acceptedAnswers.length === 1 && /^\d+$/.test(normalizeTestAnswer(review.acceptedAnswers[0]))) {
-                return "В заданиях с последовательностью важны и выбранные цифры, и их порядок. Сверь каждую позицию с формулировкой задания.";
-            }
-            return `Вернись к определению и ключевым признакам${topic}, затем проверь, какой из них прямо подтверждается условием.`;
         }
 
         function renderTestReview(result) {
@@ -13312,11 +13412,10 @@
                 });
 
                 const answerText = review.acceptedAnswers.join(review.acceptedAnswers.length > 1 ? "; " : "");
-                const explanation = getTestAnswerExplanation(questionId, review);
                 article.insertAdjacentHTML("beforeend", `
                     <div class="test-answer-review ${review.isCorrect ? "is-correct" : "is-wrong"}">
                         <strong>${review.isCorrect ? "Верно" : "Неверно"}</strong>
-                        ${review.isCorrect ? "" : `<div><span class="test-correct-answer">Правильный ответ: ${escapeHtml(answerText)}</span><small>${escapeHtml(explanation)}</small></div>`}
+                        ${review.isCorrect ? "" : `<div><span class="test-correct-answer">Правильный ответ: ${escapeHtml(answerText)}</span></div>`}
                     </div>`);
             });
 
@@ -13324,6 +13423,88 @@
                 control.disabled = true;
             });
             form.dataset.reviewed = "true";
+            renderTestCorrections(result);
+        }
+
+        function renderCorrectionControl(question) {
+            const fieldName = `correction-${question.id}`;
+            const options = question.options || [];
+            if (question.type === "checkbox" || question.type === "radio") {
+                return `<div class="test-correction-control">${options.map((option, optionIndex) => `
+                    <label class="test-correction-option">
+                        <input type="${question.type}" name="${escapeHtml(fieldName)}" value="${escapeHtml(option)}">
+                        <span>${optionIndex + 1}) ${escapeHtml(option)}</span>
+                    </label>`).join("")}</div>`;
+            }
+            if (question.type === "select" && options.length) {
+                return `<div class="test-correction-control"><select name="${escapeHtml(fieldName)}"><option value="">Выберите ответ</option>${options.map((option) => `<option value="${escapeHtml(option)}">${escapeHtml(option)}</option>`).join("")}</select></div>`;
+            }
+            return `<div class="test-correction-control"><input type="text" name="${escapeHtml(fieldName)}" placeholder="Введите исправленный ответ"></div>`;
+        }
+
+        function renderTestCorrections(result) {
+            const corrections = document.getElementById("testCorrections");
+            const wrongQuestions = Object.entries(result.questionResults).filter(([, review]) => !review.isCorrect);
+            if (!wrongQuestions.length) {
+                corrections.hidden = true;
+                return;
+            }
+
+            document.getElementById("testCorrectionList").innerHTML = wrongQuestions.map(([questionId]) => {
+                const question = currentTest.questions.find((item) => item.id === questionId);
+                if (!question) return "";
+                return `<article class="test-correction-card" data-correction-question-id="${escapeHtml(questionId)}">
+                    <span>Задание ${question.number}</span>
+                    <p>${escapeHtml(question.prompt || "Задание по изображению")}</p>
+                    ${renderQuestionImage(question)}
+                    ${renderCorrectionControl(question)}
+                    <span class="test-correction-result" aria-live="polite"></span>
+                </article>`;
+            }).join("");
+            corrections.hidden = false;
+        }
+
+        function checkTestCorrections() {
+            if (!currentTest) return;
+            const scoringTest = testScoreData.tests?.[currentTest.id];
+            if (!scoringTest) return;
+            const correctionFormData = new FormData(document.getElementById("authorTestForm"));
+            const cards = Array.from(document.querySelectorAll("[data-correction-question-id]"));
+            let correctedCount = 0;
+            const answers = {};
+
+            cards.forEach((card) => {
+                const questionId = card.dataset.correctionQuestionId;
+                const answerKey = scoringTest.answers?.[questionId];
+                if (!answerKey) return;
+                const values = correctionFormData.getAll(`correction-${questionId}`).map(String).filter((value) => value.trim());
+                const submitted = values.map(normalizeTestAnswer).sort();
+                const accepted = (answerKey.acceptedAnswers || []).map(normalizeTestAnswer).sort();
+                const isCorrect = answerKey.type === "checkbox"
+                    ? submitted.length === accepted.length && submitted.every((value, index) => value === accepted[index])
+                    : submitted.some((value) => accepted.includes(value));
+                answers[questionId] = values;
+                card.classList.toggle("is-corrected", isCorrect);
+                card.classList.toggle("is-still-wrong", !isCorrect);
+                card.querySelector(".test-correction-result").textContent = isCorrect ? "Исправлено" : "Пока неверно";
+                if (isCorrect) correctedCount += 1;
+            });
+
+            const user = getCurrentUser();
+            const correctionRecords = readJson(storage.testCorrections, {});
+            correctionRecords[`${user.login || user.name}::${currentTest.id}`] = {
+                topicId: currentTopic.id,
+                testId: currentTest.id,
+                correctedCount,
+                questionCount: cards.length,
+                answers,
+                comment: document.getElementById("testCorrectionComment").value.trim(),
+                updatedAt: new Date().toISOString()
+            };
+            localStorage.setItem(storage.testCorrections, JSON.stringify(correctionRecords));
+            document.getElementById("testCorrectionStatus").textContent = correctedCount === cards.length
+                ? "Все ошибки исправлены."
+                : `Исправлено ${correctedCount} из ${cards.length}.`;
         }
 
         function renderEmbeddedTest(test) {
@@ -13373,7 +13554,7 @@
 
         function getTestDraftKey(test = currentTest) {
             if (!test) return null;
-            const user = readJson(storage.user, { name: "Ученик", login: "" });
+            const user = getCurrentUser();
             return `${user.login || user.name || "local"}::${test.id}`;
         }
 
@@ -13673,8 +13854,14 @@
             homeworkTabStatus.classList.toggle("is-done", state.homeworkSubmitted);
         }
 
-        function setUser(user) {
-            localStorage.setItem(storage.user, JSON.stringify(user));
+        function setUser(user, remember = null) {
+            if (remember === true) {
+                localStorage.setItem(storage.user, JSON.stringify(user));
+                sessionStorage.removeItem(storage.user);
+            } else if (remember === false) {
+                sessionStorage.setItem(storage.user, JSON.stringify(user));
+                localStorage.removeItem(storage.user);
+            }
             const firstName = user.name.trim().split(/\s+/)[0] || "ученик";
             document.getElementById("sidebarName").textContent = user.name;
             document.getElementById("dashboardName").textContent = firstName;
@@ -13738,7 +13925,7 @@
         }
 
         function renderStudentMessages() {
-            const user = readJson(storage.user, { name: "Ученик", login: "" });
+            const user = getCurrentUser();
             const messages = getTeacherMessages()
                 .filter((message) => message.studentLogin ? message.studentLogin === user.login : message.studentName === user.name)
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -13999,8 +14186,18 @@
             event.preventDefault();
             const name = document.getElementById("studentName").value.trim();
             const login = document.getElementById("studentLogin").value.trim().toLowerCase();
-            if (!name || !login) return;
-            setUser({ name, login });
+            const consentInput = document.getElementById("personalDataConsent");
+            if (!name || !login || !consentInput.checked) {
+                consentInput.reportValidity();
+                return;
+            }
+            const remember = document.getElementById("rememberStudent").checked;
+            setUser({ name, login }, remember);
+            localStorage.setItem(storage.consent, JSON.stringify({
+                login,
+                version: personalDataConsentVersion,
+                acceptedAt: new Date().toISOString()
+            }));
             showView("appView");
             showPage("dashboard");
         });
@@ -14010,8 +14207,11 @@
         });
 
         document.getElementById("logoutButton").addEventListener("click", () => {
+            sessionStorage.removeItem(storage.user);
             showView("welcomeView");
         });
+
+        document.getElementById("checkCorrectionsButton").addEventListener("click", checkTestCorrections);
 
         document.getElementById("mobileMenuButton").addEventListener("click", () => {
             document.body.classList.toggle("menu-open");
@@ -14043,7 +14243,7 @@
 
         document.getElementById("teacherMessageForm").addEventListener("submit", (event) => {
             event.preventDefault();
-            const user = readJson(storage.user, { name: "Ученик", login: "" });
+            const user = getCurrentUser();
             const messages = getTeacherMessages();
             messages.push({
                 id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -14153,7 +14353,7 @@
         document.getElementById("uploadForm").addEventListener("submit", (event) => {
             event.preventDefault();
             const file = document.getElementById("answerFile").files[0];
-            const user = readJson(storage.user, { name: "Ученик", login: "" });
+            const user = getCurrentUser();
             if (!file) {
                 showToast("Сначала выбери файл с выполненной работой.");
                 return;
@@ -14181,8 +14381,20 @@
             showToast("ДЗ отмечено в прогрессе темы; пока сохраняется только название файла.");
         });
 
-        const savedUser = readJson(storage.user, null);
-        if (savedUser) setUser(savedUser);
+        const rememberedUser = readJson(storage.user, null);
+        const savedUser = readSessionJson(storage.user, null) || rememberedUser;
+        if (savedUser) {
+            setUser(savedUser);
+            document.getElementById("studentName").value = savedUser.name || "";
+            document.getElementById("studentLogin").value = savedUser.login || "";
+            document.getElementById("rememberStudent").checked = Boolean(rememberedUser);
+            const savedConsent = readJson(storage.consent, null);
+            document.getElementById("personalDataConsent").checked = Boolean(
+                savedConsent
+                && savedConsent.login === savedUser.login
+                && savedConsent.version === personalDataConsentVersion
+            );
+        }
         renderTopics(currentSubject);
         renderDashboardProgress();
     </script>

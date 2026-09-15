@@ -1,7 +1,7 @@
 // Generated scoring data. Correct answers are revealed by the interface after submission.
 window.EGE_TEST_SCORE_HASHES = {
   "schemaVersion": 1,
-  "generatedAt": "2026-09-14T07:22:45Z",
+  "generatedAt": "2026-09-14T19:07:13Z",
   "normalization": "nfkc-trim-lowercase-yo-whitespace",
   "tests": {
     "test-01": {
@@ -8859,6 +8859,3106 @@ window.EGE_TEST_SCORE_HASHES = {
           ],
           "acceptedAnswers": [
             "123"
+          ]
+        }
+      }
+    },
+    "test-43": {
+      "gradablePoints": 13,
+      "answers": {
+        "test-43-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "e4819c5162b90e09b16feb72c7fc33e3361360ae8866a49b704dabc3e7aa0c86"
+          ],
+          "acceptedAnswers": [
+            "12113"
+          ]
+        },
+        "test-43-q-002": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-43-q-003": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-43-q-004": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+          ],
+          "acceptedAnswers": [
+            "16"
+          ]
+        },
+        "test-43-q-005": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "60f1fbbad6b32ffbdf600642f4e93d1c5405630482f2fefcbde2206f47d4c4f0"
+          ],
+          "acceptedAnswers": [
+            "12331"
+          ]
+        },
+        "test-43-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-43-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-43-q-008": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-43-q-009": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "79ff17d28c9af48d1bd62c12dd65c25c48f0d0e69b8a4d50143b174bbc435303"
+          ],
+          "acceptedAnswers": [
+            "31322"
+          ]
+        },
+        "test-43-q-010": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9ec0ec041bf15aae5c374d927114a784183998942f1e351ef6652330b413aff7"
+          ],
+          "acceptedAnswers": [
+            "11323"
+          ]
+        },
+        "test-43-q-011": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-43-q-012": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "88f79958a438d2aa5624ab526d90ac3b1eb34d2fdfd30543fa11c3896ccfbd4f"
+          ],
+          "acceptedAnswers": [
+            "31224"
+          ]
+        },
+        "test-43-q-013": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "c30c483fa85a885378a6a5105391b91616c16e4d7e91a238ae93e9ddff98ffb3"
+          ],
+          "acceptedAnswers": [
+            "43124"
+          ]
+        }
+      }
+    },
+    "test-44": {
+      "gradablePoints": 17,
+      "answers": {
+        "test-44-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "b7a56873cd771f2c446d369b649430b65a756ba278ff97ec81bb6f55b2e73569"
+          ],
+          "acceptedAnswers": [
+            "25"
+          ]
+        },
+        "test-44-q-002": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-44-q-003": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-44-q-004": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-44-q-005": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-44-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "dac83bb166491b2329888108d66e2b70df84e678f89ea98d71c9552ceb9f0907"
+          ],
+          "acceptedAnswers": [
+            "12122"
+          ]
+        },
+        "test-44-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b"
+          ],
+          "acceptedAnswers": [
+            "2345"
+          ]
+        },
+        "test-44-q-008": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-44-q-009": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-44-q-010": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-44-q-011": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-44-q-012": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278"
+          ],
+          "acceptedAnswers": [
+            "13"
+          ]
+        },
+        "test-44-q-013": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-44-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-44-q-015": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-44-q-016": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-44-q-017": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        }
+      }
+    },
+    "test-45": {
+      "gradablePoints": 45,
+      "answers": {
+        "test-45-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "d9b76e73f74e659b11b26e4fac3aaf3d9d4da1e7b5d3f354bc0b04016f013c20"
+          ],
+          "acceptedAnswers": [
+            "12311"
+          ]
+        },
+        "test-45-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "4b1933c5283228a9362a20f42eab8b1448b03fe7315dd05b9af4f7217b8ebe26"
+          ],
+          "acceptedAnswers": [
+            "31323"
+          ]
+        },
+        "test-45-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "113ad07c970a19b82940b83944f90310daeb8c50c6a57bcf8641e69e9246d7c6"
+          ],
+          "acceptedAnswers": [
+            "21234"
+          ]
+        },
+        "test-45-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "731ff7c2bc67f11fd1133e41dabef65a55875316c54104688dce92297071f551"
+          ],
+          "acceptedAnswers": [
+            "33231"
+          ]
+        },
+        "test-45-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-45-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c514d648b63919245b73d03b40b6944f5cebee0985fa626ee95c42dddf67efbf"
+          ],
+          "acceptedAnswers": [
+            "13231"
+          ]
+        },
+        "test-45-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-45-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-45-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-45-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "4b1933c5283228a9362a20f42eab8b1448b03fe7315dd05b9af4f7217b8ebe26"
+          ],
+          "acceptedAnswers": [
+            "31323"
+          ]
+        },
+        "test-45-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "31ac35fe1cbb6567b6eb10f7e644d3347983175c560bbadc5292dbf14db32dd7"
+          ],
+          "acceptedAnswers": [
+            "23123"
+          ]
+        },
+        "test-45-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "31ac35fe1cbb6567b6eb10f7e644d3347983175c560bbadc5292dbf14db32dd7"
+          ],
+          "acceptedAnswers": [
+            "23123"
+          ]
+        },
+        "test-45-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "36ebe205bcdfc499a25e6923f4450fa8d48196ceb4fa0ce077d9d8ec4a36926d"
+          ],
+          "acceptedAnswers": [
+            "136"
+          ]
+        },
+        "test-45-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-45-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a5b046d07f6f971b7776de682f57c5b9cdc8fa060db7ef59de82e721c8098f4"
+          ],
+          "acceptedAnswers": [
+            "146"
+          ]
+        },
+        "test-45-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-45-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "2b07da543d6c7806fc45e25f997f9622a4748948b531c5875eba51703c7e420f"
+          ],
+          "acceptedAnswers": [
+            "12332"
+          ]
+        },
+        "test-45-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "b7a56873cd771f2c446d369b649430b65a756ba278ff97ec81bb6f55b2e73569"
+          ],
+          "acceptedAnswers": [
+            "25"
+          ]
+        },
+        "test-45-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-45-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "08eb507fdfc251480425114d641b44c24a07802770ceb8a618f02574d24d6d6a"
+          ],
+          "acceptedAnswers": [
+            "2356"
+          ]
+        },
+        "test-45-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+          ],
+          "acceptedAnswers": [
+            "12"
+          ]
+        },
+        "test-45-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "baaee97ea6abce0f8e7590d1bdfc75db2a88cd93c9e2fccf1554fe1f6b01b163"
+          ],
+          "acceptedAnswers": [
+            "24134"
+          ]
+        },
+        "test-45-q-023": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        }
+      }
+    },
+    "test-46": {
+      "gradablePoints": 35,
+      "answers": {
+        "test-46-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-46-q-002": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-46-q-003": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953"
+          ],
+          "acceptedAnswers": [
+            "35"
+          ]
+        },
+        "test-46-q-004": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-46-q-005": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-46-q-008": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+          ],
+          "acceptedAnswers": [
+            "12"
+          ]
+        },
+        "test-46-q-009": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-46-q-010": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-46-q-011": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-46-q-012": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-46-q-013": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953"
+          ],
+          "acceptedAnswers": [
+            "35"
+          ]
+        },
+        "test-46-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-46-q-015": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-46-q-016": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-017": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-018": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-46-q-019": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-020": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-46-q-021": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-46-q-022": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-46-q-023": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-46-q-024": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278"
+          ],
+          "acceptedAnswers": [
+            "13"
+          ]
+        },
+        "test-46-q-025": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-46-q-026": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-46-q-027": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-46-q-028": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-46-q-029": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-46-q-030": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+          ],
+          "acceptedAnswers": [
+            "12"
+          ]
+        },
+        "test-46-q-031": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-46-q-032": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-46-q-033": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-46-q-034": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-46-q-035": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        }
+      }
+    },
+    "test-47": {
+      "gradablePoints": 46,
+      "answers": {
+        "test-47-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5f9c4ab08cac7457e9111a30e4664920607ea2c115a1433d7be98e97e64244ca"
+          ],
+          "acceptedAnswers": [
+            "26"
+          ]
+        },
+        "test-47-q-002": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "7688b6ef52555962d008fff894223582c484517cea7da49ee67800adc7fc8866"
+          ],
+          "acceptedAnswers": [
+            "56"
+          ]
+        },
+        "test-47-q-003": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+          ],
+          "acceptedAnswers": [
+            "16"
+          ]
+        },
+        "test-47-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-47-q-005": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "76a50887d8f1c2e9301755428990ad81479ee21c25b43215cf524541e0503269"
+          ],
+          "acceptedAnswers": [
+            "36"
+          ]
+        },
+        "test-47-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "7688b6ef52555962d008fff894223582c484517cea7da49ee67800adc7fc8866"
+          ],
+          "acceptedAnswers": [
+            "56"
+          ]
+        },
+        "test-47-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-47-q-008": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790"
+          ],
+          "acceptedAnswers": [
+            "23"
+          ]
+        },
+        "test-47-q-009": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-47-q-010": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "535fa30d7e25dd8a49f1536779734ec8286108d115da5045d77f3b4185d8f790"
+          ],
+          "acceptedAnswers": [
+            "23"
+          ]
+        },
+        "test-47-q-011": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5f9c4ab08cac7457e9111a30e4664920607ea2c115a1433d7be98e97e64244ca"
+          ],
+          "acceptedAnswers": [
+            "26"
+          ]
+        },
+        "test-47-q-012": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953"
+          ],
+          "acceptedAnswers": [
+            "35"
+          ]
+        },
+        "test-47-q-013": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953"
+          ],
+          "acceptedAnswers": [
+            "35"
+          ]
+        },
+        "test-47-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "65a699905c02619370bcf9207f5a477c3d67130ca71ec6f750e07fe8d510b084"
+          ],
+          "acceptedAnswers": [
+            "126"
+          ]
+        },
+        "test-47-q-015": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5631e5efadc1db19f6b2453cc6a2d6b76a81682d8c8594680343794a2558a91e"
+          ],
+          "acceptedAnswers": [
+            "1346"
+          ]
+        },
+        "test-47-q-016": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-47-q-017": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-47-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-47-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8a620616a106ba261c32713bc81ee208c71c40df3a4381d64ee563df04e90e2d"
+          ],
+          "acceptedAnswers": [
+            "12121"
+          ]
+        },
+        "test-47-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-47-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-47-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-47-q-023": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-47-q-024": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-47-q-025": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-47-q-026": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-47-q-027": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8a620616a106ba261c32713bc81ee208c71c40df3a4381d64ee563df04e90e2d"
+          ],
+          "acceptedAnswers": [
+            "12121"
+          ]
+        },
+        "test-47-q-028": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0"
+          ],
+          "acceptedAnswers": [
+            "456"
+          ]
+        },
+        "test-47-q-029": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-47-q-030": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-47-q-031": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        }
+      }
+    },
+    "test-48": {
+      "gradablePoints": 48,
+      "answers": {
+        "test-48-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-48-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-48-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-48-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8c244b370747c1930a4e0967254778ddbb69f6a409e62beebe5f92191a09a3a1"
+          ],
+          "acceptedAnswers": [
+            "1245"
+          ]
+        },
+        "test-48-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6aac0cf87a32e631536122c3f2f9a2df215f56f28792a43a8658b0593f2e5255"
+          ],
+          "acceptedAnswers": [
+            "346"
+          ]
+        },
+        "test-48-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8d30c678193105253b548f92bd2e972c39f192ae7cc3af3812c0d7b3bcc6e1ec"
+          ],
+          "acceptedAnswers": [
+            "1345"
+          ]
+        },
+        "test-48-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "b5f1fa2ce2524172ad2a55ec9d8b82f05f42b4a2c113c0cc50e0454ca8453e3f"
+          ],
+          "acceptedAnswers": [
+            "31212"
+          ]
+        },
+        "test-48-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c093954aaeb852810c72dcd0819f912da430792c484a08ea7c8e9071b2f7b387"
+          ],
+          "acceptedAnswers": [
+            "32121"
+          ]
+        },
+        "test-48-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5e44c7ec84daf986ce875ae9f65131a8b058e6d71961c19723e9bf7c21b863cb"
+          ],
+          "acceptedAnswers": [
+            "12211"
+          ]
+        },
+        "test-48-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "30bc0a114420f0d47a28efdd05dd389dd8633700d22c0b6fb815ee17fa95efc0"
+          ],
+          "acceptedAnswers": [
+            "13223"
+          ]
+        },
+        "test-48-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0"
+          ],
+          "acceptedAnswers": [
+            "456"
+          ]
+        },
+        "test-48-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-48-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-48-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-48-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-48-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-48-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"
+          ],
+          "acceptedAnswers": [
+            "1234"
+          ]
+        },
+        "test-48-q-018": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-48-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "e826f586c1d1a5babdbe61eb98eda89bc0e2732ca03d845c7d5fe26f28b9dd1a"
+          ],
+          "acceptedAnswers": [
+            "22143"
+          ]
+        },
+        "test-48-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-48-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-48-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"
+          ],
+          "acceptedAnswers": [
+            "1234"
+          ]
+        },
+        "test-48-q-023": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-48-q-024": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-48-q-025": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        }
+      }
+    },
+    "test-49": {
+      "gradablePoints": 57,
+      "answers": {
+        "test-49-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-49-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-49-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8d30c678193105253b548f92bd2e972c39f192ae7cc3af3812c0d7b3bcc6e1ec"
+          ],
+          "acceptedAnswers": [
+            "1345"
+          ]
+        },
+        "test-49-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-49-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-49-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-49-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-49-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "03a3d955b8799a90f1ff5a39479fde8e618f8ca3282d5b187186f2cf361abd32"
+          ],
+          "acceptedAnswers": [
+            "356"
+          ]
+        },
+        "test-49-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-49-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db"
+          ],
+          "acceptedAnswers": [
+            "24"
+          ]
+        },
+        "test-49-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-49-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-49-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-49-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-49-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8d30c678193105253b548f92bd2e972c39f192ae7cc3af3812c0d7b3bcc6e1ec"
+          ],
+          "acceptedAnswers": [
+            "1345"
+          ]
+        },
+        "test-49-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-49-q-017": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "25fc0e7096fc653718202dc30b0c580b8ab87eac11a700cba03a7c021bc35b0c"
+          ],
+          "acceptedAnswers": [
+            "46"
+          ]
+        },
+        "test-49-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-49-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-49-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "ffdc094ea6d4af89dfc4fc5882631b9005fcd682d89249df8018782ecc3ac338"
+          ],
+          "acceptedAnswers": [
+            "22111"
+          ]
+        },
+        "test-49-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7e566d38ee11051cc243f442d0d3332647d27ea375f16c6db02b16bcdd6e31ef"
+          ],
+          "acceptedAnswers": [
+            "32132"
+          ]
+        },
+        "test-49-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-49-q-023": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+          ],
+          "acceptedAnswers": [
+            "14"
+          ]
+        },
+        "test-49-q-024": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5a9b68ad8cf5063dff85a908bd79ce6458dada36c016bd7435a7f97bef3a05e6"
+          ],
+          "acceptedAnswers": [
+            "11212"
+          ]
+        },
+        "test-49-q-025": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "cfae26288bd82e1a97669b7720470cf394e87b0e53bdd7e584055805cc63001f"
+          ],
+          "acceptedAnswers": [
+            "12312"
+          ]
+        },
+        "test-49-q-026": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+          ],
+          "acceptedAnswers": [
+            "156"
+          ]
+        },
+        "test-49-q-027": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-49-q-028": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "08eb507fdfc251480425114d641b44c24a07802770ceb8a618f02574d24d6d6a"
+          ],
+          "acceptedAnswers": [
+            "2356"
+          ]
+        },
+        "test-49-q-029": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "03a3d955b8799a90f1ff5a39479fde8e618f8ca3282d5b187186f2cf361abd32"
+          ],
+          "acceptedAnswers": [
+            "356"
+          ]
+        },
+        "test-49-q-030": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        }
+      }
+    },
+    "test-50": {
+      "gradablePoints": 40,
+      "answers": {
+        "test-50-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db"
+          ],
+          "acceptedAnswers": [
+            "24"
+          ]
+        },
+        "test-50-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-50-q-003": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-50-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-50-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-50-q-006": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-50-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-50-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a5b046d07f6f971b7776de682f57c5b9cdc8fa060db7ef59de82e721c8098f4"
+          ],
+          "acceptedAnswers": [
+            "146"
+          ]
+        },
+        "test-50-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c0d427f8b875401198831f31edb981bf951a3b77f5ec5f336ad84a50ed831ac9"
+          ],
+          "acceptedAnswers": [
+            "2456"
+          ]
+        },
+        "test-50-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-50-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "2c2907c96e5d5a9884921655c10efc0c83c9834e527ffeaf95abee4c83fa9102"
+          ],
+          "acceptedAnswers": [
+            "21211"
+          ]
+        },
+        "test-50-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "098ed0a6477db3aee54048eb7262d133687420bab7a75688b291c1157e64467b"
+          ],
+          "acceptedAnswers": [
+            "21212"
+          ]
+        },
+        "test-50-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "165f4089c872b411bed35175b6c0a79aaff12f84fcb4faadc4e14e2bc52b829e"
+          ],
+          "acceptedAnswers": [
+            "11221"
+          ]
+        },
+        "test-50-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a842d752f0a21103c853c01c28977f62f979e735b7dd123ceeeaaa0443826d19"
+          ],
+          "acceptedAnswers": [
+            "13213"
+          ]
+        },
+        "test-50-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5e44c7ec84daf986ce875ae9f65131a8b058e6d71961c19723e9bf7c21b863cb"
+          ],
+          "acceptedAnswers": [
+            "12211"
+          ]
+        },
+        "test-50-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "165f4089c872b411bed35175b6c0a79aaff12f84fcb4faadc4e14e2bc52b829e"
+          ],
+          "acceptedAnswers": [
+            "11221"
+          ]
+        },
+        "test-50-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "682b73e4ac2608d5ab87ffb2dd7dea6ec7b327bd14c9f9bc7802bd9296b9892a"
+          ],
+          "acceptedAnswers": [
+            "22341"
+          ]
+        },
+        "test-50-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-50-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8d30c678193105253b548f92bd2e972c39f192ae7cc3af3812c0d7b3bcc6e1ec"
+          ],
+          "acceptedAnswers": [
+            "1345"
+          ]
+        },
+        "test-50-q-020": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "3fdba35f04dc8c462986c992bcf875546257113072a909c162f7e470e581e278"
+          ],
+          "acceptedAnswers": [
+            "13"
+          ]
+        },
+        "test-50-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-50-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "310ced37200b1a0dae25edb263fe52c491f6e467268acab0ffec06666e2ed959"
+          ],
+          "acceptedAnswers": [
+            "1235"
+          ]
+        }
+      }
+    },
+    "test-51": {
+      "gradablePoints": 44,
+      "answers": {
+        "test-51-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5df0faa2769a27a88cbbc988a6f6ae73593aa16c47711dceac0d51e382bfecff"
+          ],
+          "acceptedAnswers": [
+            "33122"
+          ]
+        },
+        "test-51-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c2356069e9d1e79ca924378153cfbbfb4d4416b1f99d41a2940bfdb66c5319db"
+          ],
+          "acceptedAnswers": [
+            "24"
+          ]
+        },
+        "test-51-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-51-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "1985ad3cff2f49f0a7743ce6aedb725ce078466631cbf3d2d799a5d5c2f0d1ef"
+          ],
+          "acceptedAnswers": [
+            "12221"
+          ]
+        },
+        "test-51-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "2e878272481b14207c97cfffbc4ff7573f4bafd1dbe452cb1eafa913bd4f5294"
+          ],
+          "acceptedAnswers": [
+            "12112"
+          ]
+        },
+        "test-51-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-51-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-51-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4"
+          ],
+          "acceptedAnswers": [
+            "1234"
+          ]
+        },
+        "test-51-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-51-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "51e8ea280b44e16934d4d611901f3d3afc41789840acdff81942c2f65009cd52"
+          ],
+          "acceptedAnswers": [
+            "256"
+          ]
+        },
+        "test-51-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-51-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-51-q-013": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+          ],
+          "acceptedAnswers": [
+            "14"
+          ]
+        },
+        "test-51-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "5f9c4ab08cac7457e9111a30e4664920607ea2c115a1433d7be98e97e64244ca"
+          ],
+          "acceptedAnswers": [
+            "26"
+          ]
+        },
+        "test-51-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-51-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "165f4089c872b411bed35175b6c0a79aaff12f84fcb4faadc4e14e2bc52b829e"
+          ],
+          "acceptedAnswers": [
+            "11221"
+          ]
+        },
+        "test-51-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "82b29e795413ba0c43ded58ca0a529264b3e8c958d4e12b49b8e2da4141d843f"
+          ],
+          "acceptedAnswers": [
+            "21221"
+          ]
+        },
+        "test-51-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0622caefe523d249d6e110679c72ece4c98a42914ec41ae3d14db3c3e821f1e6"
+          ],
+          "acceptedAnswers": [
+            "23311"
+          ]
+        },
+        "test-51-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "4f2d1ef6213a727dda15ed754bf6f6c3d8391b3908af2a1f645f6074ee982624"
+          ],
+          "acceptedAnswers": [
+            "32123"
+          ]
+        },
+        "test-51-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "b3a8e0e1f9ab1bfe3a36f231f676f78bb30a519d2b21e6c530c0eee8ebb4a5d0"
+          ],
+          "acceptedAnswers": [
+            "456"
+          ]
+        },
+        "test-51-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-51-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7688b6ef52555962d008fff894223582c484517cea7da49ee67800adc7fc8866"
+          ],
+          "acceptedAnswers": [
+            "56"
+          ]
+        },
+        "test-51-q-023": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "65a699905c02619370bcf9207f5a477c3d67130ca71ec6f750e07fe8d510b084"
+          ],
+          "acceptedAnswers": [
+            "126"
+          ]
+        }
+      }
+    },
+    "test-52": {
+      "gradablePoints": 36,
+      "answers": {
+        "test-52-q-001": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "cfeb395f26321fa9738e173979d8f4cb5e6c203cca830996335d0bf2394778df"
+          ],
+          "acceptedAnswers": [
+            "33212"
+          ]
+        },
+        "test-52-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6da7ebeee4f44c6c0b91140ee648984f6287bbdef61ea19bcc186afb8e86e204"
+          ],
+          "acceptedAnswers": [
+            "32213"
+          ]
+        },
+        "test-52-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7b0838c2af7e6b1f3fe5a49c32dd459d997a931cee349ca6869f3c17cc838394"
+          ],
+          "acceptedAnswers": [
+            "1236"
+          ]
+        },
+        "test-52-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-52-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-52-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7d6f7382d2677f951d70a180edd7e28e352e50a33eb91addd8d61c4109ab60e8"
+          ],
+          "acceptedAnswers": [
+            "11332"
+          ]
+        },
+        "test-52-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-52-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "d15819b231d421c7b2b119a5fd3a5225a8b94c38cd87e0241b8e33f53719c2ec"
+          ],
+          "acceptedAnswers": [
+            "21112"
+          ]
+        },
+        "test-52-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "65a699905c02619370bcf9207f5a477c3d67130ca71ec6f750e07fe8d510b084"
+          ],
+          "acceptedAnswers": [
+            "126"
+          ]
+        },
+        "test-52-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6da7ebeee4f44c6c0b91140ee648984f6287bbdef61ea19bcc186afb8e86e204"
+          ],
+          "acceptedAnswers": [
+            "32213"
+          ]
+        },
+        "test-52-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "e7d5f7be5195d60646a43ebfa0c38f0451121756e4146f5c2c75deb4e1f63820"
+          ],
+          "acceptedAnswers": [
+            "1256"
+          ]
+        },
+        "test-52-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "9a049b03f6fc40bfcf2f136320359257ed4af8513f71aa6fef47f17059bbae23"
+          ],
+          "acceptedAnswers": [
+            "236"
+          ]
+        },
+        "test-52-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-52-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-52-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-52-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+          ],
+          "acceptedAnswers": [
+            "156"
+          ]
+        },
+        "test-52-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7b0838c2af7e6b1f3fe5a49c32dd459d997a931cee349ca6869f3c17cc838394"
+          ],
+          "acceptedAnswers": [
+            "1236"
+          ]
+        },
+        "test-52-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8d30c678193105253b548f92bd2e972c39f192ae7cc3af3812c0d7b3bcc6e1ec"
+          ],
+          "acceptedAnswers": [
+            "1345"
+          ]
+        },
+        "test-52-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+          ],
+          "acceptedAnswers": [
+            "12"
+          ]
+        }
+      }
+    },
+    "test-53": {
+      "gradablePoints": 25,
+      "answers": {
+        "test-53-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-53-q-002": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "9f14025af0065b30e47e23ebb3b491d39ae8ed17d33739e5ff3827ffb3634953"
+          ],
+          "acceptedAnswers": [
+            "35"
+          ]
+        },
+        "test-53-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-53-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "011af72a910ac4acf367eef9e6b761e0980842c30d4e9809840f4141d5163ede"
+          ],
+          "acceptedAnswers": [
+            "245"
+          ]
+        },
+        "test-53-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "57a89c11968eb79532b49ad45ab2641f2024fbd097a2c62db28ca8fd382215c1"
+          ],
+          "acceptedAnswers": [
+            "13322"
+          ]
+        },
+        "test-53-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-53-q-007": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "965e70fde48279c6094c807bb9f664ef94a2ea4cfee79e5f9d038564532c9a61"
+          ],
+          "acceptedAnswers": [
+            "31332"
+          ]
+        },
+        "test-53-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "310ced37200b1a0dae25edb263fe52c491f6e467268acab0ffec06666e2ed959"
+          ],
+          "acceptedAnswers": [
+            "1235"
+          ]
+        },
+        "test-53-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-53-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-53-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "da70dfa4d9f95ac979f921e8e623358236313f334afcd06cddf8a5621cf6a1e9"
+          ],
+          "acceptedAnswers": [
+            "345"
+          ]
+        },
+        "test-53-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "e629fa6598d732768f7c726b4b621285f9c3b85303900aa912017db7617d8bdb"
+          ],
+          "acceptedAnswers": [
+            "15"
+          ]
+        },
+        "test-53-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-53-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "37c20f19f3272b5ccc3a5d80587eb9deb3f4afcf568c4280fb195568da8eb1a2"
+          ],
+          "acceptedAnswers": [
+            "246"
+          ]
+        }
+      }
+    },
+    "test-54": {
+      "gradablePoints": 45,
+      "answers": {
+        "test-54-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-54-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "165f4089c872b411bed35175b6c0a79aaff12f84fcb4faadc4e14e2bc52b829e"
+          ],
+          "acceptedAnswers": [
+            "11221"
+          ]
+        },
+        "test-54-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "37c20f19f3272b5ccc3a5d80587eb9deb3f4afcf568c4280fb195568da8eb1a2"
+          ],
+          "acceptedAnswers": [
+            "246"
+          ]
+        },
+        "test-54-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "d15819b231d421c7b2b119a5fd3a5225a8b94c38cd87e0241b8e33f53719c2ec"
+          ],
+          "acceptedAnswers": [
+            "21112"
+          ]
+        },
+        "test-54-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5e44c7ec84daf986ce875ae9f65131a8b058e6d71961c19723e9bf7c21b863cb"
+          ],
+          "acceptedAnswers": [
+            "12211"
+          ]
+        },
+        "test-54-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "c7f278a04237d3bafb4e0d15ccc3094e5f7be9037ef77e6c300c28ef00a04530"
+          ],
+          "acceptedAnswers": [
+            "11222"
+          ]
+        },
+        "test-54-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a5b046d07f6f971b7776de682f57c5b9cdc8fa060db7ef59de82e721c8098f4"
+          ],
+          "acceptedAnswers": [
+            "146"
+          ]
+        },
+        "test-54-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-54-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+          ],
+          "acceptedAnswers": [
+            "156"
+          ]
+        },
+        "test-54-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8a620616a106ba261c32713bc81ee208c71c40df3a4381d64ee563df04e90e2d"
+          ],
+          "acceptedAnswers": [
+            "12121"
+          ]
+        },
+        "test-54-q-011": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "b17ef6d19c7a5b1ee83b907c595526dcb1eb06db8227d650d5dda0a9f4ce8cd9"
+          ],
+          "acceptedAnswers": [
+            "16"
+          ]
+        },
+        "test-54-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-54-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-54-q-014": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-54-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-54-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5a9b68ad8cf5063dff85a908bd79ce6458dada36c016bd7435a7f97bef3a05e6"
+          ],
+          "acceptedAnswers": [
+            "11212"
+          ]
+        },
+        "test-54-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a5b046d07f6f971b7776de682f57c5b9cdc8fa060db7ef59de82e721c8098f4"
+          ],
+          "acceptedAnswers": [
+            "146"
+          ]
+        },
+        "test-54-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-54-q-019": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-54-q-020": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+          ],
+          "acceptedAnswers": [
+            "156"
+          ]
+        },
+        "test-54-q-021": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "e7d5f7be5195d60646a43ebfa0c38f0451121756e4146f5c2c75deb4e1f63820"
+          ],
+          "acceptedAnswers": [
+            "1256"
+          ]
+        },
+        "test-54-q-022": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "9a049b03f6fc40bfcf2f136320359257ed4af8513f71aa6fef47f17059bbae23"
+          ],
+          "acceptedAnswers": [
+            "236"
+          ]
+        },
+        "test-54-q-023": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        }
+      }
+    },
+    "test-55": {
+      "gradablePoints": 35,
+      "answers": {
+        "test-55-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-55-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-55-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-55-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-55-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0a2d643bfd24a028cd236e76575d828424ccffbfa47392bd09d8ca9dc85e2f8d"
+          ],
+          "acceptedAnswers": [
+            "235"
+          ]
+        },
+        "test-55-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "38083c7ee9121e17401883566a148aa5c2e2d55dc53bc4a94a026517dbff3c6b"
+          ],
+          "acceptedAnswers": [
+            "2345"
+          ]
+        },
+        "test-55-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-55-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-55-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-55-q-010": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "114bd151f8fb0c58642d2170da4ae7d7c57977260ac2cc8905306cab6b2acabc"
+          ],
+          "acceptedAnswers": [
+            "234"
+          ]
+        },
+        "test-55-q-011": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-55-q-012": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "9364c0b7ec4a296fdce500a45a310f6ef6960a844f7070c7241fe652b912518e"
+          ],
+          "acceptedAnswers": [
+            "21121"
+          ]
+        },
+        "test-55-q-013": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8cf0d4301190a4bd5dea4c8722a4f8afdf98664b9dd0cd770dd7c848752d60b0"
+          ],
+          "acceptedAnswers": [
+            "12212"
+          ]
+        },
+        "test-55-q-014": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "76a50887d8f1c2e9301755428990ad81479ee21c25b43215cf524541e0503269"
+          ],
+          "acceptedAnswers": [
+            "36"
+          ]
+        },
+        "test-55-q-015": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "7c4075dd6184ccca96cadfca2f63457a984e76abccf1ead2a1285e5b5db909fd"
+          ],
+          "acceptedAnswers": [
+            "22211"
+          ]
+        },
+        "test-55-q-016": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0fecf9247f3ddc84db8a804fa3065c013baf6b7c2458c2ba2bf56c2e1d42ddd4"
+          ],
+          "acceptedAnswers": [
+            "156"
+          ]
+        },
+        "test-55-q-017": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "6affdae3b3c1aa6aa7689e9b6a7b3225a636aa1ac0025f490cca1285ceaf1487"
+          ],
+          "acceptedAnswers": [
+            "124"
+          ]
+        },
+        "test-55-q-018": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61"
+          ],
+          "acceptedAnswers": [
+            "14"
+          ]
+        }
+      }
+    },
+    "test-56": {
+      "gradablePoints": 19,
+      "answers": {
+        "test-56-q-001": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "5d389f5e2e34c6b0bad96581c22cee0be36dcf627cd73af4d4cccacd9ef40cc3"
+          ],
+          "acceptedAnswers": [
+            "134"
+          ]
+        },
+        "test-56-q-002": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "d15819b231d421c7b2b119a5fd3a5225a8b94c38cd87e0241b8e33f53719c2ec"
+          ],
+          "acceptedAnswers": [
+            "21112"
+          ]
+        },
+        "test-56-q-003": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "9364c0b7ec4a296fdce500a45a310f6ef6960a844f7070c7241fe652b912518e"
+          ],
+          "acceptedAnswers": [
+            "21121"
+          ]
+        },
+        "test-56-q-004": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-56-q-005": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "13671077b66a29874a2578b5240319092ef2a1043228e433e9b006b5e53e7513"
+          ],
+          "acceptedAnswers": [
+            "135"
+          ]
+        },
+        "test-56-q-006": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"
+          ],
+          "acceptedAnswers": [
+            "123"
+          ]
+        },
+        "test-56-q-007": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "36ebe205bcdfc499a25e6923f4450fa8d48196ceb4fa0ce077d9d8ec4a36926d"
+          ],
+          "acceptedAnswers": [
+            "136"
+          ]
+        },
+        "test-56-q-008": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "be47addbcb8f60566a3d7fd5a36f8195798e2848b368195d9a5d20e007c59a0c"
+          ],
+          "acceptedAnswers": [
+            "145"
+          ]
+        },
+        "test-56-q-009": {
+          "type": "text",
+          "points": 2,
+          "hashes": [
+            "0f8ef3377b30fc47f96b48247f463a726a802f62f3faa03d56403751d2f66c67"
+          ],
+          "acceptedAnswers": [
+            "125"
+          ]
+        },
+        "test-56-q-010": {
+          "type": "text",
+          "points": 1,
+          "hashes": [
+            "811786ad1ae74adfdd20dd0372abaaebc6246e343aebd01da0bfc4c02bf0106c"
+          ],
+          "acceptedAnswers": [
+            "45"
           ]
         }
       }
