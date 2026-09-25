@@ -1581,6 +1581,9 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-file small {
 
 #appView .sidebar {
     top: 0;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
     min-height: calc(76px + env(safe-area-inset-top, 0px));
     padding-top: max(10px, env(safe-area-inset-top, 0px));
 }

@@ -73,9 +73,10 @@
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
-    width: min(1240px, calc(100% - 48px));
+    width: 100%;
     min-height: 78px;
-    margin: 0 auto;
+    margin: 0;
+    padding-inline: max(24px, calc((100% - 1240px) / 2));
     border-bottom: 1px solid rgba(23, 70, 162, 0.12);
     background: var(--cream);
 }
@@ -835,7 +836,8 @@
 @media (max-width: 1120px) {
     .landing-header {
         grid-template-columns: 1fr auto;
-        width: calc(100% - 40px);
+        width: 100%;
+        padding-inline: 20px;
         column-gap: 8px;
     }
 
@@ -943,7 +945,8 @@
 
 @media (max-width: 640px) {
     .landing-header {
-        width: calc(100% - 28px);
+        width: 100%;
+        padding-inline: 14px;
         min-height: 68px;
     }
 
