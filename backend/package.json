@@ -1,0 +1,20 @@
+{
+  "name": "social-ege-backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Private API for the Social EGE student platform",
+  "main": "server.js",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.1.0",
+    "helmet": "^8.3.0",
+    "pg": "^8.16.3"
+  }
+}

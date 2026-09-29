@@ -2,6 +2,20 @@
 private-data/
 *.secret.json
 
+# Backend dependencies, runtime configuration and generated data
+backend/node_modules/
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/logs/
+backend/tmp/
+backend/coverage/
+backend/uploads/
+backend/*.log
+*.pem
+*.key
+*.secret
+
 # macOS and temporary office files
 .DS_Store
 **/.DS_Store
