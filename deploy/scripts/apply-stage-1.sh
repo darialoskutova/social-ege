@@ -131,18 +131,24 @@ fi
 
 sudo systemctl reload nginx
 
-if ! api_response="$(curl --noproxy '*' --fail-with-body --silent --show-error --max-time 5 \
-    http://127.0.0.1/api/health)"; then
+api_response=""
+for attempt in {1..10}; do
+    api_response="$(curl --noproxy '*' --fail --silent --max-time 5 \
+        http://127.0.0.1/api/health || true)"
+    if [[ "$api_response" == '{"ok":true}' ]]; then
+        break
+    fi
+    sleep 1
+done
+
+if [[ "$api_response" != '{"ok":true}' ]]; then
+    printf '%s\n' 'Nginx health diagnostic:' >&2
+    curl --noproxy '*' --silent --show-error --max-time 5 --include \
+        http://127.0.0.1/api/health 2>&1 | sed -n '1,20p' >&2 || true
     sudo install -o root -g root -m 0644 "$nginx_backup" "$NGINX_SITE"
     sudo nginx -t
     sudo systemctl reload nginx
     fail "Nginx API health check failed; previous site configuration restored"
-fi
-if [[ "$api_response" != '{"ok":true}' ]]; then
-    sudo install -o root -g root -m 0644 "$nginx_backup" "$NGINX_SITE"
-    sudo nginx -t
-    sudo systemctl reload nginx
-    fail "unexpected /api/health response; previous site configuration restored"
 fi
 
 root_hash_after="$(curl --noproxy '*' --fail --silent --show-error --max-time 5 \
