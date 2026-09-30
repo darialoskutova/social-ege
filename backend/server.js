@@ -1,9 +1,13 @@
 "use strict";
 
 const path = require("node:path");
+const cookieParser = require("cookie-parser");
 const express = require("express");
 const helmet = require("helmet");
 const { Pool } = require("pg");
+const { readAuthConfig } = require("./auth/config");
+const { createAuthRouter } = require("./auth/router");
+const { HttpError } = require("./lib/http-error");
 
 require("dotenv").config({
   path: path.resolve(__dirname, ".env"),
@@ -14,6 +18,7 @@ const host = process.env.HOST || "127.0.0.1";
 const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;
 const databaseSsl = process.env.DATABASE_SSL === "true";
+const authConfig = readAuthConfig();
 
 function firstConfigured(...names) {
   for (const name of names) {
@@ -75,6 +80,7 @@ app.disable("x-powered-by");
 app.set("trust proxy", "loopback");
 app.use(helmet());
 app.use(express.json({ limit: "64kb", strict: true }));
+app.use(cookieParser());
 
 app.get("/health", async (req, res) => {
   try {
@@ -86,6 +92,8 @@ app.get("/health", async (req, res) => {
   }
 });
 
+app.use("/api/auth", createAuthRouter(pool, authConfig));
+
 app.use((req, res) => {
   res.status(404).json({ error: { code: "not_found", message: "Ресурс не найден" } });
 });
@@ -93,6 +101,18 @@ app.use((req, res) => {
 app.use((error, req, res, next) => {
   if (res.headersSent) {
     next(error);
+    return;
+  }
+  if (error instanceof HttpError) {
+    res.status(error.status).json({
+      error: { code: error.code, message: error.message },
+    });
+    return;
+  }
+  if (error?.type === "entity.parse.failed") {
+    res.status(400).json({
+      error: { code: "invalid_json", message: "Некорректный формат запроса" },
+    });
     return;
   }
   console.error("Unhandled request error", {

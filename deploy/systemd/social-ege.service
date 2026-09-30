@@ -11,7 +11,9 @@ WorkingDirectory=/opt/social-ege/backend
 Environment=NODE_ENV=production
 EnvironmentFile=/opt/social-ege/backend/.env
 ExecStartPre=/usr/bin/node scripts/migrate.js
-ExecStart=/usr/bin/node server.js
+# The stage-3 unit deliberately overrides any value from .env. Remove this
+# command-level guard only in the later HTTPS/auth activation stage.
+ExecStart=/usr/bin/env AUTH_ENABLED=false /usr/bin/node server.js
 Restart=on-failure
 RestartSec=5s
 TimeoutStartSec=60s

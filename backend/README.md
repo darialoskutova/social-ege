@@ -1,8 +1,8 @@
 # Social EGE backend
 
-Minimal private API for the first infrastructure stage. It intentionally
-contains only a database-backed health check. Authentication, student data and
-test scoring are separate later stages.
+Private API deployed in small, reversible stages. It currently contains a
+database-backed health check, the core schema and disabled authentication
+primitives. Student data and server-side test scoring remain later stages.
 
 ## Configuration
 
@@ -56,6 +56,31 @@ The initial schema contains users and roles, consent records, server sessions,
 topic progress, test drafts and attempts, homework metadata, teacher messages
 and an audit log. Homework file bytes and test answer keys are deliberately not
 stored in the public repository.
+
+## Authentication boundary
+
+The backend contains password and session primitives, but production keeps
+them disabled with `AUTH_ENABLED=false` until HTTPS and the final public origin
+are configured. `GET /api/auth/status` reports this state without exposing any
+configuration values.
+
+When enabled later, authentication requires:
+
+- Argon2id password hashes;
+- opaque random sessions stored as SHA-256 token hashes in PostgreSQL;
+- `HttpOnly`, `Secure`, `SameSite=Strict` cookies;
+- exact HTTPS origins for state-changing requests;
+- rate limiting and generic login errors.
+
+The interactive account command never accepts a password in command-line
+arguments:
+
+```sh
+npm run create-user -- --login LOGIN --name "Имя" --role student
+```
+
+Do not create production accounts before HTTPS is active and the legal consent
+flow is connected to the frontend.
 
 ## Current boundary
 

@@ -14,6 +14,8 @@ URLs, SSH keys or other secrets.
   rollout, creates backups and restores the prior Nginx site on failed checks.
 - `scripts/apply-stage-2-schema.sh` installs and verifies the initial database
   schema without creating accounts or importing test answer keys.
+- `scripts/apply-stage-3-auth-foundation.sh` tests and installs authentication
+  primitives while explicitly keeping production login disabled until HTTPS.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:
