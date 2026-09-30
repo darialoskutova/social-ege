@@ -10,6 +10,8 @@ URLs, SSH keys or other secrets.
 - `nginx/default-with-api.conf` preserves Ubuntu's standard `/var/www/html`
   document root and includes the API snippet.
 - `scripts/audit-server.sh` performs read-only checks and never reads `.env`.
+- `scripts/apply-stage-1.sh` performs the guarded backend → systemd → Nginx
+  rollout, creates backups and restores the prior Nginx site on failed checks.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

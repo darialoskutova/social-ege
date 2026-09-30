@@ -3,6 +3,10 @@
 This runbook intentionally does not change SSH, UFW or PostgreSQL settings. It
 does not read, print, copy or replace `/opt/social-ege/backend/.env`.
 
+The guarded automated form of these steps is
+`deploy/scripts/apply-stage-1.sh`. Run it as `daria` from the repository root;
+it will ask for sudo normally and stop before a risky or unexpected state.
+
 Run it only after comparing the active server files with the versioned files.
 All health checks must pass before moving to the next section.
 
