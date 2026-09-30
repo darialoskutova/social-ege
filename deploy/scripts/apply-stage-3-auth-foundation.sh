@@ -154,16 +154,23 @@ direct_auth_status="$(curl --noproxy '*' --fail --silent --max-time 5 \
     http://127.0.0.1:3000/api/auth/status)"
 proxy_auth_status="$(curl --noproxy '*' --fail --silent --max-time 5 \
     http://127.0.0.1/api/auth/status)"
-[[ "$direct_auth_status" == '{"enabled":false,"httpsRequired":true}' ]] \
-    || fail "unexpected direct authentication status"
-[[ "$proxy_auth_status" == "$direct_auth_status" ]] \
-    || fail "authentication status differs through Nginx"
+if [[ "$direct_auth_status" != '{"enabled":false,"httpsRequired":true}' ]]; then
+    restore_live_release
+    fail "unexpected direct authentication status"
+fi
+if [[ "$proxy_auth_status" != "$direct_auth_status" ]]; then
+    restore_live_release
+    fail "authentication status differs through Nginx"
+fi
 
 login_http_code="$(curl --noproxy '*' --silent --output /dev/null --write-out '%{http_code}' \
     --max-time 5 --request POST --header 'Content-Type: application/json' \
     --data '{"login":"disabled-check","password":"not-a-real-password"}' \
     http://127.0.0.1:3000/api/auth/login)"
-[[ "$login_http_code" == "503" ]] || fail "disabled login did not return HTTP 503"
+if [[ "$login_http_code" != "503" ]]; then
+    restore_live_release
+    fail "disabled login did not return HTTP 503"
+fi
 
 step "Result"
 rollback_armed=0
