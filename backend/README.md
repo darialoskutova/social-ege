@@ -40,9 +40,26 @@ The health endpoint executes `SELECT 1`, so HTTP 200 confirms both the Express
 process and the configured PostgreSQL connection. It returns HTTP 503 without
 database error details when PostgreSQL is unavailable.
 
+## Schema migrations
+
+```sh
+npm run migrate
+npm run schema:status
+```
+
+Migrations are immutable numbered SQL files. The runner serializes execution
+with a PostgreSQL advisory lock and stores a SHA-256 checksum for every applied
+file. If an applied migration is edited later, startup stops instead of
+silently changing history.
+
+The initial schema contains users and roles, consent records, server sessions,
+topic progress, test drafts and attempts, homework metadata, teacher messages
+and an audit log. Homework file bytes and test answer keys are deliberately not
+stored in the public repository.
+
 ## Current boundary
 
-This stage does not implement login, sessions, progress, homework uploads or
-test scoring. In particular, `data/tests-score-hashes.js` remains an identified
+The schema alone does not expose login, progress, homework or scoring API
+routes. In particular, `data/tests-score-hashes.js` remains an identified
 security issue and must later be replaced by server-side scoring without
 shipping answer keys to browsers.

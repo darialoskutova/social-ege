@@ -12,6 +12,8 @@ URLs, SSH keys or other secrets.
 - `scripts/audit-server.sh` performs read-only checks and never reads `.env`.
 - `scripts/apply-stage-1.sh` performs the guarded backend → systemd → Nginx
   rollout, creates backups and restores the prior Nginx site on failed checks.
+- `scripts/apply-stage-2-schema.sh` installs and verifies the initial database
+  schema without creating accounts or importing test answer keys.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

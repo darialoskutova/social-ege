@@ -10,6 +10,7 @@ Group=daria
 WorkingDirectory=/opt/social-ege/backend
 Environment=NODE_ENV=production
 EnvironmentFile=/opt/social-ege/backend/.env
+ExecStartPre=/usr/bin/node scripts/migrate.js
 ExecStart=/usr/bin/node server.js
 Restart=on-failure
 RestartSec=5s

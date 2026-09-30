@@ -58,3 +58,14 @@ No server configuration was changed while these checks were unavailable.
    API endpoints, one frontend function at a time without redesigning pages.
 8. Run localhost, Nginx and role-isolation smoke tests. Reboot only after an
    explicit maintenance window is confirmed.
+
+## Stage 1 result — 30 September 2026
+
+- `social-ege.service` is enabled and active under user `daria`.
+- The backend listens on `127.0.0.1:3000` and its database-backed `/health`
+  endpoint returns `{"ok":true}`.
+- Public `http://135.106.228.88/api/health` returns HTTP 200 through Nginx.
+- Direct public access to port 3000 times out, while PostgreSQL and firewall
+  settings were not changed.
+- The root page still returns the same standard Nginx file; its checksum was
+  unchanged across the rollout.

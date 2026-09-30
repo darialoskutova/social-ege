@@ -9,6 +9,8 @@
   },
   "scripts": {
     "start": "node server.js",
+    "migrate": "node scripts/migrate.js",
+    "schema:status": "node scripts/schema-status.js",
     "test": "node --test"
   },
   "dependencies": {
