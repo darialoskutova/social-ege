@@ -13,7 +13,8 @@ to Git or printed in logs. Keep it owned by `daria` with mode `0600`.
 
 - `HOST` must remain `127.0.0.1`; the process refuses any other value;
 - `PORT` defaults to `3000`;
-- `DATABASE_URL` points to local PostgreSQL;
+- the backend accepts either `DATABASE_URL` or the existing split variables
+  `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`;
 - `DATABASE_SSL=false` is appropriate for the existing localhost connection.
 
 ## Install and run

@@ -15,18 +15,46 @@ const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;
 const databaseSsl = process.env.DATABASE_SSL === "true";
 
+function firstConfigured(...names) {
+  for (const name of names) {
+    if (process.env[name] !== undefined && process.env[name] !== "") {
+      return process.env[name];
+    }
+  }
+  return undefined;
+}
+
 if (host !== "127.0.0.1") {
   throw new Error("Backend must listen on 127.0.0.1");
 }
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT must be an integer between 1 and 65535");
 }
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+const databaseHost = firstConfigured("DB_HOST", "PGHOST", "POSTGRES_HOST") || "127.0.0.1";
+const databasePort = Number(firstConfigured("DB_PORT", "PGPORT", "POSTGRES_PORT") || 5432);
+const databaseName = firstConfigured("DB_NAME", "DB_DATABASE", "PGDATABASE", "POSTGRES_DB") || "social_ege";
+const databaseUser = firstConfigured("DB_USER", "DB_USERNAME", "PGUSER", "POSTGRES_USER") || "social_ege_app";
+const databasePassword = firstConfigured("DB_PASSWORD", "PGPASSWORD", "POSTGRES_PASSWORD");
+
+if (!databaseUrl && !databasePassword) {
+  throw new Error("Database configuration is incomplete");
+}
+if (!databaseUrl && (!Number.isInteger(databasePort) || databasePort < 1 || databasePort > 65535)) {
+  throw new Error("Database port must be an integer between 1 and 65535");
 }
 
+const databaseConnection = databaseUrl
+  ? { connectionString: databaseUrl }
+  : {
+      host: databaseHost,
+      port: databasePort,
+      database: databaseName,
+      user: databaseUser,
+      password: databasePassword,
+    };
+
 const pool = new Pool({
-  connectionString: databaseUrl,
+  ...databaseConnection,
   ssl: databaseSsl ? { rejectUnauthorized: true } : false,
   application_name: "social-ege-api",
   max: 10,

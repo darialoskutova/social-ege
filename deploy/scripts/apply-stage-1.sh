@@ -108,6 +108,7 @@ for attempt in {1..10}; do
     if [[ "$attempt" == "10" ]]; then
         sudo systemctl --no-pager --full status social-ege.service || true
         sudo journalctl -u social-ege.service -n 50 --no-pager || true
+        sudo systemctl stop social-ege.service || true
         fail "direct backend health check failed"
     fi
     sleep 1
