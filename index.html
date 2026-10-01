@@ -10704,7 +10704,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20260925-full-header">
+    <link rel="stylesheet" href="cabinet.css?v=20260930-test-transcriptions">
 </head>
 <body>
 
@@ -12059,8 +12059,9 @@
 
     <script src="analytics.js"></script>
     <script src="landing.js?v=20260913-clean2"></script>
-    <script src="data/tests-public.js?v=20260914-law-tests"></script>
-    <script src="data/tests-score-hashes.js?v=20260914-law-tests"></script>
+    <script src="data/tests-public.js?v=20260930-topic-index"></script>
+    <script src="data/tests-score-hashes.js?v=20260930-topic-index"></script>
+    <script src="data/test-image-transcriptions.js?v=20260930-1"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
     <script>
         const topics = [
@@ -12376,6 +12377,10 @@
         const toast = document.getElementById("toast");
         const testData = window.EGE_TESTS_PUBLIC || { tests: [], unavailableTests: [] };
         const testScoreData = window.EGE_TEST_SCORE_HASHES || { tests: {} };
+        const testImageTranscriptions = window.EGE_TEST_IMAGE_TRANSCRIPTIONS?.questions || {};
+        const testsByLesson = new Map(
+            (testData.tests || []).map((test) => [Number(test.lesson), test])
+        );
         const topicSubjectLabels = {
             soc: "Социология",
             eco: "Экономика",
@@ -13244,8 +13249,8 @@
             } else {
                 homeworkPanelDownload.removeAttribute("href");
             }
-            const testLesson = topic.testLesson || Number(topic.lesson);
-            const topicTest = testData.tests.find((test) => test.lesson === testLesson);
+            const testLesson = Number(topic.testLesson || topic.lesson);
+            const topicTest = testsByLesson.get(testLesson) || null;
             renderEmbeddedTest(topicTest);
             document.getElementById("answerFile").value = "";
             document.getElementById("fileLabel").textContent = "Выбрать выполненную работу";
@@ -13303,9 +13308,23 @@
         }
 
         function renderQuestionImage(question) {
+            const transcription = testImageTranscriptions[question.id];
+            if (transcription) {
+                const left = transcription.left || [];
+                const right = transcription.right || [];
+                const renderColumn = (title, items) => items.length ? `
+                    <div class="test-transcription-column">
+                        <strong>${title}</strong>
+                        <div>${items.map((item) => `<p>${escapeHtml(item)}</p>`).join("")}</div>
+                    </div>` : "";
+                return `<div class="test-question-transcription ${left.length ? "" : "is-single"}" aria-label="Текст задания">
+                    ${renderColumn(left.length ? "Позиции" : "", left)}
+                    ${renderColumn(left.length ? "Варианты ответа" : "Утверждения", right)}
+                </div>`;
+            }
             if (!question.image) return "";
             if (question.image.src) {
-                return `<img class="test-question-image" src="${escapeHtml(question.image.src)}" alt="Иллюстрация к вопросу ${question.number}">`;
+                return `<figure class="test-question-figure"><img class="test-question-image test-question-image--diagram" src="${escapeHtml(question.image.src)}" alt="График или диаграмма к вопросу ${question.number}"></figure>`;
             }
             return '<div class="test-image-pending">К этому вопросу относится изображение из Google Forms. Оно будет добавлено при закрытой дозагрузке изображений.</div>';
         }
@@ -13616,8 +13635,8 @@
         }
 
         function getTopicTest(topic) {
-            const testLesson = topic.testLesson || Number(topic.lesson);
-            return testData.tests.find((test) => test.lesson === testLesson) || null;
+            const testLesson = Number(topic.testLesson || topic.lesson);
+            return testsByLesson.get(testLesson) || null;
         }
 
         function getTopicProgress(topic) {
