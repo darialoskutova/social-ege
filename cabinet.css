@@ -1598,6 +1598,11 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-file small {
     body.menu-open #appView .sidebar {
         padding-top: max(8px, env(safe-area-inset-top, 0px));
     }
+
+    /* Keep the topic tabs below the two-row fixed cabinet navigation. */
+    #appView #lessonPage .lesson-section-tabs {
+        top: calc(112px + env(safe-area-inset-top, 0px));
+    }
 }
 
 @media (max-width: 560px) {
