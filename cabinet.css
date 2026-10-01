@@ -1586,6 +1586,34 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-file small {
     margin-inline: 0;
     min-height: calc(76px + env(safe-area-inset-top, 0px));
     padding-top: max(10px, env(safe-area-inset-top, 0px));
+    background: #fff;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+/* Safari can repaint nested sticky translucent panels on different subpixels
+   while scrolling. Stable compositor layers prevent that visible jitter. */
+#appView .sidebar,
+#appView #lessonPage .lesson-section-tabs {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    will-change: transform;
+}
+
+#appView .sidebar {
+    -webkit-transform: translate3d(0, 0, 0) !important;
+    transform: translate3d(0, 0, 0) !important;
+}
+
+#appView #lessonPage .lesson-section-tab {
+    transition: border-color 160ms ease, background-color 160ms ease,
+        color 160ms ease, box-shadow 160ms ease;
+}
+
+html[data-theme="dark"] #appView .sidebar {
+    background: #0d192b;
 }
 
 @media (max-width: 900px) {
