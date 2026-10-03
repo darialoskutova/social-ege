@@ -1678,6 +1678,27 @@ html[data-theme="dark"] #appView .sidebar {
     text-underline-offset: 3px;
 }
 
+.login-card > .login-error {
+    margin: 16px 0 0;
+    padding: 11px 13px;
+    border-left: 3px solid var(--wine);
+    background: rgba(123, 30, 52, 0.08);
+    color: var(--wine);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.login-card > .login-error[hidden] {
+    display: none;
+}
+
+#loginSubmitButton:disabled,
+#logoutButton:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
 .cabinet-legal {
     display: flex;
     width: min(1240px, calc(100% - 64px));
@@ -1870,6 +1891,12 @@ html[data-theme="dark"] #appView .sidebar {
 html[data-theme="dark"] .login-consent-panel {
     border-color: #415778;
     background: #172944;
+}
+
+html[data-theme="dark"] .login-card > .login-error {
+    border-left-color: #e7a5b4;
+    background: rgba(231, 165, 180, 0.11);
+    color: #ffd7e0;
 }
 
 html[data-theme="dark"] .login-check,

@@ -1,8 +1,8 @@
 # Social EGE backend
 
 Private API deployed in small, reversible stages. It currently contains a
-database-backed health check, the core schema and disabled authentication
-primitives. Student data and server-side test scoring remain later stages.
+database-backed health check, the core schema and database-backed session
+authentication. Student data and server-side test scoring remain later stages.
 
 ## Configuration
 
@@ -59,18 +59,24 @@ stored in the public repository.
 
 ## Authentication boundary
 
-The backend contains password and session primitives, but production keeps
-them disabled with `AUTH_ENABLED=false` until HTTPS and the final public origin
-are configured. `GET /api/auth/status` reports this state without exposing any
-configuration values.
+`GET /api/auth/status` reports whether authentication is enabled without
+exposing configuration values. When enabled, the public auth routes are:
 
-When enabled later, authentication requires:
+- `POST /api/auth/login`;
+- `GET /api/auth/me`;
+- `POST /api/auth/logout`.
+
+When enabled, authentication requires:
 
 - Argon2id password hashes;
 - opaque random sessions stored as SHA-256 token hashes in PostgreSQL;
 - `HttpOnly`, `Secure`, `SameSite=Strict` cookies;
 - exact HTTPS origins for state-changing requests;
 - rate limiting and generic login errors.
+
+The frontend must treat `GET /api/auth/me` as the source of truth for the
+current user. Passwords and session tokens must never be copied into browser
+storage; the browser receives the session only as an HttpOnly cookie.
 
 The interactive account command never accepts a password in command-line
 arguments:
@@ -79,12 +85,14 @@ arguments:
 npm run create-user -- --login LOGIN --name "Имя" --role student
 ```
 
-Do not create production accounts before HTTPS is active and the legal consent
-flow is connected to the frontend.
+Run the command only on the server where the protected `.env` is available.
 
 ## Current boundary
 
-The schema alone does not expose login, progress, homework or scoring API
-routes. In particular, `data/tests-score-hashes.js` remains an identified
+Progress, homework, teacher-message and scoring API routes have not been
+implemented yet. The current frontend gates the cabinet with the server
+session and keeps legacy browser-only learning data scoped by authenticated
+user ID, but moving those records to protected API routes remains a separate
+stage. In particular, `data/tests-score-hashes.js` remains an identified
 security issue and must later be replaced by server-side scoring without
 shipping answer keys to browsers.
