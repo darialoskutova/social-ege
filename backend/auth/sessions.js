@@ -44,6 +44,7 @@ async function findSession(pool, token) {
         AND s.revoked_at IS NULL
         AND s.expires_at > NOW()
         AND u.is_active = TRUE
+        AND u.account_status = 'active'
       LIMIT 1`,
     [hashToken(token)],
   );

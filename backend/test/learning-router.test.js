@@ -207,8 +207,8 @@ async function fixture() {
   const password = "safe-test-password-123";
   const passwordHash = await hashPassword(password);
   const pool = createPool([
-    { id: 1, login: "student_a", display_name: "Ученица А", password_hash: passwordHash, role: "student", is_active: true },
-    { id: 2, login: "student_b", display_name: "Ученица Б", password_hash: passwordHash, role: "student", is_active: true },
+    { id: 1, login: "student_a", display_name: "Ученица А", password_hash: passwordHash, role: "student", is_active: true, account_status: "active" },
+    { id: 2, login: "student_b", display_name: "Ученица Б", password_hash: passwordHash, role: "student", is_active: true, account_status: "active" },
   ]);
   const server = await startServer(pool);
   return { password, pool, server };

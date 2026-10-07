@@ -5,6 +5,8 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const helmet = require("helmet");
 const { Pool } = require("pg");
+const { createAdminRouter } = require("./admin/router");
+const { createAccountRouter } = require("./auth/account-router");
 const { readAuthConfig } = require("./auth/config");
 const { createAuthRouter } = require("./auth/router");
 const { createLearningRouter } = require("./learning/router");
@@ -94,6 +96,8 @@ app.get("/health", async (req, res) => {
 });
 
 app.use("/api/auth", createAuthRouter(pool, authConfig));
+app.use("/api/account", createAccountRouter(pool, authConfig));
+app.use("/api/admin", createAdminRouter(pool, authConfig));
 app.use("/api/learning", createLearningRouter(pool, authConfig));
 
 app.use((req, res) => {

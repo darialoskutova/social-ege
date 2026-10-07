@@ -1,0 +1,117 @@
+:root {
+  color-scheme: light;
+  --blue: #173f77;
+  --blue-deep: #102e59;
+  --burgundy: #7b263d;
+  --ink: #172033;
+  --muted: #5e6879;
+  --paper: #ffffff;
+  --canvas: #f4f6fa;
+  --line: #d9dfeb;
+  --ok: #17643c;
+  --danger: #9b1c31;
+  --shadow: 0 18px 45px rgba(23, 63, 119, 0.12);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(23, 63, 119, 0.07), transparent 36%),
+    linear-gradient(315deg, rgba(123, 38, 61, 0.06), transparent 32%),
+    var(--canvas);
+}
+
+button, input { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+
+a { color: var(--blue); }
+a:focus-visible, button:focus-visible, input:focus-visible {
+  outline: 3px solid rgba(23, 63, 119, 0.28);
+  outline-offset: 3px;
+}
+
+.account-shell {
+  width: min(620px, calc(100% - 32px));
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  padding: 44px 0;
+}
+
+.account-card {
+  width: 100%;
+  padding: clamp(26px, 6vw, 46px);
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--burgundy);
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 30px;
+  color: var(--blue-deep);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: white;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+h1, h2, p { margin-top: 0; }
+h1 { margin-bottom: 12px; font-size: clamp(28px, 6vw, 42px); line-height: 1.08; }
+.lead { color: var(--muted); font-size: 17px; line-height: 1.55; }
+
+.form-stack { display: grid; gap: 18px; margin-top: 28px; }
+.field { display: grid; gap: 7px; }
+.field label { font-size: 14px; font-weight: 750; }
+.field input {
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 13px;
+  color: var(--ink);
+  border: 1px solid #adb8ca;
+  border-radius: 9px;
+  background: white;
+}
+.field input:focus { border-color: var(--blue); }
+
+.primary-button, .secondary-button, .danger-button {
+  min-height: 44px;
+  padding: 10px 17px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.primary-button { color: white; background: var(--blue); }
+.primary-button:hover { background: var(--blue-deep); }
+.secondary-button { color: var(--blue); border-color: #9cacc4; background: white; }
+.danger-button { color: var(--danger); border-color: #d9a7b0; background: white; }
+button:disabled { opacity: 0.55; cursor: wait; }
+
+.form-message { min-height: 24px; margin: 3px 0 0; color: var(--danger); font-size: 14px; }
+.form-message.success { color: var(--ok); }
+.legal-note { margin: 26px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.is-hidden { display: none !important; }
+
+@media (max-width: 520px) {
+  .account-shell { width: min(100% - 20px, 620px); padding: 14px 0; }
+  .account-card { padding: 24px 20px; }
+}

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="same-origin">
+  <title>Панель преподавателя</title>
+  <link rel="stylesheet" href="/account-pages.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <header class="admin-header">
+    <a class="admin-brand" href="/admin/"><span class="brand-mark" aria-hidden="true">Е</span><span>Панель преподавателя</span></a>
+    <div class="admin-user"><span data-admin-name>Проверяем доступ…</span><a href="/">На сайт</a></div>
+  </header>
+
+  <div class="admin-layout">
+    <nav class="admin-tabs" aria-label="Разделы панели">
+      <button class="admin-tab is-active" type="button" data-tab="students">Ученики</button>
+      <button class="admin-tab" type="button" data-tab="materials">Материалы</button>
+      <button class="admin-tab" type="button" data-tab="results">Результаты</button>
+      <button class="admin-tab" type="button" data-tab="homework">Домашние работы</button>
+    </nav>
+
+    <main class="admin-main">
+      <section data-panel="students">
+        <div class="section-heading">
+          <div><h1>Ученики</h1><p>Аккаунты, доступ и ссылки для самостоятельной установки пароля.</p></div>
+          <button class="primary-button" type="button" data-create-student>Добавить ученика</button>
+        </div>
+        <p class="admin-message" data-admin-message role="status" aria-live="polite"></p>
+        <div class="student-table-wrap">
+          <table class="student-table">
+            <thead><tr><th>Ученик</th><th>Статус</th><th>Создан</th><th>Последний вход</th><th><span class="sr-only">Действия</span></th></tr></thead>
+            <tbody data-student-list></tbody>
+          </table>
+          <div class="table-state" data-table-state>Загружаем список…</div>
+        </div>
+      </section>
+
+      <section class="is-hidden" data-panel="placeholder">
+        <h1 data-placeholder-title></h1>
+        <div class="placeholder-note">Этот раздел появится на следующем этапе. Сейчас панель безопасно работает только с аккаунтами учеников.</div>
+      </section>
+
+      <section class="access-state is-hidden" data-access-state>
+        <h1>Не удалось открыть панель</h1>
+        <p data-access-message></p>
+        <a class="primary-button" href="/#login">Перейти ко входу</a>
+      </section>
+    </main>
+  </div>
+
+  <dialog class="admin-dialog" data-student-dialog>
+    <form class="dialog-body" data-student-form>
+      <div class="dialog-heading"><h2 data-dialog-title>Новый ученик</h2><button type="button" class="close-button" data-close-dialog aria-label="Закрыть">×</button></div>
+      <input type="hidden" name="studentId">
+      <div class="field"><label for="student-name">Имя и фамилия</label><input id="student-name" name="name" maxlength="120" autocomplete="off" required></div>
+      <div class="field"><label for="student-login">Логин</label><input id="student-login" name="login" minlength="3" maxlength="64" pattern="[A-Za-z0-9._-]+" autocapitalize="none" autocomplete="off" required><small>Латинские буквы, цифры, точка, дефис или подчёркивание</small></div>
+      <p class="form-message" data-dialog-message role="status" aria-live="polite"></p>
+      <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>Отмена</button><button class="primary-button" type="submit" data-dialog-submit>Создать</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="admin-dialog" data-link-dialog>
+    <div class="dialog-body">
+      <div class="dialog-heading"><h2 data-link-title>Ссылка готова</h2><button type="button" class="close-button" data-close-link aria-label="Закрыть">×</button></div>
+      <p>Передайте её ученику. Ссылка одноразовая и действует 72 часа.</p>
+      <label class="sr-only" for="generated-link">Ссылка</label><input class="generated-link" id="generated-link" data-generated-link readonly>
+      <p class="form-message" data-copy-message role="status" aria-live="polite"></p>
+      <div class="dialog-actions"><button class="secondary-button" type="button" data-close-link>Закрыть</button><button class="primary-button" type="button" data-copy-link>Скопировать</button></div>
+    </div>
+  </dialog>
+
+  <script src="/admin/admin.js" defer></script>
+</body>
+</html>

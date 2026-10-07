@@ -6,9 +6,11 @@ const { readAuthConfig } = require("../auth/config");
 
 const managedNames = [
   "ALLOWED_ORIGINS",
+  "ACCOUNT_TOKEN_TTL_HOURS",
   "AUTH_ENABLED",
   "COOKIE_SECURE",
   "NODE_ENV",
+  "PUBLIC_ORIGIN",
   "SESSION_COOKIE_NAME",
   "SESSION_TTL_HOURS",
 ];
@@ -57,5 +59,19 @@ test("production authentication accepts an exact HTTPS origin", () => {
     const config = readAuthConfig();
     assert.equal(config.enabled, true);
     assert.equal(config.allowedOrigins.has("https://example.test"), true);
+    assert.equal(config.publicOrigin, "https://example.test");
+    assert.equal(config.accountTokenTtlHours, 72);
+  });
+});
+
+test("public origin must be one of the exact allowed origins", () => {
+  withEnvironment({
+    NODE_ENV: "production",
+    AUTH_ENABLED: "true",
+    COOKIE_SECURE: "true",
+    ALLOWED_ORIGINS: "https://example.test",
+    PUBLIC_ORIGIN: "https://other.test",
+  }, () => {
+    assert.throws(() => readAuthConfig(), /also be present/);
   });
 });

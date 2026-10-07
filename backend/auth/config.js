@@ -23,6 +23,7 @@ function readAuthConfig() {
   const isProduction = process.env.NODE_ENV === "production";
   const cookieName = process.env.SESSION_COOKIE_NAME || "social_ege_session";
   const sessionTtlHours = integerValue("SESSION_TTL_HOURS", 24 * 7, 1, 24 * 30);
+  const accountTokenTtlHours = integerValue("ACCOUNT_TOKEN_TTL_HOURS", 72, 1, 24 * 7);
   const origins = (process.env.ALLOWED_ORIGINS || "")
     .split(",")
     .map((origin) => origin.trim())
@@ -48,6 +49,20 @@ function readAuthConfig() {
   if (enabled && isProduction && origins.some((origin) => !origin.startsWith("https://"))) {
     throw new Error("Production authentication requires HTTPS origins");
   }
+  const configuredPublicOrigin = (process.env.PUBLIC_ORIGIN || "").trim();
+  const publicOrigin = configuredPublicOrigin || origins[0] || "";
+  if (publicOrigin) {
+    const url = new URL(publicOrigin);
+    if (url.origin !== publicOrigin || !["http:", "https:"].includes(url.protocol)) {
+      throw new Error("PUBLIC_ORIGIN must be an exact HTTP(S) origin");
+    }
+    if (enabled && !origins.includes(publicOrigin)) {
+      throw new Error("PUBLIC_ORIGIN must also be present in ALLOWED_ORIGINS");
+    }
+    if (enabled && isProduction && !publicOrigin.startsWith("https://")) {
+      throw new Error("Production PUBLIC_ORIGIN must use HTTPS");
+    }
+  }
 
   return Object.freeze({
     enabled,
@@ -55,6 +70,8 @@ function readAuthConfig() {
     isProduction,
     cookieName,
     sessionTtlHours,
+    accountTokenTtlHours,
+    publicOrigin,
     allowedOrigins: new Set(origins),
   });
 }

@@ -1,6 +1,11 @@
 "use strict";
 
 const { z } = require("zod");
+const {
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  passwordMeetsPolicy,
+} = require("../auth/password-policy");
 const { hashPassword } = require("../auth/passwords");
 const { createPool } = require("./database");
 
@@ -71,8 +76,8 @@ async function run() {
   if (password !== confirmation) {
     throw new Error("Passwords do not match");
   }
-  if (password.length < 12 || password.length > 256) {
-    throw new Error("Password must contain 12–256 characters");
+  if (!passwordMeetsPolicy(password)) {
+    throw new Error(`Password must contain ${PASSWORD_MIN_LENGTH}–${PASSWORD_MAX_LENGTH} characters`);
   }
 
   const passwordHash = await hashPassword(password);
@@ -80,8 +85,9 @@ async function run() {
 
   try {
     await pool.query(
-      `INSERT INTO users (login, display_name, password_hash, role)
-       VALUES ($1, $2, $3, $4)`,
+      `INSERT INTO users
+         (login, display_name, password_hash, role, account_status, activated_at)
+       VALUES ($1, $2, $3, $4, 'active', NOW())`,
       [user.login, user.name.normalize("NFKC"), passwordHash, user.role],
     );
     console.log(`Created ${user.role} account: ${user.login}`);

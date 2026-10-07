@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Активация аккаунта</title>
+  <link rel="stylesheet" href="/account-pages.css">
+</head>
+<body>
+  <main class="account-shell" data-account-flow="activation">
+    <section class="account-card">
+      <a class="brand-link" href="/"><span class="brand-mark" aria-hidden="true">Е</span><span>ЕГЭ по обществознанию</span></a>
+      <h1>Активация аккаунта</h1>
+      <p class="lead" data-account>Проверяем ссылку…</p>
+      <form class="form-stack is-hidden" novalidate>
+        <div class="field"><label for="password">Придумайте пароль</label><input id="password" name="password" type="password" minlength="12" maxlength="256" autocomplete="new-password" required></div>
+        <div class="field"><label for="confirmation">Повторите пароль</label><input id="confirmation" name="confirmation" type="password" minlength="12" maxlength="256" autocomplete="new-password" required></div>
+        <button class="primary-button" type="submit">Активировать аккаунт</button>
+      </form>
+      <p class="form-message" data-message role="status" aria-live="polite"></p>
+      <a class="secondary-button is-hidden" data-login-link href="/#login">Перейти ко входу</a>
+      <p class="legal-note">Данные обрабатываются в соответствии с <a href="/privacy.html">Политикой обработки персональных данных</a>.</p>
+    </section>
+  </main>
+  <script src="/account-flow.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,415 @@
+"use strict";
+
+const test = require("node:test");
+const assert = require("node:assert/strict");
+const cookieParser = require("cookie-parser");
+const express = require("express");
+const { createAdminRouter } = require("../admin/router");
+const { createAccountRouter } = require("../auth/account-router");
+const { createAuthRouter } = require("../auth/router");
+const { hashPassword } = require("../auth/passwords");
+const { HttpError } = require("../lib/http-error");
+
+const ORIGIN = "https://social-ege.example";
+
+function config() {
+  return {
+    enabled: true,
+    secureCookie: false,
+    isProduction: false,
+    cookieName: "social_ege_session",
+    sessionTtlHours: 168,
+    accountTokenTtlHours: 72,
+    publicOrigin: ORIGIN,
+    allowedOrigins: new Set([ORIGIN]),
+  };
+}
+
+function publicColumns(user) {
+  return {
+    id: user.id,
+    login: user.login,
+    display_name: user.display_name,
+    account_status: user.account_status,
+    created_at: user.created_at,
+    last_login_at: user.last_login_at,
+    activated_at: user.activated_at,
+    disabled_at: user.disabled_at,
+    archived_at: user.archived_at,
+  };
+}
+
+function fakePool(initialUsers) {
+  const state = {
+    users: initialUsers,
+    sessions: new Map(),
+    tokens: [],
+    learning: new Map(),
+    nextUserId: Math.max(...initialUsers.map((user) => Number(user.id))) + 1,
+    nextTokenId: 1,
+  };
+
+  function uniqueLogin(login, exceptId = null) {
+    if (state.users.some((user) => user.login === login && String(user.id) !== String(exceptId))) {
+      const error = new Error("duplicate");
+      error.code = "23505";
+      throw error;
+    }
+  }
+
+  async function query(sql, values = []) {
+    const normalized = sql.replace(/\s+/g, " ").trim();
+    if (["BEGIN", "COMMIT", "ROLLBACK"].includes(normalized)) return { rows: [] };
+
+    if (normalized.includes("FROM users") && normalized.includes("WHERE login = $1")) {
+      const user = state.users.find((item) => item.login === values[0]);
+      return { rows: user ? [user] : [] };
+    }
+    if (normalized.startsWith("INSERT INTO auth_sessions")) {
+      state.sessions.set(values[0], { userId: String(values[1]), expiresAt: values[2], revoked: false });
+      return { rows: [] };
+    }
+    if (normalized.startsWith("UPDATE users SET last_login_at")) {
+      const user = state.users.find((item) => String(item.id) === String(values[0]));
+      if (user) user.last_login_at = new Date();
+      return { rows: [] };
+    }
+    if (normalized.includes("FROM auth_sessions AS s")) {
+      const session = state.sessions.get(values[0]);
+      const user = session && state.users.find((item) => String(item.id) === session.userId);
+      if (!session || session.revoked || session.expiresAt <= new Date()
+        || !user?.is_active || user.account_status !== "active") return { rows: [] };
+      return { rows: [{ id: user.id, login: user.login, display_name: user.display_name, role: user.role }] };
+    }
+    if (normalized.startsWith("UPDATE auth_sessions") && normalized.includes("WHERE token_hash = $1")) {
+      const session = state.sessions.get(values[0]);
+      if (session) session.revoked = true;
+      return { rows: [] };
+    }
+    if (normalized.startsWith("UPDATE auth_sessions") && normalized.includes("WHERE user_id = $1")) {
+      for (const session of state.sessions.values()) {
+        if (session.userId === String(values[0])) session.revoked = true;
+      }
+      return { rows: [] };
+    }
+
+    if (normalized.includes("FROM users") && normalized.includes("WHERE role = 'student'")
+      && normalized.includes("ORDER BY")) {
+      return { rows: state.users.filter((user) => user.role === "student").map(publicColumns) };
+    }
+    if (normalized.startsWith("INSERT INTO users") && normalized.includes("pending_activation")) {
+      uniqueLogin(values[0]);
+      const user = {
+        id: state.nextUserId++, login: values[0], display_name: values[1], password_hash: null,
+        role: "student", is_active: false, password_changed_at: null,
+        account_status: "pending_activation", created_at: new Date(), updated_at: new Date(),
+        last_login_at: null, activated_at: null, disabled_at: null, archived_at: null,
+      };
+      state.users.push(user);
+      return { rows: [publicColumns(user)] };
+    }
+    if (normalized.startsWith("UPDATE users") && normalized.includes("login = COALESCE")) {
+      const user = state.users.find((item) => String(item.id) === String(values[2])
+        && item.role === "student" && item.account_status !== "archived");
+      if (!user) return { rows: [] };
+      if (values[0] !== null) uniqueLogin(values[0], user.id);
+      if (values[0] !== null) user.login = values[0];
+      if (values[1] !== null) user.display_name = values[1];
+      user.updated_at = new Date();
+      return { rows: [publicColumns(user)] };
+    }
+    if (normalized.startsWith("SELECT id, password_hash, account_status") && normalized.includes("FOR UPDATE")) {
+      const user = state.users.find((item) => String(item.id) === String(values[0]) && item.role === "student");
+      return { rows: user ? [{ id: user.id, password_hash: user.password_hash, account_status: user.account_status }] : [] };
+    }
+    if (normalized.startsWith("SELECT id, login, account_status") && normalized.includes("FOR UPDATE")) {
+      const user = state.users.find((item) => String(item.id) === String(values[0]) && item.role === "student");
+      return { rows: user ? [{ id: user.id, login: user.login, account_status: user.account_status }] : [] };
+    }
+    if (normalized.startsWith("UPDATE users") && normalized.includes("SET account_status = $1")) {
+      const user = state.users.find((item) => String(item.id) === String(values[1]));
+      if (!user) return { rows: [] };
+      user.account_status = values[0];
+      user.is_active = values[0] === "active";
+      user.disabled_at = ["blocked", "archived"].includes(values[0]) ? new Date() : null;
+      if (values[0] === "archived") user.archived_at = new Date();
+      user.updated_at = new Date();
+      return { rows: [publicColumns(user)] };
+    }
+
+    if (normalized.startsWith("UPDATE account_tokens") && normalized.includes("WHERE user_id = $1")
+      && normalized.includes("purpose = $2")) {
+      for (const token of state.tokens) {
+        if (String(token.userId) === String(values[0]) && token.purpose === values[1]
+          && !token.usedAt && !token.revokedAt) token.revokedAt = new Date();
+      }
+      return { rows: [] };
+    }
+    if (normalized.startsWith("UPDATE account_tokens") && normalized.includes("WHERE user_id = $1")) {
+      for (const token of state.tokens) {
+        if (String(token.userId) === String(values[0]) && !token.usedAt && !token.revokedAt) token.revokedAt = new Date();
+      }
+      return { rows: [] };
+    }
+    if (normalized.startsWith("INSERT INTO account_tokens")) {
+      state.tokens.push({
+        id: state.nextTokenId++, userId: values[0], tokenHash: values[1], purpose: values[2],
+        expiresAt: values[3], createdBy: values[4], usedAt: null, revokedAt: null,
+      });
+      return { rows: [] };
+    }
+    if (normalized.includes("FROM account_tokens AS t")) {
+      const token = state.tokens.find((item) => item.tokenHash === values[0]
+        && item.purpose === values[1] && !item.usedAt && !item.revokedAt && item.expiresAt > new Date());
+      const user = token && state.users.find((item) => String(item.id) === String(token.userId));
+      return { rows: token && user ? [{
+        token_id: token.id, user_id: user.id, login: user.login, display_name: user.display_name,
+        account_status: user.account_status, password_hash: user.password_hash,
+      }] : [] };
+    }
+    if (normalized.startsWith("UPDATE users") && normalized.includes("password_hash = $1")
+      && normalized.includes("account_status = 'active'")) {
+      const user = state.users.find((item) => String(item.id) === String(values[1]));
+      user.password_hash = values[0];
+      user.password_changed_at = new Date();
+      user.activated_at ||= new Date();
+      user.account_status = "active";
+      user.is_active = true;
+      user.disabled_at = null;
+      return { rows: [] };
+    }
+    if (normalized.startsWith("UPDATE users") && normalized.includes("password_hash = $1")) {
+      const user = state.users.find((item) => String(item.id) === String(values[1]));
+      user.password_hash = values[0];
+      user.password_changed_at = new Date();
+      return { rows: [] };
+    }
+    if (normalized.startsWith("UPDATE account_tokens SET used_at")) {
+      const token = state.tokens.find((item) => String(item.id) === String(values[0]));
+      if (token && !token.usedAt) token.usedAt = new Date();
+      return { rows: [] };
+    }
+    if (normalized.startsWith("INSERT INTO audit_log")) return { rows: [] };
+
+    throw new Error(`Unexpected fake database query: ${normalized}`);
+  }
+
+  return {
+    state,
+    query,
+    async connect() { return { query, release() {} }; },
+  };
+}
+
+async function fixture() {
+  const adminPassword = "admin-password-123";
+  const studentPassword = "student-password-123";
+  const now = new Date();
+  const pool = fakePool([
+    { id: 1, login: "daria", display_name: "Дарья", password_hash: await hashPassword(adminPassword), role: "admin", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
+    { id: 2, login: "student", display_name: "Ученица", password_hash: await hashPassword(studentPassword), role: "student", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
+  ]);
+  pool.state.learning.set("2", { topic: "soc1", completed: true });
+
+  const app = express();
+  app.use(express.json({ limit: "64kb" }));
+  app.use(cookieParser());
+  app.use("/api/auth", createAuthRouter(pool, config()));
+  app.use("/api/account", createAccountRouter(pool, config()));
+  app.use("/api/admin", createAdminRouter(pool, config()));
+  app.use((error, req, res, next) => {
+    if (error instanceof HttpError) {
+      res.status(error.status).json({ error: { code: error.code, message: error.message } });
+      return;
+    }
+    next(error);
+  });
+  const server = await new Promise((resolve, reject) => {
+    const instance = app.listen(0, "127.0.0.1", () => resolve(instance));
+    instance.once("error", reject);
+  });
+  return {
+    pool, adminPassword, studentPassword,
+    baseUrl: `http://127.0.0.1:${server.address().port}`,
+    close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())),
+  };
+}
+
+async function request(ctx, path, { method = "GET", cookie, body } = {}) {
+  return fetch(`${ctx.baseUrl}${path}`, {
+    method,
+    headers: {
+      ...(cookie ? { cookie } : {}),
+      ...(method === "GET" ? {} : { origin: ORIGIN }),
+      ...(body === undefined ? {} : { "content-type": "application/json" }),
+    },
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
+async function login(ctx, loginName, password) {
+  const response = await request(ctx, "/api/auth/login", {
+    method: "POST", body: { login: loginName, password, remember: false },
+  });
+  return { response, cookie: response.ok ? response.headers.get("set-cookie").split(";", 1)[0] : null };
+}
+
+function rawToken(url) {
+  return new URLSearchParams(new URL(url).hash.slice(1)).get("token");
+}
+
+async function createStudent(ctx, cookie, loginName = "new_student") {
+  const response = await request(ctx, "/api/admin/students", {
+    method: "POST", cookie, body: { login: loginName, name: "Новая ученица" },
+  });
+  return { response, payload: await response.json() };
+}
+
+test("A/B: admin API rejects a student with 403 and a missing session with 401", async () => {
+  const ctx = await fixture();
+  try {
+    assert.equal((await request(ctx, "/api/admin/students")).status, 401);
+    const student = await login(ctx, "student", ctx.studentPassword);
+    assert.equal(student.response.status, 200);
+    assert.equal((await request(ctx, "/api/admin/students", { cookie: student.cookie })).status, 403);
+  } finally { await ctx.close(); }
+});
+
+test("C-F/I: admin creates a passwordless pending student; activation is private and one-time", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const created = await createStudent(ctx, admin.cookie);
+    assert.equal(created.response.status, 201);
+    assert.equal(created.payload.student.status, "pending_activation");
+    const user = ctx.pool.state.users.find((item) => item.login === "new_student");
+    assert.equal(user.password_hash, null);
+    assert.equal((await login(ctx, "new_student", "some-password-123")).response.status, 401);
+
+    const serialized = JSON.stringify(created.payload);
+    assert.doesNotMatch(serialized, /password|hash/i);
+    const token = rawToken(created.payload.activationUrl);
+    assert.ok(token);
+    assert.equal(ctx.pool.state.tokens.some((item) => item.tokenHash === token), false);
+
+    const activation = await request(ctx, "/api/account/activate", {
+      method: "POST", body: { token, password: "chosen-password-123" },
+    });
+    assert.equal(activation.status, 200);
+    assert.equal((await request(ctx, "/api/account/activate", {
+      method: "POST", body: { token, password: "another-password-123" },
+    })).status, 400);
+  } finally { await ctx.close(); }
+});
+
+test("G/H: an expired activation link fails; an activated student can log in", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const expired = await createStudent(ctx, admin.cookie, "expired_student");
+    const expiredToken = rawToken(expired.payload.activationUrl);
+    ctx.pool.state.tokens.at(-1).expiresAt = new Date(Date.now() - 1000);
+    assert.equal((await request(ctx, "/api/account/activate/validate", {
+      method: "POST", body: { token: expiredToken },
+    })).status, 400);
+
+    const created = await createStudent(ctx, admin.cookie, "active_student");
+    const token = rawToken(created.payload.activationUrl);
+    assert.equal((await request(ctx, "/api/account/activate", {
+      method: "POST", body: { token, password: "chosen-password-123" },
+    })).status, 200);
+    assert.equal((await login(ctx, "active_student", "chosen-password-123")).response.status, 200);
+  } finally { await ctx.close(); }
+});
+
+test("J: issuing a new activation link invalidates the old link", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const created = await createStudent(ctx, admin.cookie, "replace_link");
+    const oldToken = rawToken(created.payload.activationUrl);
+    const refreshed = await request(ctx, `/api/admin/students/${created.payload.student.id}/activation-link`, { method: "POST", cookie: admin.cookie });
+    const newToken = rawToken((await refreshed.json()).url);
+    assert.notEqual(oldToken, newToken);
+    assert.equal((await request(ctx, "/api/account/activate/validate", {
+      method: "POST", body: { token: oldToken },
+    })).status, 400);
+    assert.equal((await request(ctx, "/api/account/activate/validate", {
+      method: "POST", body: { token: newToken },
+    })).status, 200);
+  } finally { await ctx.close(); }
+});
+
+test("K-M: reset link changes the password, invalidates sessions and works once", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const oldSession = await login(ctx, "student", ctx.studentPassword);
+    const linkResponse = await request(ctx, "/api/admin/students/2/password-reset-link", { method: "POST", cookie: admin.cookie });
+    const token = rawToken((await linkResponse.json()).url);
+    assert.equal((await request(ctx, "/api/account/reset-password", {
+      method: "POST", body: { token, password: "new-student-password-123" },
+    })).status, 200);
+    assert.equal((await login(ctx, "student", ctx.studentPassword)).response.status, 401);
+    assert.equal((await login(ctx, "student", "new-student-password-123")).response.status, 200);
+    assert.equal((await request(ctx, "/api/auth/me", { cookie: oldSession.cookie })).status, 401);
+    assert.equal((await request(ctx, "/api/account/reset-password", {
+      method: "POST", body: { token, password: "third-student-password-123" },
+    })).status, 400);
+  } finally { await ctx.close(); }
+});
+
+test("N/O: blocked student cannot log in; unblocked student can log in again", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    assert.equal((await request(ctx, "/api/admin/students/2/block", { method: "POST", cookie: admin.cookie })).status, 200);
+    assert.equal((await login(ctx, "student", ctx.studentPassword)).response.status, 401);
+    assert.equal((await request(ctx, "/api/admin/students/2/unblock", { method: "POST", cookie: admin.cookie })).status, 200);
+    assert.equal((await login(ctx, "student", ctx.studentPassword)).response.status, 200);
+  } finally { await ctx.close(); }
+});
+
+test("archive is non-destructive, revokes access and preserves learning data", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const student = await login(ctx, "student", ctx.studentPassword);
+    const archived = await request(ctx, "/api/admin/students/2/archive", { method: "POST", cookie: admin.cookie });
+    assert.equal(archived.status, 200);
+    assert.equal((await archived.json()).student.status, "archived");
+    assert.equal((await login(ctx, "student", ctx.studentPassword)).response.status, 401);
+    assert.equal((await request(ctx, "/api/auth/me", { cookie: student.cookie })).status, 401);
+    assert.deepEqual(ctx.pool.state.learning.get("2"), { topic: "soc1", completed: true });
+  } finally { await ctx.close(); }
+});
+
+test("P/Q: editing login keeps the user id and learning data; duplicate login is rejected", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const edit = await request(ctx, "/api/admin/students/2", {
+      method: "PATCH", cookie: admin.cookie, body: { login: "student_new", name: "Новое имя" },
+    });
+    assert.equal(edit.status, 200);
+    assert.equal((await edit.json()).student.id, "2");
+    assert.deepEqual(ctx.pool.state.learning.get("2"), { topic: "soc1", completed: true });
+    assert.equal((await request(ctx, "/api/admin/students/2", {
+      method: "PATCH", cookie: admin.cookie, body: { login: "daria" },
+    })).status, 409);
+  } finally { await ctx.close(); }
+});
+
+test("R/S: neither payload role nor forged identity grants admin privileges", async () => {
+  const ctx = await fixture();
+  try {
+    const student = await login(ctx, "student", ctx.studentPassword);
+    assert.equal((await request(ctx, "/api/admin/students/2", {
+      method: "PATCH", cookie: student.cookie, body: { role: "admin" },
+    })).status, 403);
+    assert.equal(ctx.pool.state.users.find((item) => item.id === 2).role, "student");
+    assert.equal((await request(ctx, "/api/admin/students?role=admin", {
+      cookie: "social_ege_session=this-is-a-forged-session-token-that-is-long-enough",
+    })).status, 401);
+  } finally { await ctx.close(); }
+});

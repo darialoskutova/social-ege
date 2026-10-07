@@ -190,6 +190,7 @@ test("successful login stores only a token hash and sets a secure cookie", async
             password_hash: passwordHash,
             role: "student",
             is_active: true,
+            account_status: "active",
           }],
         };
       }
@@ -266,6 +267,7 @@ test("an existing user with a wrong password is rejected with 401", async () => 
     password_hash: passwordHash,
     role: "student",
     is_active: true,
+    account_status: "active",
   });
   const server = await startAuthServer(pool, authConfig({
     enabled: true,
@@ -291,6 +293,7 @@ test("server session protects /me and is revoked by logout", async () => {
     password_hash: await hashPassword(password),
     role: "student",
     is_active: true,
+    account_status: "active",
   });
   const server = await startAuthServer(pool, authConfig({
     enabled: true,

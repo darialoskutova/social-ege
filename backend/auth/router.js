@@ -87,17 +87,20 @@ function createAuthRouter(pool, config) {
 
       const login = parsed.data.login.normalize("NFKC").toLowerCase();
       const { rows } = await pool.query(
-        `SELECT id, login, display_name, password_hash, role, is_active
+        `SELECT id, login, display_name, password_hash, role, is_active, account_status
            FROM users
           WHERE login = $1
           LIMIT 1`,
         [login],
       );
       const user = rows[0];
-      const passwordHash = user?.is_active ? user.password_hash : await getDummyHash();
+      const canLogin = user?.is_active
+        && user?.account_status === "active"
+        && typeof user?.password_hash === "string";
+      const passwordHash = canLogin ? user.password_hash : await getDummyHash();
       const passwordIsValid = await verifyPassword(passwordHash, parsed.data.password);
 
-      if (!user || !user.is_active || !passwordIsValid) {
+      if (!user || !canLogin || !passwordIsValid) {
         throw new HttpError(401, "invalid_credentials", "Неверный логин или пароль");
       }
 

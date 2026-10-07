@@ -59,6 +59,13 @@ unscored legacy attempts and metadata-only legacy homework records, and adds
 per-user legacy IDs so a browser migration can be retried without duplicates.
 It does not drop tables or data.
 
+Migration `003_student_identity_management.sql` extends the existing `users`
+table without creating a second identity store. It adds account lifecycle
+fields, permits a null password hash only for accounts that have not been
+activated, and creates `account_tokens` for activation and password-reset
+links. Existing active users remain active; previously disabled users become
+blocked. The migration does not delete users or learning records.
+
 Homework file bytes are not uploaded in this stage. Only the filename, MIME
 type, byte size and existing student comment are persisted. Test answer keys
 are still not stored by these routes and must not be added to the public API.
@@ -92,6 +99,50 @@ npm run create-user -- --login LOGIN --name "Имя" --role student
 ```
 
 Run the command only on the server where the protected `.env` is available.
+
+## Student identity management
+
+Every `/api/admin/*` route requires a valid server session and `role=admin`.
+The implemented routes are:
+
+- `GET /api/admin/access`;
+- `GET /api/admin/students`;
+- `POST /api/admin/students`;
+- `PATCH /api/admin/students/:studentId`;
+- `POST /api/admin/students/:studentId/block`;
+- `POST /api/admin/students/:studentId/unblock`;
+- `POST /api/admin/students/:studentId/archive`;
+- `POST /api/admin/students/:studentId/activation-link`;
+- `POST /api/admin/students/:studentId/password-reset-link`.
+
+The administrator supplies only a display name and unique login. A new
+student has no password and remains in `pending_activation` until the student
+chooses a password. Admin responses never include password hashes, session
+tokens or stored token hashes.
+
+Activation and password reset use the following unauthenticated, rate-limited
+routes. Unsafe requests still require an exact allowed Origin and production
+HTTPS:
+
+- `POST /api/account/activate/validate`;
+- `POST /api/account/activate`;
+- `POST /api/account/reset-password/validate`;
+- `POST /api/account/reset-password`.
+
+Raw account tokens are generated with `crypto.randomBytes(32)`, returned only
+inside the newly created link and never stored in PostgreSQL. The database
+stores a SHA-256 token hash. Each token expires after 72 hours by default, is
+single-use, and a replacement revokes older unused tokens of the same purpose.
+Generated browser links put the raw token after `#token=` so it is not sent in
+the initial HTTP request or included in ordinary Nginx access logs. The page
+submits it only inside the API request body and removes it from the address bar
+immediately. These pages load no analytics.
+
+Password creation and reset share the same server-side 12–256 character
+policy and existing Argon2id implementation. A successful password reset also
+revokes all existing sessions for that student. Blocking or archiving revokes
+sessions and preserves all learning data; unblocking restores the same user ID
+and password. Archiving is non-destructive.
 
 ## Learning data API
 
@@ -136,7 +187,9 @@ npm test
 ```
 
 The integration suite covers unauthenticated access, persistence across new
-sessions, cross-user isolation, forged owner fields and post-logout denial.
+sessions, cross-user isolation, forged owner fields, post-logout denial,
+admin role enforcement, activation, reset, blocking and non-destructive
+student updates.
 
 ## Current boundary
 

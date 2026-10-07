@@ -29,3 +29,13 @@ Before installing either template on a server:
 This stage does not deploy the frontend or alter the active document root. A
 later frontend release must use an explicit public-file allowlist; never point
 Nginx at the Git working tree or recursively copy the repository into web root.
+
+## Admin/student identity release
+
+The first admin panel adds migration `003_student_identity_management.sql`.
+It is additive: it extends `users`, creates `account_tokens`, preserves current
+user IDs and learning records, and does not modify the production `.env`.
+Deploying the release later must install both the backend files and the
+explicitly allowlisted frontend files (`admin/`, `activate/`,
+`reset-password/`, `account-pages.css`, `account-flow.js`). Do not recursively
+copy the repository or overwrite `privacy.html` and `offer.html`.
