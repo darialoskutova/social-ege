@@ -16,6 +16,7 @@
     <link rel="icon" href="ege.webp" type="image/webp">
     <title>ЕГЭ по обществознанию — подготовка, конспекты и практика</title>
     <script>
+        document.documentElement.classList.add("auth-checking");
         try {
             document.documentElement.dataset.theme = localStorage.getItem("daria-ege-color-theme") === "dark" ? "dark" : "light";
         } catch {
@@ -122,6 +123,51 @@
 
         .view {
             min-height: 100vh;
+        }
+
+        .auth-restore {
+            display: none;
+        }
+
+        html.auth-checking .view,
+        html.auth-checking .cookie-banner,
+        html.auth-checking .toast {
+            display: none !important;
+        }
+
+        html.auth-checking .auth-restore {
+            display: grid;
+            position: fixed;
+            z-index: 10000;
+            inset: 0;
+            place-items: center;
+            padding: 24px;
+            background: var(--paper);
+            color: var(--ink);
+        }
+
+        .auth-restore > div {
+            display: grid;
+            gap: 12px;
+            justify-items: center;
+            text-align: center;
+        }
+
+        .auth-restore-mark {
+            display: grid;
+            width: 54px;
+            height: 54px;
+            place-items: center;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 18px;
+        }
+
+        .auth-restore p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
         }
 
         .button {
@@ -10708,6 +10754,10 @@
 </head>
 <body>
 
+<div class="auth-restore" id="authRestore" role="status" aria-live="polite">
+    <div><span class="auth-restore-mark" aria-hidden="true">ЕГЭ</span><p>Восстанавливаем личный кабинет…</p></div>
+</div>
+
 <section class="view landing" id="welcomeView">
 
     <!-- =========================================================
@@ -12064,6 +12114,7 @@
     <script src="data/tests-score-hashes.js?v=20261001-all-topics"></script>
     <script src="data/test-image-transcriptions.js?v=20260930-1"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
+    <script src="frontend-state.js?v=20261007-session-restore"></script>
     <script>
         const topics = [
             {
@@ -12379,6 +12430,7 @@
         const testData = window.EGE_TESTS_PUBLIC || { tests: [], unavailableTests: [] };
         const testScoreData = window.EGE_TEST_SCORE_HASHES || { tests: {} };
         const testImageTranscriptions = window.EGE_TEST_IMAGE_TRANSCRIPTIONS?.questions || {};
+        const frontendState = window.EGE_FRONTEND_STATE;
         const testsByLesson = new Map(
             (testData.tests || []).map((test) => [Number(test.lesson), test])
         );
@@ -12737,6 +12789,8 @@
 
         let currentSubject = "soc";
         let currentTopic = topics[0];
+        let currentPage = "dashboard";
+        let currentLessonPanel = "materials";
         let currentTest = null;
         let toastTimer;
         let activeGameKey = null;
@@ -12829,6 +12883,43 @@
             else localStorage.setItem(scopedKey, JSON.stringify(value));
         }
 
+        function cabinetIsVisible() {
+            return Boolean(authenticatedUser && !document.getElementById("appView").hidden);
+        }
+
+        function replaceUiHash(hash) {
+            if (window.location.hash === hash) return;
+            window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${hash}`);
+        }
+
+        function updateCabinetHash() {
+            if (!cabinetIsVisible()) return;
+            const route = currentPage === "lesson"
+                ? { page: "lesson", topicId: currentTopic?.id, panel: currentLessonPanel }
+                : currentPage === "subjects"
+                    ? { page: "subjects", subject: currentSubject }
+                    : { page: currentPage };
+            replaceUiHash(frontendState.hashForRoute(route));
+        }
+
+        function restoreCabinetSection() {
+            const route = frontendState.routeFromHash(window.location.hash);
+            if (route.page === "lesson") {
+                const topic = topics.find((item) => item.id === route.topicId);
+                if (topic) {
+                    openTopic(topic.id);
+                    showLessonPanel(route.panel);
+                    return;
+                }
+            }
+            if (route.page === "subjects") {
+                if (Object.hasOwn(topicSubjectLabels, route.subject)) renderTopics(route.subject);
+                showPage("subjects");
+                return;
+            }
+            showPage(route.page);
+        }
+
         function scrollAppToTop() {
             window.scrollTo(0, 0);
             document.documentElement.scrollTop = 0;
@@ -12849,6 +12940,7 @@
             if (name === "admin" && !["teacher", "admin"].includes(authenticatedUser?.role)) {
                 name = "dashboard";
             }
+            currentPage = name;
             const targetId = name + "Page";
             pages.forEach((page) => {
                 page.hidden = page.id !== targetId;
@@ -12870,6 +12962,7 @@
                 renderAdminWorks();
                 renderAdminMessages();
             }
+            updateCabinetHash();
         }
 
         function stopGameTimer() {
@@ -13195,11 +13288,12 @@
         }
 
         function showLessonPanel(panelName, scrollToTabs = false) {
+            currentLessonPanel = ["materials", "test", "homework"].includes(panelName) ? panelName : "materials";
             document.querySelectorAll("[data-lesson-panel]").forEach((panel) => {
-                panel.hidden = panel.dataset.lessonPanel !== panelName;
+                panel.hidden = panel.dataset.lessonPanel !== currentLessonPanel;
             });
             document.querySelectorAll("[data-lesson-tab]").forEach((tab) => {
-                const isActive = tab.dataset.lessonTab === panelName;
+                const isActive = tab.dataset.lessonTab === currentLessonPanel;
                 tab.classList.toggle("is-active", isActive);
                 tab.setAttribute("aria-selected", String(isActive));
             });
@@ -13208,6 +13302,7 @@
                     document.querySelector(".lesson-section-tabs").scrollIntoView({ behavior: "smooth", block: "start" });
                 });
             }
+            updateCabinetHash();
         }
 
         function escapeHtml(value) {
@@ -13576,10 +13671,15 @@
             form.hidden = false;
             unavailable.hidden = true;
             form.querySelector('button[type="submit"]').textContent = "Отправить тест";
-            const restoredAnswers = restoreTestDraft(test, form);
-            document.getElementById("testAnswerStatus").textContent = restoredAnswers
-                ? `Продолжаем с сохранённого места · заполнено ${restoredAnswers} из ${test.questionCount}`
-                : "Ответы сохраняются автоматически. После отправки появятся балл, процент и разбор.";
+            const testState = frontendState.selectTestState(test.id, learningState.testDrafts, learningState.testAttempts);
+            if (testState.kind === "draft") {
+                const restoredAnswers = restoreTestDraft(test, form);
+                document.getElementById("testAnswerStatus").textContent = `Продолжаем с сохранённого места · заполнено ${restoredAnswers} из ${test.questionCount}`;
+            } else if (testState.kind === "completed") {
+                restoreCompletedTest(test, form, testState.attempt);
+            } else {
+                document.getElementById("testAnswerStatus").textContent = "Ответы сохраняются автоматически. После отправки появятся балл, процент и разбор.";
+            }
         }
 
         function getTestDrafts() {
@@ -13634,15 +13734,48 @@
             const draft = getTestDrafts()[getTestDraftKey(test)];
             if (!draft?.values) return 0;
 
+            restoreTestAnswers(draft.values, form);
+            return Number(draft.answeredCount || Object.keys(draft.values).length);
+        }
+
+        function restoreTestAnswers(values, form) {
             form.querySelectorAll("[name]").forEach((control) => {
-                const savedValues = draft.values[control.name] || [];
+                const savedValues = values[control.name] || [];
                 if (control.type === "checkbox" || control.type === "radio") {
                     control.checked = savedValues.includes(control.value);
                 } else if (savedValues.length) {
                     control.value = savedValues[0];
                 }
             });
-            return Number(draft.answeredCount || Object.keys(draft.values).length);
+        }
+
+        function restoreCompletedTest(test, form, attempt) {
+            const restored = frontendState.buildCompletedAttemptResult(test, attempt, testScoreData);
+            const { result } = restored;
+            restoreTestAnswers(attempt.submittedAnswers || {}, form);
+
+            document.getElementById("testResultPoints").textContent = result.earnedPoints === null || result.totalPoints === null
+                ? "Результат отправлен"
+                : `${result.earnedPoints} / ${result.totalPoints}`;
+            document.getElementById("testResultPercent").textContent = result.percent === null ? "—" : `${result.percent}%`;
+            document.getElementById("testResultTitle").textContent = "Последняя попытка";
+            document.getElementById("testResultNote").textContent = restored.hasReviewData && result.gradedQuestions
+                ? `Верно выполнено ${result.correctQuestions} из ${result.gradedQuestions} автоматически проверяемых заданий.`
+                : `Попытка сохранена ${formatDate(attempt.createdAt)}. Для старых попыток подробный разбор может быть недоступен.`;
+            document.getElementById("testResultCard").hidden = false;
+            document.getElementById("testAnswerStatus").textContent = result.earnedPoints === null || result.totalPoints === null
+                ? "Тест уже отправлен. Результат ожидает проверки."
+                : `Тест уже отправлен: ${result.earnedPoints} из ${result.totalPoints} баллов.`;
+
+            if (restored.hasReviewData) {
+                renderTestReview(result);
+            } else {
+                form.querySelectorAll("input, select").forEach((control) => {
+                    control.disabled = true;
+                });
+                form.dataset.reviewed = "true";
+            }
+            form.querySelector('button[type="submit"]').textContent = "Пройти ещё раз";
         }
 
         function clearCurrentTestDraft(test = currentTest) {
@@ -13935,8 +14068,7 @@
                 });
                 if (response.status === 401 || response.status === 403) return null;
                 if (!response.ok) throw new Error("auth_session_unavailable");
-                await response.json();
-                const user = await requestCurrentSession();
+                const user = normalizeAuthenticatedUser(await response.json());
                 if (!user) throw new Error("invalid_auth_response");
                 return user;
             })();
@@ -14116,7 +14248,7 @@
                 await loadLearningData();
                 renderAuthenticatedCabinet();
                 showView("appView");
-                showPage("dashboard");
+                restoreCabinetSection();
             } catch {
                 clearUser();
                 setLoginError("Вход временно недоступен. Попробуйте позже.");
@@ -14475,7 +14607,8 @@
                     throw new Error("auth_login_unavailable");
                 }
 
-                const user = normalizeAuthenticatedUser(await response.json());
+                await response.json();
+                const user = await requestCurrentSession();
                 if (!user) throw new Error("invalid_auth_response");
                 setUser(user);
                 await loadLearningData();
@@ -14516,6 +14649,7 @@
                 document.getElementById("loginForm").reset();
                 document.getElementById("rememberStudent").checked = true;
                 setLoginError();
+                replaceUiHash("#login");
                 showView("loginView");
                 document.getElementById("studentLogin").focus();
             } catch {
@@ -14674,7 +14808,7 @@
             }
 
             submitButton.disabled = false;
-            submitButton.textContent = result ? "Пройти тест заново" : "Отправить ещё раз";
+            submitButton.textContent = result ? "Пройти ещё раз" : "Отправить ещё раз";
             renderTopicProgress();
             renderTopics(currentSubject);
             renderDashboardProgress();
@@ -14725,13 +14859,36 @@
         localStorage.removeItem("daria-ege-demo-user");
         sessionStorage.removeItem("daria-ege-demo-user");
 
-        void requestCurrentSession()
-            .then((user) => {
-                if (user) setUser(user);
-            })
-            .catch(() => {
-                // The public landing remains available while auth is unavailable.
-            });
+        async function initializeApplication() {
+            try {
+                const user = await requestCurrentSession();
+                const destination = frontendState.startupViewFor(user, window.location.hash);
+                if (destination === "cabinet") {
+                    setUser(user);
+                    await loadLearningData();
+                    renderAuthenticatedCabinet();
+                    showView("appView");
+                    restoreCabinetSection();
+                    return;
+                }
+
+                clearUser();
+                showView(destination === "login" ? "loginView" : "welcomeView");
+            } catch {
+                clearUser();
+                const destination = frontendState.startupViewFor(null, window.location.hash);
+                if (destination === "login") {
+                    setLoginError("Вход временно недоступен. Попробуйте позже.");
+                    showView("loginView");
+                } else {
+                    showView("welcomeView");
+                }
+            } finally {
+                document.documentElement.classList.remove("auth-checking");
+            }
+        }
+
+        void initializeApplication();
 
         document.addEventListener("visibilitychange", () => {
             if (!document.hidden) void verifyVisibleCabinetSession();
