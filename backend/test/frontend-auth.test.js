@@ -21,8 +21,18 @@ test("cabinet view checks the server session and cannot open without an authenti
   assert.match(frontend, /fetch\("\/api\/auth\/me"/);
   assert.match(frontend, /id === "appView" && !authenticatedUser \? "loginView" : id/);
   assert.match(frontend, /if \(!user\) \{\s+clearUser\(\);\s+return;/);
-  assert.match(frontend, /readUserJson\(storage\.works, \[\]\)/);
-  assert.match(frontend, /return scopedKey \? readJson\(scopedKey, fallback\) : fallback/);
+  assert.match(frontend, /await loadLearningData\(\)/);
+  assert.match(frontend, /learningRequest\("\/progress"\)/);
+  assert.match(frontend, /learningRequest\("\/test-attempts"\)/);
+  assert.match(frontend, /learningRequest\("\/homework-submissions"\)/);
+});
+
+test("learning records use protected APIs instead of browser storage", () => {
+  assert.match(frontend, /learningRequest\("\/test-attempts", \{/);
+  assert.match(frontend, /learningRequest\("\/homework-submissions", \{/);
+  assert.match(frontend, /learningRequest\(`\/test-drafts\/\$\{encodeURIComponent\(testId\)\}`/);
+  assert.doesNotMatch(frontend, /readUserJson\(storage\.(?:works|testAttempts|testDrafts|messages)/);
+  assert.doesNotMatch(frontend, /writeUserJson\(storage\.(?:works|testAttempts|testDrafts|messages)/);
 });
 
 test("logout is performed by the backend before the local cabinet is closed", () => {

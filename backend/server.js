@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const { Pool } = require("pg");
 const { readAuthConfig } = require("./auth/config");
 const { createAuthRouter } = require("./auth/router");
+const { createLearningRouter } = require("./learning/router");
 const { HttpError } = require("./lib/http-error");
 
 require("dotenv").config({
@@ -93,6 +94,7 @@ app.get("/health", async (req, res) => {
 });
 
 app.use("/api/auth", createAuthRouter(pool, authConfig));
+app.use("/api/learning", createLearningRouter(pool, authConfig));
 
 app.use((req, res) => {
   res.status(404).json({ error: { code: "not_found", message: "Ресурс не найден" } });

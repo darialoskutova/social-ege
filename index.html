@@ -12754,10 +12754,22 @@
         let matchingSolved = new Set();
         let matchingMistakes = 0;
         let testDraftSaveTimer = null;
+        let testDraftSavePromise = Promise.resolve();
         let currentOralQuestion = null;
         let slotAnimationTimer = null;
         let authenticatedUser = null;
         let sessionRequest = null;
+        let learningState = createEmptyLearningState();
+
+        function createEmptyLearningState() {
+            return {
+                progress: {},
+                testAttempts: [],
+                testDrafts: {},
+                works: [],
+                messages: []
+            };
+        }
 
         function updateThemeButtons() {
             const isDark = document.documentElement.dataset.theme === "dark";
@@ -12805,16 +12817,16 @@
             return `${key}::${authenticatedUser.id}`;
         }
 
-        function readUserJson(key, fallback) {
+        function readLegacyUserJson(key, fallback) {
             const scopedKey = userStorageKey(key);
             return scopedKey ? readJson(scopedKey, fallback) : fallback;
         }
 
-        function writeUserJson(key, value) {
+        function writeLegacyRemainder(key, value, isEmpty) {
             const scopedKey = userStorageKey(key);
-            if (!scopedKey) return false;
-            localStorage.setItem(scopedKey, JSON.stringify(value));
-            return true;
+            if (!scopedKey) return;
+            if (isEmpty) localStorage.removeItem(scopedKey);
+            else localStorage.setItem(scopedKey, JSON.stringify(value));
         }
 
         function scrollAppToTop() {
@@ -13507,7 +13519,6 @@
             const correctionFormData = new FormData(document.getElementById("authorTestForm"));
             const cards = Array.from(document.querySelectorAll("[data-correction-question-id]"));
             let correctedCount = 0;
-            const answers = {};
 
             cards.forEach((card) => {
                 const questionId = card.dataset.correctionQuestionId;
@@ -13519,25 +13530,12 @@
                 const isCorrect = answerKey.type === "checkbox"
                     ? submitted.length === accepted.length && submitted.every((value, index) => value === accepted[index])
                     : submitted.some((value) => accepted.includes(value));
-                answers[questionId] = values;
                 card.classList.toggle("is-corrected", isCorrect);
                 card.classList.toggle("is-still-wrong", !isCorrect);
                 card.querySelector(".test-correction-result").textContent = isCorrect ? "Исправлено" : "Пока неверно";
                 if (isCorrect) correctedCount += 1;
             });
 
-            const user = getCurrentUser();
-            const correctionRecords = readUserJson(storage.testCorrections, {});
-            correctionRecords[`${user.login || user.name}::${currentTest.id}`] = {
-                topicId: currentTopic.id,
-                testId: currentTest.id,
-                correctedCount,
-                questionCount: cards.length,
-                answers,
-                comment: document.getElementById("testCorrectionComment").value.trim(),
-                updatedAt: new Date().toISOString()
-            };
-            writeUserJson(storage.testCorrections, correctionRecords);
             document.getElementById("testCorrectionStatus").textContent = correctedCount === cards.length
                 ? "Все ошибки исправлены."
                 : `Исправлено ${correctedCount} из ${cards.length}.`;
@@ -13585,19 +13583,21 @@
         }
 
         function getTestDrafts() {
-            return readUserJson(storage.testDrafts, {});
+            return learningState.testDrafts;
         }
 
         function getTestDraftKey(test = currentTest) {
             if (!test) return null;
-            const user = getCurrentUser();
-            return `${user.login || user.name || "local"}::${test.id}`;
+            return test.id;
         }
 
-        function saveCurrentTestDraft() {
+        async function saveCurrentTestDraft() {
             const form = document.getElementById("authorTestForm");
             const draftKey = getTestDraftKey();
             if (!currentTest || !draftKey || form.dataset.reviewed === "true") return;
+            const testId = currentTest.id;
+            const topicId = currentTopic.id;
+            const questionCount = currentTest.questionCount;
 
             const values = {};
             const answered = new Set();
@@ -13608,15 +13608,26 @@
                 answered.add(name);
             }
 
-            const drafts = getTestDrafts();
-            drafts[draftKey] = {
-                testId: currentTest.id,
-                values,
-                answeredCount: answered.size,
-                updatedAt: new Date().toISOString()
-            };
-            writeUserJson(storage.testDrafts, drafts);
-            document.getElementById("testAnswerStatus").textContent = `Ответы сохранены автоматически · заполнено ${answered.size} из ${currentTest.questionCount}`;
+            const status = document.getElementById("testAnswerStatus");
+            status.textContent = `Сохраняем ответы… · заполнено ${answered.size} из ${questionCount}`;
+            const operation = testDraftSavePromise.then(async () => {
+              try {
+                const payload = await learningRequest(`/test-drafts/${encodeURIComponent(testId)}`, {
+                    method: "PUT",
+                    body: { topicId, answers: values }
+                });
+                learningState.testDrafts[draftKey] = payload.draft;
+                if (currentTest?.id === testId) {
+                    status.textContent = `Ответы сохранены · заполнено ${answered.size} из ${questionCount}`;
+                }
+              } catch {
+                if (currentTest?.id === testId) {
+                    status.textContent = "Не удалось сохранить ответы. Проверь соединение и попробуй ещё раз.";
+                }
+              }
+            });
+            testDraftSavePromise = operation;
+            await operation;
         }
 
         function restoreTestDraft(test, form) {
@@ -13637,18 +13648,7 @@
         function clearCurrentTestDraft(test = currentTest) {
             const draftKey = getTestDraftKey(test);
             if (!draftKey) return;
-            const drafts = getTestDrafts();
-            if (!(draftKey in drafts)) return;
-            delete drafts[draftKey];
-            writeUserJson(storage.testDrafts, drafts);
-        }
-
-        function getTestAttempts() {
-            return readUserJson(storage.testAttempts, []);
-        }
-
-        function saveTestAttempts(attempts) {
-            writeUserJson(storage.testAttempts, attempts);
+            delete learningState.testDrafts[draftKey];
         }
 
         function getTopicTest(topic) {
@@ -13658,12 +13658,9 @@
 
         function getTopicProgress(topic) {
             const test = getTopicTest(topic);
-            const attempts = getTestAttempts();
-            const works = getWorks();
-            const testSubmitted = Boolean(test) && attempts.some((attempt) =>
-                attempt.topicId === topic.id || (!attempt.topicId && attempt.testId === test.id)
-            );
-            const homeworkSubmitted = works.some((work) => work.topicId === topic.id);
+            const progress = learningState.progress[topic.id] || {};
+            const testSubmitted = Boolean(test && progress.testCompletedAt);
+            const homeworkSubmitted = Boolean(progress.homeworkSubmittedAt);
 
             return {
                 test,
@@ -13913,6 +13910,7 @@
 
         function clearUser() {
             authenticatedUser = null;
+            learningState = createEmptyLearningState();
             document.getElementById("sidebarName").textContent = "Ученик";
             document.getElementById("dashboardName").textContent = "ученик";
             renderTopics(currentSubject);
@@ -13937,7 +13935,8 @@
                 });
                 if (response.status === 401 || response.status === 403) return null;
                 if (!response.ok) throw new Error("auth_session_unavailable");
-                const user = normalizeAuthenticatedUser(await response.json());
+                await response.json();
+                const user = await requestCurrentSession();
                 if (!user) throw new Error("invalid_auth_response");
                 return user;
             })();
@@ -13946,6 +13945,155 @@
             } finally {
                 sessionRequest = null;
             }
+        }
+
+        async function learningRequest(path, { method = "GET", body } = {}) {
+            const response = await fetch(`/api/learning${path}`, {
+                method,
+                credentials: "same-origin",
+                headers: {
+                    accept: "application/json",
+                    ...(body === undefined ? {} : { "content-type": "application/json" })
+                },
+                ...(body === undefined ? {} : { body: JSON.stringify(body) })
+            });
+            if (response.status === 401 || response.status === 403) {
+                throw new Error("learning_session_required");
+            }
+            if (!response.ok) throw new Error("learning_api_unavailable");
+            return response.status === 204 ? null : response.json();
+        }
+
+        function applyLearningPayloads(payloads) {
+            const [progressPayload, attemptsPayload, draftsPayload, homeworkPayload, messagesPayload] = payloads;
+            learningState = {
+                progress: Object.fromEntries((progressPayload.progress || []).map((item) => [item.topicId, item])),
+                testAttempts: attemptsPayload.attempts || [],
+                testDrafts: Object.fromEntries((draftsPayload.drafts || []).map((item) => [item.testId, item])),
+                works: (homeworkPayload.submissions || []).map((item) => ({
+                    ...item,
+                    topicTitle: topics.find((topic) => topic.id === item.topicId)?.title || item.topicId
+                })),
+                messages: messagesPayload.messages || []
+            };
+        }
+
+        async function fetchLearningData() {
+            const payloads = await Promise.all([
+                learningRequest("/progress"),
+                learningRequest("/test-attempts"),
+                learningRequest("/test-drafts"),
+                learningRequest("/homework-submissions"),
+                learningRequest("/messages")
+            ]);
+            applyLearningPayloads(payloads);
+        }
+
+        function legacyTopicForTest(testId) {
+            const test = (testData.tests || []).find((item) => item.id === testId);
+            return test ? topics.find((topic) => Number(topic.testLesson || topic.lesson) === Number(test.lesson)) : null;
+        }
+
+        async function migrateLegacyArray(storageKey, endpoint, convert) {
+            const legacyItems = readLegacyUserJson(storageKey, []);
+            if (!Array.isArray(legacyItems) || !legacyItems.length) return false;
+            const remaining = [];
+            let migrated = false;
+            for (const item of legacyItems) {
+                const body = convert(item);
+                if (!body) {
+                    remaining.push(item);
+                    continue;
+                }
+                try {
+                    await learningRequest(endpoint, { method: "POST", body });
+                    migrated = true;
+                } catch {
+                    remaining.push(item);
+                }
+            }
+            writeLegacyRemainder(storageKey, remaining, remaining.length === 0);
+            return migrated;
+        }
+
+        async function migrateLegacyDrafts() {
+            const legacyDrafts = readLegacyUserJson(storage.testDrafts, {});
+            if (!legacyDrafts || Array.isArray(legacyDrafts) || typeof legacyDrafts !== "object") return false;
+            const remaining = {};
+            let migrated = false;
+            for (const [legacyKey, draft] of Object.entries(legacyDrafts)) {
+                const testId = draft?.testId;
+                const topic = legacyTopicForTest(testId);
+                if (!topic || !draft?.values || typeof draft.values !== "object") {
+                    remaining[legacyKey] = draft;
+                    continue;
+                }
+                const serverDraft = learningState.testDrafts[testId];
+                if (serverDraft) {
+                    if (JSON.stringify(serverDraft.values) === JSON.stringify(draft.values)) migrated = true;
+                    else remaining[legacyKey] = draft;
+                    continue;
+                }
+                try {
+                    await learningRequest(`/test-drafts/${encodeURIComponent(testId)}`, {
+                        method: "PUT",
+                        body: { topicId: topic.id, answers: draft.values }
+                    });
+                    migrated = true;
+                } catch {
+                    remaining[legacyKey] = draft;
+                }
+            }
+            writeLegacyRemainder(storage.testDrafts, remaining, Object.keys(remaining).length === 0);
+            return migrated;
+        }
+
+        async function migrateLegacyLearningData() {
+            if (!authenticatedUser?.id) return false;
+            const migrated = [];
+            migrated.push(await migrateLegacyDrafts());
+            migrated.push(await migrateLegacyArray(storage.testAttempts, "/test-attempts", (item) => {
+                const topic = topics.find((candidate) => candidate.id === item?.topicId) || legacyTopicForTest(item?.testId);
+                if (!topic || typeof item?.testId !== "string" || typeof item?.id !== "string") return null;
+                const hasScore = Number.isInteger(item.scorePoints) && Number.isInteger(item.scoreTotal) && item.scoreTotal > 0;
+                return {
+                    topicId: topic.id,
+                    testId: item.testId,
+                    scorePoints: hasScore ? item.scorePoints : null,
+                    scoreTotal: hasScore ? item.scoreTotal : null,
+                    submittedAnswers: {},
+                    incorrectQuestionIds: [],
+                    legacyClientId: item.id,
+                    ...(item.createdAt ? { legacyCreatedAt: item.createdAt } : {})
+                };
+            }));
+            migrated.push(await migrateLegacyArray(storage.works, "/homework-submissions", (item) => {
+                if (typeof item?.topicId !== "string" || typeof item?.fileName !== "string" || typeof item?.id !== "string") return null;
+                return {
+                    topicId: item.topicId,
+                    originalFilename: item.fileName,
+                    mimeType: null,
+                    sizeBytes: null,
+                    studentComment: typeof item.studentComment === "string" ? item.studentComment : "",
+                    legacyClientId: item.id,
+                    ...(item.createdAt ? { legacyCreatedAt: item.createdAt } : {})
+                };
+            }));
+            migrated.push(await migrateLegacyArray(storage.messages, "/messages", (item) => {
+                if (typeof item?.category !== "string" || typeof item?.text !== "string" || typeof item?.id !== "string") return null;
+                return {
+                    category: item.category,
+                    text: item.text,
+                    legacyClientId: item.id,
+                    ...(item.createdAt ? { legacyCreatedAt: item.createdAt } : {})
+                };
+            }));
+            return migrated.some(Boolean);
+        }
+
+        async function loadLearningData() {
+            await fetchLearningData();
+            if (await migrateLegacyLearningData()) await fetchLearningData();
         }
 
         function renderAuthenticatedCabinet() {
@@ -13965,6 +14113,7 @@
                     return;
                 }
                 setUser(user);
+                await loadLearningData();
                 renderAuthenticatedCabinet();
                 showView("appView");
                 showPage("dashboard");
@@ -13980,6 +14129,8 @@
                 const user = await requestCurrentSession();
                 if (user) {
                     setUser(user);
+                    await loadLearningData();
+                    renderAuthenticatedCabinet();
                     return;
                 }
             } catch {
@@ -13992,19 +14143,11 @@
         }
 
         function getWorks() {
-            return readUserJson(storage.works, []);
-        }
-
-        function saveWorks(works) {
-            writeUserJson(storage.works, works);
+            return learningState.works;
         }
 
         function getTeacherMessages() {
-            return readUserJson(storage.messages, []);
-        }
-
-        function saveTeacherMessages(messages) {
-            writeUserJson(storage.messages, messages);
+            return learningState.messages;
         }
 
         function formatDate(value) {
@@ -14285,28 +14428,13 @@
 
             const saveButton = event.target.closest("[data-save-review]");
             if (saveButton) {
-                const id = saveButton.dataset.saveReview;
-                const works = getWorks();
-                const work = works.find((item) => item.id === id);
-                if (!work) return;
-                work.status = document.querySelector(`[data-admin-status="${id}"]`).value;
-                work.teacherComment = document.querySelector(`[data-admin-comment="${id}"]`).value.trim();
-                saveWorks(works);
-                renderAdminWorks();
-                showToast("Статус и комментарий сохранены на этом устройстве.");
+                showToast("Сохранение проверки будет подключено вместе с панелью преподавателя.");
                 return;
             }
 
             const saveMessageReplyButton = event.target.closest("[data-save-message-reply]");
             if (saveMessageReplyButton) {
-                const id = saveMessageReplyButton.dataset.saveMessageReply;
-                const messages = getTeacherMessages();
-                const message = messages.find((item) => item.id === id);
-                if (!message) return;
-                message.reply = document.querySelector(`[data-message-reply="${id}"]`).value.trim();
-                saveTeacherMessages(messages);
-                renderAdminMessages();
-                showToast("Ответ ученику сохранён на этом устройстве.");
+                showToast("Ответы будут сохраняться после подключения панели преподавателя.");
             }
         });
 
@@ -14350,6 +14478,7 @@
                 const user = normalizeAuthenticatedUser(await response.json());
                 if (!user) throw new Error("invalid_auth_response");
                 setUser(user);
+                await loadLearningData();
                 passwordInput.value = "";
                 localStorage.setItem(storage.consent, JSON.stringify({
                     login: user.login,
@@ -14426,23 +14555,27 @@
             event.currentTarget.textContent = willShow ? "Скрыть подсказку" : "Показать подсказку";
         });
 
-        document.getElementById("teacherMessageForm").addEventListener("submit", (event) => {
+        document.getElementById("teacherMessageForm").addEventListener("submit", async (event) => {
             event.preventDefault();
-            const user = getCurrentUser();
-            const messages = getTeacherMessages();
-            messages.push({
-                id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                studentName: user.name,
-                studentLogin: user.login,
-                category: document.getElementById("teacherMessageCategory").value,
-                text: document.getElementById("teacherMessageText").value.trim(),
-                reply: "",
-                createdAt: new Date().toISOString()
-            });
-            saveTeacherMessages(messages);
-            event.currentTarget.reset();
-            renderStudentMessages();
-            showToast("Сообщение сохранено на этом устройстве.");
+            const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            try {
+                const payload = await learningRequest("/messages", {
+                    method: "POST",
+                    body: {
+                        category: document.getElementById("teacherMessageCategory").value,
+                        text: document.getElementById("teacherMessageText").value.trim()
+                    }
+                });
+                learningState.messages.unshift(payload.message);
+                event.currentTarget.reset();
+                renderStudentMessages();
+                showToast("Сообщение отправлено преподавателю.");
+            } catch {
+                showToast("Не удалось отправить сообщение. Попробуй ещё раз.");
+            } finally {
+                submitButton.disabled = false;
+            }
         });
 
         document.getElementById("answerFile").addEventListener("change", (event) => {
@@ -14480,8 +14613,9 @@
             submitButton.disabled = true;
             submitButton.textContent = "Проверяем…";
             const formData = new FormData(event.currentTarget);
-            const answeredQuestions = new Set(Array.from(formData.keys())).size;
             let result = null;
+
+            await saveCurrentTestDraft();
 
             try {
                 result = await scoreTestSubmission(currentTest, formData);
@@ -14489,24 +14623,38 @@
                 console.error("Automatic test scoring failed", error);
             }
 
-            const attempts = getTestAttempts();
-            attempts.push({
-                id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                topicId: currentTopic.id,
-                testId: currentTest.id,
-                lesson: currentTest.lesson,
-                title: currentTest.title,
-                subject: currentTest.subject,
-                answeredCount: answeredQuestions,
-                questionCount: currentTest.questionCount,
-                scorePoints: result?.earnedPoints ?? null,
-                scoreTotal: result?.totalPoints ?? null,
-                scorePercent: result?.percent ?? null,
-                status: result ? "Проверено автоматически" : "Ожидает проверки",
-                createdAt: new Date().toISOString()
-            });
-            saveTestAttempts(attempts);
-            clearCurrentTestDraft(currentTest);
+            const submittedAnswers = {};
+            for (const [name, rawValue] of formData.entries()) {
+                const value = String(rawValue);
+                if (!value.trim()) continue;
+                (submittedAnswers[name] ||= []).push(value);
+            }
+            const incorrectQuestionIds = result
+                ? Object.entries(result.questionResults).filter(([, review]) => !review.isCorrect).map(([id]) => id)
+                : [];
+
+            try {
+                const payload = await learningRequest("/test-attempts", {
+                    method: "POST",
+                    body: {
+                        topicId: currentTopic.id,
+                        testId: currentTest.id,
+                        scorePoints: result?.earnedPoints ?? null,
+                        scoreTotal: result?.totalPoints ?? null,
+                        submittedAnswers,
+                        incorrectQuestionIds
+                    }
+                });
+                learningState.testAttempts.unshift(payload.attempt);
+                learningState.progress[currentTopic.id] = payload.progress;
+                clearCurrentTestDraft(currentTest);
+            } catch {
+                submitButton.disabled = false;
+                submitButton.textContent = "Отправить тест";
+                document.getElementById("testAnswerStatus").textContent = "Не удалось сохранить результат. Ответы остались на странице — попробуй отправить ещё раз.";
+                showToast("Результат не сохранён. Проверь соединение и попробуй ещё раз.");
+                return;
+            }
 
             if (result) {
                 document.getElementById("testResultPoints").textContent = `${result.earnedPoints} / ${result.totalPoints}`;
@@ -14535,35 +14683,41 @@
                 : "Тест отправлен и отмечен в прогрессе темы.");
         });
 
-        document.getElementById("uploadForm").addEventListener("submit", (event) => {
+        document.getElementById("uploadForm").addEventListener("submit", async (event) => {
             event.preventDefault();
             const file = document.getElementById("answerFile").files[0];
-            const user = getCurrentUser();
             if (!file) {
                 showToast("Сначала выбери файл с выполненной работой.");
                 return;
             }
 
-            const works = getWorks();
-            works.push({
-                id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                topicId: currentTopic.id,
-                topicTitle: currentTopic.title,
-                studentName: user.name,
-                studentLogin: user.login,
-                fileName: file.name,
-                studentComment: document.getElementById("studentComment").value.trim(),
-                teacherComment: "",
-                status: "Отправлено",
-                createdAt: new Date().toISOString()
-            });
-            saveWorks(works);
-            event.currentTarget.reset();
-            document.getElementById("fileLabel").textContent = "Выбрать выполненную работу";
-            renderTopicProgress();
-            renderTopics(currentSubject);
-            renderDashboardProgress();
-            showToast("ДЗ отмечено в прогрессе темы; пока сохраняется только название файла.");
+            const submitButton = event.currentTarget.querySelector('button[type="submit"]');
+            submitButton.disabled = true;
+            try {
+                const payload = await learningRequest("/homework-submissions", {
+                    method: "POST",
+                    body: {
+                        topicId: currentTopic.id,
+                        originalFilename: file.name,
+                        mimeType: file.type || "application/octet-stream",
+                        sizeBytes: file.size,
+                        studentComment: document.getElementById("studentComment").value.trim()
+                    }
+                });
+                learningState.works.unshift({ ...payload.submission, topicTitle: currentTopic.title });
+                learningState.progress[currentTopic.id] = payload.progress;
+                event.currentTarget.reset();
+                document.getElementById("fileLabel").textContent = "Выбрать выполненную работу";
+                renderTopicProgress();
+                renderTopics(currentSubject);
+                renderDashboardProgress();
+                renderStudentWorks();
+                showToast("ДЗ отмечено в прогрессе; сохранены название файла и комментарий.");
+            } catch {
+                showToast("Не удалось сохранить данные ДЗ. Файл не отправлен — попробуй ещё раз.");
+            } finally {
+                submitButton.disabled = false;
+            }
         });
 
         // Remove credentials from the retired frontend-only login. Authentication

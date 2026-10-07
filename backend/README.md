@@ -1,8 +1,8 @@
 # Social EGE backend
 
-Private API deployed in small, reversible stages. It currently contains a
-database-backed health check, the core schema and database-backed session
-authentication. Student data and server-side test scoring remain later stages.
+Private API deployed in small, reversible stages. It contains a database-backed
+health check, server-side sessions and protected persistence for student
+learning data. Server-side test scoring remains a later stage.
 
 ## Configuration
 
@@ -54,8 +54,14 @@ silently changing history.
 
 The initial schema contains users and roles, consent records, server sessions,
 topic progress, test drafts and attempts, homework metadata, teacher messages
-and an audit log. Homework file bytes and test answer keys are deliberately not
-stored in the public repository.
+and an audit log. Migration `002_learning_data_persistence.sql` permits
+unscored legacy attempts and metadata-only legacy homework records, and adds
+per-user legacy IDs so a browser migration can be retried without duplicates.
+It does not drop tables or data.
+
+Homework file bytes are not uploaded in this stage. Only the filename, MIME
+type, byte size and existing student comment are persisted. Test answer keys
+are still not stored by these routes and must not be added to the public API.
 
 ## Authentication boundary
 
@@ -87,12 +93,54 @@ npm run create-user -- --login LOGIN --name "Имя" --role student
 
 Run the command only on the server where the protected `.env` is available.
 
+## Learning data API
+
+Every route below requires a valid server session. State-changing requests
+also require an exact allowed `Origin`. The server always takes the owner from
+the authenticated session and rejects unexpected fields such as `user_id`.
+
+- `GET /api/learning/progress`
+- `PUT /api/learning/progress/:topicId`
+- `GET /api/learning/test-drafts`
+- `PUT /api/learning/test-drafts/:testId`
+- `DELETE /api/learning/test-drafts/:testId`
+- `GET /api/learning/test-attempts`
+- `POST /api/learning/test-attempts`
+- `GET /api/learning/homework-submissions`
+- `POST /api/learning/homework-submissions`
+- `GET /api/learning/messages`
+- `POST /api/learning/messages`
+
+Creating a test attempt and marking its topic progress happen in one database
+transaction; the same is true for homework metadata and homework progress.
+Test attempts are append-only, so repeat attempts preserve history. Drafts are
+upserted by stable test ID and removed after a confirmed attempt.
+
+The frontend keeps only runtime copies of learning records. On first load it
+can retry a one-time import of old keys scoped as `KEY::authenticatedUser.id`.
+Each old item is removed only after the protected API confirms it. Unscoped
+records, conflicting drafts and the unused correction-history key are left
+untouched because ownership or intent cannot be proved safely.
+
+Browser-local data is limited to UI/legal preferences:
+
+- `daria-ege-color-theme` — light/dark theme;
+- `daria-ege-personal-data-consent` — local acknowledgement shown by the UI;
+- `analytics_consent` — optional analytics choice (analytics remain disabled
+  unless accepted).
+
+## Tests
+
+```sh
+npm test
+```
+
+The integration suite covers unauthenticated access, persistence across new
+sessions, cross-user isolation, forged owner fields and post-logout denial.
+
 ## Current boundary
 
-Progress, homework, teacher-message and scoring API routes have not been
-implemented yet. The current frontend gates the cabinet with the server
-session and keeps legacy browser-only learning data scoped by authenticated
-user ID, but moving those records to protected API routes remains a separate
-stage. In particular, `data/tests-score-hashes.js` remains an identified
-security issue and must later be replaced by server-side scoring without
-shipping answer keys to browsers.
+Full file upload, teacher/admin review endpoints and server-side scoring are not
+implemented in this stage. In particular, `data/tests-score-hashes.js` remains
+an identified security issue and must later be replaced by server-side scoring
+without shipping answer keys to browsers.
