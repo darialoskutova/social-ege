@@ -10704,7 +10704,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20261001-sticky-stable">
+    <link rel="stylesheet" href="cabinet.css?v=20261007-ux-polish">
 </head>
 <body>
 
@@ -11597,16 +11597,16 @@
                             </div>
                         </div>
                         <div class="subject-selector-grid" role="tablist" aria-label="Разделы курса">
-                            <button class="subject-selector-card is-active" type="button" data-subject-tab="soc">
+                            <button class="subject-selector-card is-active" type="button" role="tab" aria-selected="true" data-subject-tab="soc">
                                 <span class="subject-selector-number">01</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><rect class="icon-fill" x="5" y="8" width="37" height="27" rx="9"/><path d="M14 35 8 43l1-11M15 20h17M15 26h11"/><rect x="25" y="29" width="34" height="25" rx="9"/><path d="m50 52 6 6-1-9M34 40h16M34 46h10"/></svg></span><strong>Социология</strong><small>14 тем</small><b>→</b>
                             </button>
-                            <button class="subject-selector-card" type="button" data-subject-tab="eco">
+                            <button class="subject-selector-card" type="button" role="tab" aria-selected="false" data-subject-tab="eco">
                                 <span class="subject-selector-number">02</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><ellipse class="icon-fill" cx="21" cy="43" rx="14" ry="7"/><path d="M7 33c0 4 6 7 14 7s14-3 14-7-6-7-14-7-14 3-14 7Zm0 0v10c0 4 6 7 14 7s14-3 14-7V33m-28 9v9c0 4 6 7 14 7 5 0 9-1 12-4M37 26l8-8 6 5 8-11M50 12h9v9"/></svg></span><strong>Экономика</strong><small>14 тем</small><b>→</b>
                             </button>
-                            <button class="subject-selector-card" type="button" data-subject-tab="pol">
+                            <button class="subject-selector-card" type="button" role="tab" aria-selected="false" data-subject-tab="pol">
                                 <span class="subject-selector-number">03</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="m32 6 26 13H6z"/><path d="m32 6 26 13H6zM10 23h44M13 27v20m12-20v20m14-20v20m12-20v20M8 51h48v7H8z"/><circle cx="32" cy="15" r="3"/></svg></span><strong>Политика</strong><small>14 тем</small><b>→</b>
                             </button>
-                            <button class="subject-selector-card" type="button" data-subject-tab="law">
+                            <button class="subject-selector-card" type="button" role="tab" aria-selected="false" data-subject-tab="law">
                                 <span class="subject-selector-number">04</span><span class="subject-selector-icon"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="icon-fill" d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7z"/><path d="M7 11h21c3 0 5 2 5 5v39c0-4-3-6-7-6H7zm50 0H38c-3 0-5 2-5 5v39c0-4 3-6 7-6h17zM15 22h11m-11 7h11m12-7h11m-11 7h11"/></svg></span><strong>Право</strong><small>14 тем</small><b>→</b>
                             </button>
                         </div>
@@ -13233,7 +13233,9 @@
                 </div>`;
 
             document.querySelectorAll("[data-subject-tab]").forEach((tab) => {
-                tab.classList.toggle("is-active", tab.dataset.subjectTab === subject);
+                const isActive = tab.dataset.subjectTab === subject;
+                tab.classList.toggle("is-active", isActive);
+                tab.setAttribute("aria-selected", String(isActive));
             });
         }
 

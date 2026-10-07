@@ -2080,3 +2080,405 @@ html[data-theme="dark"] #appView #lessonPage .test-question-image--diagram {
         margin-left: 0;
     }
 }
+
+/* =========================================================
+   UX polish: stable cabinet header, readable scale and wrapping
+========================================================= */
+
+:root {
+    --cabinet-header-height: 84px;
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+/* A sticky element must stay in the normal layout layer. The previous
+   translate3d/will-change combination caused Safari to repaint it on
+   fractional pixels while scrolling. An explicit height also removes the
+   conflict between the original 80px header and the later 76px override. */
+#appView .sidebar {
+    position: sticky;
+    top: 0;
+    height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+    min-height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+    max-height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+    flex-wrap: nowrap;
+    padding: calc(10px + env(safe-area-inset-top, 0px)) 24px 10px;
+    background: #fff;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    -webkit-transform: none !important;
+    transform: none !important;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    will-change: auto;
+}
+
+#appView #lessonPage .lesson-section-tabs {
+    top: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    -webkit-transform: none;
+    transform: none;
+    will-change: auto;
+}
+
+#appView .sidebar .brand {
+    min-height: 44px;
+    font-size: 15px;
+}
+
+#appView .sidebar .brand-mark {
+    width: 44px;
+    height: 44px;
+}
+
+#appView .nav-button {
+    min-height: 50px;
+    padding: 7px 13px;
+    font-size: 16px;
+}
+
+#appView .nav-icon {
+    width: 32px;
+    height: 32px;
+}
+
+#appView .theme-toggle {
+    min-height: 44px;
+    padding-inline: 13px;
+    font-size: 12px;
+}
+
+#appView .theme-toggle:hover {
+    transform: none;
+}
+
+#appView .sidebar-user strong {
+    font-size: 13px;
+}
+
+#appView .sidebar-user .text-button {
+    min-height: 28px;
+    padding: 3px 0;
+    font-size: 12px;
+}
+
+#appView {
+    font-size: 17px;
+    line-height: 1.55;
+}
+
+#appView .page,
+.cabinet-legal {
+    width: min(1320px, calc(100% - 56px));
+}
+
+#appView .eyebrow {
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+#appView .dashboard-sheet > span,
+#appView .course-donut span,
+#appView .dashboard-progress-stats > div > span:not(.dashboard-legend),
+#appView .daily-plan-copy > span,
+#appView .daily-plan-copy > small,
+#appView .daily-plan-action,
+#appView .study-week-day > span,
+#appView .study-week-day > strong,
+#appView .study-week-day > small,
+#appView .schedule-list button > span,
+#appView .slot-reels span,
+#appView .slot-question > span,
+#appView .subject-selector-number,
+#appView #practicePage .game-mode-label {
+    font-size: 12px;
+}
+
+#appView .topic-progress-check strong {
+    font-size: 15px;
+}
+
+#appView .topic-progress-check small,
+#appView .topic-progress-check .topic-progress-action,
+#appView .topic-progress-mood figcaption {
+    font-size: 13px;
+}
+
+#appView .topic-row h3,
+#appView .work-card h3,
+#appView .admin-card h3 {
+    font-size: 17px;
+}
+
+#appView .topic-row-status,
+#appView .topic-section-meta,
+#appView .work-card small,
+#appView .student-message-card small,
+#appView .admin-message-card small,
+#appView .prototype-warning {
+    font-size: 13px;
+}
+
+#appView .practice-path-card small,
+#appView .game-mode-card > small,
+#appView .library-card small,
+#appView .constitution-file small,
+#appView .game-section-card small,
+#appView .library-file small,
+#appView .library-shelf-heading small {
+    font-size: 14px;
+}
+
+#appView .student-message-card header,
+#appView .admin-message-card header {
+    font-size: 12px;
+}
+
+#appView .message-reply {
+    font-size: 14px;
+}
+
+#appView .button,
+#appView :where(input:not([type="radio"]):not([type="checkbox"]), select, textarea) {
+    min-height: 48px;
+    font-size: 16px;
+}
+
+#appView .topic-row {
+    min-height: 82px;
+    padding-block: 17px;
+}
+
+#appView #lessonPage .test-question {
+    min-width: 0;
+    max-width: 100%;
+    padding: clamp(24px, 3.2vw, 36px);
+}
+
+#appView #lessonPage .test-question-heading,
+#appView #lessonPage .test-question-title,
+#appView #lessonPage .test-answer-options,
+#appView #lessonPage .test-answer-option,
+#appView #lessonPage .test-answer-option > span,
+#appView #lessonPage .test-answer-review,
+#appView #lessonPage .test-answer-review > div,
+#appView #lessonPage .test-correction-card,
+#appView #lessonPage .test-correction-control,
+#appView #lessonPage .test-transcription-column,
+#appView #lessonPage .test-transcription-column p {
+    min-width: 0;
+    max-width: 100%;
+}
+
+#appView #lessonPage .test-question-title,
+#appView #lessonPage .test-answer-option > span,
+#appView #lessonPage .test-answer-review,
+#appView #lessonPage .test-answer-review span,
+#appView #lessonPage .test-correction-card > p,
+#appView #lessonPage .test-correction-result,
+#appView #lessonPage .test-transcription-column p {
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+#appView #lessonPage .test-question-title {
+    white-space: pre-wrap;
+}
+
+#appView #lessonPage .test-answer-option,
+#appView #lessonPage .test-text-answer,
+#appView #lessonPage .test-select-answer,
+#appView #lessonPage .test-transcription-column p {
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+#appView #lessonPage .test-question-points,
+#appView #lessonPage .test-answer-review,
+#appView #lessonPage .test-result-card small,
+#appView #lessonPage .test-submit-panel p {
+    font-size: 14px;
+}
+
+#appView #lessonPage .test-instructions p {
+    font-size: 15px;
+}
+
+#appView #lessonPage .test-answer-review {
+    align-items: flex-start;
+}
+
+#appView :where(a, button, input, select, textarea):focus-visible,
+.login-view :where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--blue) 65%, #fff);
+    outline-offset: 3px;
+}
+
+#appView :where(button, input, select, textarea):disabled {
+    cursor: not-allowed;
+}
+
+#appView button:disabled:not(.is-correct):not(.is-wrong),
+#appView input:disabled:not(.is-correct):not(.is-wrong),
+#appView select:disabled:not(.is-correct):not(.is-wrong) {
+    opacity: .62;
+}
+
+.login-card > p:not(.eyebrow):not(.login-error),
+.login-check {
+    font-size: 15px;
+}
+
+.login-card > .login-error {
+    display: block;
+    min-height: 64px;
+    opacity: 1;
+    transition: opacity 140ms ease;
+}
+
+.login-card > .login-error[hidden] {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.cabinet-legal,
+.cabinet-legal strong {
+    font-size: 14px;
+}
+
+@media (max-width: 1120px) {
+    :root {
+        --cabinet-header-height: 106px;
+    }
+
+    html {
+        scroll-padding-top: calc(var(--cabinet-header-height) + 22px);
+    }
+
+    #appView .sidebar,
+    body.menu-open #appView .sidebar {
+        left: auto;
+        height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+        min-height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+        max-height: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+        flex-wrap: wrap;
+        gap: 6px 12px;
+        padding: calc(8px + env(safe-area-inset-top, 0px)) 12px 7px;
+    }
+
+    #appView .sidebar .brand {
+        max-width: calc(100% - 170px);
+        min-height: 40px;
+        order: 1;
+        font-size: 13px;
+    }
+
+    #appView .sidebar .brand-mark {
+        width: 40px;
+        height: 40px;
+    }
+
+    #appView .sidebar > .theme-toggle {
+        width: 40px;
+        min-height: 40px;
+        order: 2;
+        padding: 0;
+    }
+
+    #appView .sidebar .theme-toggle-label {
+        display: none;
+    }
+
+    #appView .sidebar-user {
+        min-width: 104px;
+        order: 2;
+        margin-left: auto;
+    }
+
+    #appView .sidebar-user strong {
+        max-width: 104px;
+        font-size: 12px;
+    }
+
+    #appView .sidebar-user .text-button {
+        min-height: 22px;
+        font-size: 11px;
+    }
+
+    #appView .nav {
+        width: calc(100vw - 24px);
+        flex: 0 0 100%;
+        order: 3;
+        justify-content: flex-start;
+        padding-bottom: 0;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+    }
+
+    #appView .nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    #appView .nav-button {
+        min-width: max-content;
+        min-height: 44px;
+        grid-template-columns: 28px max-content;
+        gap: 7px;
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+
+    #appView .nav-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    #appView .page {
+        width: min(100% - 40px, 1320px);
+    }
+
+    #appView #lessonPage .lesson-section-tabs {
+        top: calc(var(--cabinet-header-height) + env(safe-area-inset-top, 0px));
+    }
+
+    #appView .selected-subject-heading,
+    #appView .lesson-section-tabs,
+    #appView #topicTestSection,
+    #appView #uploadForm {
+        scroll-margin-top: calc(var(--cabinet-header-height) + 22px);
+    }
+}
+
+@media (max-width: 560px) {
+    #appView {
+        font-size: 16px;
+    }
+
+    #appView .page,
+    .cabinet-legal {
+        width: min(100% - 24px, 1320px);
+    }
+
+    #appView #lessonPage .test-question {
+        padding: 22px 18px;
+    }
+
+    #appView #lessonPage .test-question-heading {
+        gap: 12px;
+    }
+
+    #appView #lessonPage .test-answer-options {
+        gap: 10px;
+    }
+
+    #appView #lessonPage .test-answer-option {
+        min-height: 48px;
+        padding: 13px;
+    }
+}
