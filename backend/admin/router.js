@@ -15,15 +15,42 @@ const { withTransaction } = require("../lib/transaction");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
-const nameSchema = z.string().trim().min(2).max(120)
+const namePartSchema = z.string().trim().min(1).max(60)
   .transform((value) => value.normalize("NFKC"));
-const createStudentSchema = z.object({ login: loginSchema, name: nameSchema }).strict();
-const updateStudentSchema = z.object({ login: loginSchema.optional(), name: nameSchema.optional() })
+const optionalMiddleNameSchema = z.preprocess(
+  (value) => value === undefined || (typeof value === "string" && value.trim() === "") ? null : value,
+  namePartSchema.nullable(),
+);
+const createStudentSchema = z.object({
+  login: loginSchema,
+  firstName: namePartSchema,
+  lastName: namePartSchema,
+  middleName: optionalMiddleNameSchema,
+}).strict().refine((value) => displayName(value).length <= 120);
+const updateStudentSchema = z.object({
+  login: loginSchema.optional(),
+  firstName: namePartSchema.optional(),
+  lastName: namePartSchema.optional(),
+  middleName: optionalMiddleNameSchema.optional(),
+})
   .strict()
-  .refine((value) => value.login !== undefined || value.name !== undefined);
+  .refine((value) => value.login !== undefined || hasIdentity(value))
+  .refine((value) => !hasIdentity(value) || (value.firstName && value.lastName))
+  .refine((value) => !hasIdentity(value) || displayName(value).length <= 120);
 const studentIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
 
-const studentColumns = `id, login, display_name, account_status, created_at,
+function hasIdentity(value) {
+  return value.firstName !== undefined
+    || value.lastName !== undefined
+    || value.middleName !== undefined;
+}
+
+function displayName(value) {
+  return [value.lastName, value.firstName, value.middleName].filter(Boolean).join(" ");
+}
+
+const studentColumns = `id, login, display_name, first_name, last_name, middle_name,
+  account_status, created_at,
   last_login_at, activated_at, disabled_at, archived_at`;
 
 function publicStudent(row) {
@@ -31,6 +58,9 @@ function publicStudent(row) {
     id: String(row.id),
     login: row.login,
     name: row.display_name,
+    firstName: row.first_name ?? null,
+    lastName: row.last_name ?? null,
+    middleName: row.middle_name ?? null,
     status: row.account_status,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at,
@@ -52,7 +82,7 @@ function studentId(value) {
 }
 
 function inputError() {
-  return new HttpError(400, "invalid_student", "Проверьте имя и логин");
+  return new HttpError(400, "invalid_student", "Проверьте ФИО и логин");
 }
 
 function duplicateLogin(error) {
@@ -100,7 +130,8 @@ function createAdminRouter(pool, config) {
     "/students",
     asyncHandler(async (req, res) => {
       const { rows } = await pool.query(
-        `SELECT u.id, u.login, u.display_name, u.account_status, u.created_at,
+        `SELECT u.id, u.login, u.display_name, u.first_name, u.last_name, u.middle_name,
+                u.account_status, u.created_at,
                 u.last_login_at, u.activated_at, u.disabled_at, u.archived_at,
                 activation.expires_at AS activation_expires_at,
                 CASE
@@ -135,11 +166,18 @@ function createAdminRouter(pool, config) {
         result = await withTransaction(pool, async (client) => {
           const inserted = await client.query(
             `INSERT INTO users
-               (login, display_name, password_hash, role, is_active,
+               (login, first_name, last_name, middle_name, display_name,
+                password_hash, role, is_active,
                 password_changed_at, account_status)
-             VALUES ($1, $2, NULL, 'student', FALSE, NULL, 'pending_activation')
+             VALUES ($1, $2, $3, $4, $5, NULL, 'student', FALSE, NULL, 'pending_activation')
              RETURNING ${studentColumns}`,
-            [parsed.data.login, parsed.data.name],
+            [
+              parsed.data.login,
+              parsed.data.firstName,
+              parsed.data.lastName,
+              parsed.data.middleName,
+              displayName(parsed.data),
+            ],
           );
           const row = inserted.rows[0];
           const token = await createOneTimeToken(client, {
@@ -172,16 +210,28 @@ function createAdminRouter(pool, config) {
       const id = studentId(req.params.studentId);
       const parsed = updateStudentSchema.safeParse(req.body);
       if (!parsed.success) throw inputError();
+      const identityChanged = hasIdentity(parsed.data);
       let result;
       try {
         result = await pool.query(
           `UPDATE users
               SET login = COALESCE($1, login),
-                  display_name = COALESCE($2, display_name),
+                  first_name = CASE WHEN $2 THEN $3 ELSE first_name END,
+                  last_name = CASE WHEN $2 THEN $4 ELSE last_name END,
+                  middle_name = CASE WHEN $2 THEN $5 ELSE middle_name END,
+                  display_name = CASE WHEN $2 THEN $6 ELSE display_name END,
                   updated_at = NOW()
-            WHERE id = $3 AND role = 'student' AND account_status <> 'archived'
+            WHERE id = $7 AND role = 'student' AND account_status <> 'archived'
             RETURNING ${studentColumns}`,
-          [parsed.data.login ?? null, parsed.data.name ?? null, id],
+          [
+            parsed.data.login ?? null,
+            identityChanged,
+            parsed.data.firstName ?? null,
+            parsed.data.lastName ?? null,
+            parsed.data.middleName ?? null,
+            identityChanged ? displayName(parsed.data) : null,
+            id,
+          ],
         );
       } catch (error) {
         throw duplicateLogin(error);

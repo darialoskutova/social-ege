@@ -46,6 +46,7 @@ body { min-height: 100vh; }
 .dialog-body { display: grid; gap: 18px; padding: 26px; }
 .dialog-heading { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
 .dialog-heading h2 { margin: 0; font-size: 26px; }
+.legacy-name-note { margin: 0; padding: 10px 12px; color: var(--muted); border-left: 3px solid var(--blue); font-size: 14px; line-height: 1.45; }
 .close-button { width: 40px; height: 40px; padding: 0; color: var(--muted); border: 0; background: transparent; font-size: 30px; line-height: 1; cursor: pointer; }
 .field small { color: var(--muted); line-height: 1.4; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: 10px; }

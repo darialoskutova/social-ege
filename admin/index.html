@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261008-token-ttl">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261008-student-identity">
 </head>
 <body>
   <header class="admin-header">
@@ -56,7 +56,10 @@
     <form class="dialog-body" data-student-form>
       <div class="dialog-heading"><h2 data-dialog-title>Новый ученик</h2><button type="button" class="close-button" data-close-dialog aria-label="Закрыть">×</button></div>
       <input type="hidden" name="studentId">
-      <div class="field"><label for="student-name">Имя и фамилия</label><input id="student-name" name="name" maxlength="120" autocomplete="off" required></div>
+      <p class="legacy-name-note" data-legacy-name hidden></p>
+      <div class="field"><label for="student-first-name">Имя</label><input id="student-first-name" name="firstName" maxlength="60" autocomplete="given-name" required></div>
+      <div class="field"><label for="student-last-name">Фамилия</label><input id="student-last-name" name="lastName" maxlength="60" autocomplete="family-name" required></div>
+      <div class="field"><label for="student-middle-name">Отчество <small>— необязательно</small></label><input id="student-middle-name" name="middleName" maxlength="60" autocomplete="additional-name"></div>
       <div class="field"><label for="student-login">Логин</label><input id="student-login" name="login" minlength="3" maxlength="64" pattern="[A-Za-z0-9._-]+" autocapitalize="none" autocomplete="off" required><small>Латинские буквы, цифры, точка, дефис или подчёркивание</small></div>
       <p class="form-message" data-dialog-message role="status" aria-live="polite"></p>
       <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>Отмена</button><button class="primary-button" type="submit" data-dialog-submit>Создать</button></div>
@@ -73,6 +76,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261008-token-ttl" defer></script>
+  <script src="/admin/admin.js?v=20261008-student-identity" defer></script>
 </body>
 </html>

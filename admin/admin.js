@@ -102,15 +102,25 @@
   }
 
   function openStudentDialog(student = null) {
+    const legacyName = student && !student.firstName && !student.lastName
+      ? String(student.name || "").trim()
+      : "";
+    const legacyNameNote = document.querySelector("[data-legacy-name]");
     form.reset();
     form.elements.studentId.value = student?.id || "";
-    form.elements.name.value = student?.name || "";
+    form.elements.firstName.value = student?.firstName || "";
+    form.elements.lastName.value = student?.lastName || "";
+    form.elements.middleName.value = student?.middleName || "";
     form.elements.login.value = student?.login || "";
+    legacyNameNote.hidden = !legacyName;
+    legacyNameNote.textContent = legacyName
+      ? `Ранее сохранено: ${legacyName}. Укажите имя и фамилию в отдельных полях.`
+      : "";
     document.querySelector("[data-dialog-title]").textContent = student ? "Изменить ученика" : "Новый ученик";
     document.querySelector("[data-dialog-submit]").textContent = student ? "Сохранить" : "Создать";
     document.querySelector("[data-dialog-message]").textContent = "";
     dialog.showModal();
-    form.elements.name.focus();
+    form.elements.firstName.focus();
   }
 
   function showLink(url, title, expiresAt) {
@@ -137,7 +147,12 @@
     try {
       const payload = await api(id ? `/students/${id}` : "/students", {
         method: id ? "PATCH" : "POST",
-        body: JSON.stringify({ name: form.elements.name.value, login: form.elements.login.value }),
+        body: JSON.stringify({
+          firstName: form.elements.firstName.value,
+          lastName: form.elements.lastName.value,
+          middleName: form.elements.middleName.value,
+          login: form.elements.login.value,
+        }),
       });
       if (id) {
         students = students.map((student) => student.id === id ? { ...student, ...payload.student } : student);

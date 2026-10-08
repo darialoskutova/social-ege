@@ -30,6 +30,9 @@ function publicColumns(user) {
     id: user.id,
     login: user.login,
     display_name: user.display_name,
+    first_name: user.first_name ?? null,
+    last_name: user.last_name ?? null,
+    middle_name: user.middle_name ?? null,
     account_status: user.account_status,
     created_at: user.created_at,
     last_login_at: user.last_login_at,
@@ -117,7 +120,8 @@ function fakePool(initialUsers, initialNow = Date.now()) {
     if (normalized.startsWith("INSERT INTO users") && normalized.includes("pending_activation")) {
       uniqueLogin(values[0]);
       const user = {
-        id: state.nextUserId++, login: values[0], display_name: values[1], password_hash: null,
+        id: state.nextUserId++, login: values[0], first_name: values[1], last_name: values[2],
+        middle_name: values[3], display_name: values[4], password_hash: null,
         role: "student", is_active: false, password_changed_at: null,
         account_status: "pending_activation", created_at: state.now(), updated_at: state.now(),
         last_login_at: null, activated_at: null, disabled_at: null, archived_at: null,
@@ -126,12 +130,17 @@ function fakePool(initialUsers, initialNow = Date.now()) {
       return { rows: [publicColumns(user)] };
     }
     if (normalized.startsWith("UPDATE users") && normalized.includes("login = COALESCE")) {
-      const user = state.users.find((item) => String(item.id) === String(values[2])
+      const user = state.users.find((item) => String(item.id) === String(values[6])
         && item.role === "student" && item.account_status !== "archived");
       if (!user) return { rows: [] };
       if (values[0] !== null) uniqueLogin(values[0], user.id);
       if (values[0] !== null) user.login = values[0];
-      if (values[1] !== null) user.display_name = values[1];
+      if (values[1]) {
+        user.first_name = values[2];
+        user.last_name = values[3];
+        user.middle_name = values[4];
+        user.display_name = values[5];
+      }
       user.updated_at = new Date();
       return { rows: [publicColumns(user)] };
     }
@@ -226,8 +235,8 @@ async function fixture() {
   const studentPassword = "student-password-123";
   const now = new Date();
   const pool = fakePool([
-    { id: 1, login: "daria", display_name: "Дарья", password_hash: await hashPassword(adminPassword), role: "admin", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
-    { id: 2, login: "student", display_name: "Ученица", password_hash: await hashPassword(studentPassword), role: "student", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
+    { id: 1, login: "daria", display_name: "Дарья", first_name: null, last_name: null, middle_name: null, password_hash: await hashPassword(adminPassword), role: "admin", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
+    { id: 2, login: "student", display_name: "Ученица", first_name: null, last_name: null, middle_name: null, password_hash: await hashPassword(studentPassword), role: "student", is_active: true, account_status: "active", created_at: now, activated_at: now, last_login_at: null, disabled_at: null, archived_at: null },
   ]);
   pool.state.learning.set("2", { topic: "soc1", completed: true });
 
@@ -278,9 +287,14 @@ function rawToken(url) {
   return new URLSearchParams(new URL(url).hash.slice(1)).get("token");
 }
 
-async function createStudent(ctx, cookie, loginName = "new_student") {
+async function createStudent(ctx, cookie, loginName = "new_student", identity = {}) {
   const response = await request(ctx, "/api/admin/students", {
-    method: "POST", cookie, body: { login: loginName, name: "Новая ученица" },
+    method: "POST", cookie, body: {
+      login: loginName,
+      firstName: identity.firstName || "Мария",
+      lastName: identity.lastName || "Иванова",
+      ...(Object.hasOwn(identity, "middleName") ? { middleName: identity.middleName } : {}),
+    },
   });
   return { response, payload: await response.json() };
 }
@@ -302,6 +316,10 @@ test("C-F/I: admin creates a passwordless pending student; activation is private
     const created = await createStudent(ctx, admin.cookie);
     assert.equal(created.response.status, 201);
     assert.equal(created.payload.student.status, "pending_activation");
+    assert.equal(created.payload.student.name, "Иванова Мария");
+    assert.equal(created.payload.student.firstName, "Мария");
+    assert.equal(created.payload.student.lastName, "Иванова");
+    assert.equal(created.payload.student.middleName, null);
     const user = ctx.pool.state.users.find((item) => item.login === "new_student");
     assert.equal(user.password_hash, null);
     assert.equal((await login(ctx, "new_student", "some-password-123")).response.status, 401);
@@ -409,14 +427,41 @@ test("P/Q: editing login keeps the user id and learning data; duplicate login is
   try {
     const admin = await login(ctx, "daria", ctx.adminPassword);
     const edit = await request(ctx, "/api/admin/students/2", {
-      method: "PATCH", cookie: admin.cookie, body: { login: "student_new", name: "Новое имя" },
+      method: "PATCH", cookie: admin.cookie, body: {
+        login: "student_new", firstName: "Мария", lastName: "Петрова", middleName: "Сергеевна",
+      },
     });
     assert.equal(edit.status, 200);
-    assert.equal((await edit.json()).student.id, "2");
+    const editedStudent = (await edit.json()).student;
+    assert.equal(editedStudent.id, "2");
+    assert.equal(editedStudent.name, "Петрова Мария Сергеевна");
     assert.deepEqual(ctx.pool.state.learning.get("2"), { topic: "soc1", completed: true });
     assert.equal((await request(ctx, "/api/admin/students/2", {
       method: "PATCH", cookie: admin.cookie, body: { login: "daria" },
     })).status, 409);
+  } finally { await ctx.close(); }
+});
+
+test("F-I: structured names allow optional patronymics and require unique logins", async () => {
+  const ctx = await fixture();
+  try {
+    const admin = await login(ctx, "daria", ctx.adminPassword);
+    const withoutMiddleName = await createStudent(ctx, admin.cookie, "maria_ivanova", {
+      firstName: "Мария", lastName: "Иванова",
+    });
+    assert.equal(withoutMiddleName.response.status, 201);
+    assert.equal(withoutMiddleName.payload.student.middleName, null);
+
+    const sameFirstName = await createStudent(ctx, admin.cookie, "maria_petrova", {
+      firstName: "Мария", lastName: "Петрова", middleName: "Сергеевна",
+    });
+    assert.equal(sameFirstName.response.status, 201);
+    assert.equal(sameFirstName.payload.student.name, "Петрова Мария Сергеевна");
+
+    const duplicateLogin = await createStudent(ctx, admin.cookie, "maria_ivanova", {
+      firstName: "Анна", lastName: "Смирнова",
+    });
+    assert.equal(duplicateLogin.response.status, 409);
   } finally { await ctx.close(); }
 });
 
