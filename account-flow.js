@@ -17,7 +17,11 @@
 
   document.title = `${title} — ЕГЭ по обществознанию`;
   root.querySelector("h1").textContent = title;
-  window.history.replaceState({}, document.title, window.location.pathname);
+  if (!fragmentParams.get("token") && queryParams.get("token")) {
+    window.history.replaceState(
+      {}, document.title, `${window.location.pathname}#token=${encodeURIComponent(token)}`,
+    );
+  }
 
   function showError(text) {
     message.classList.remove("success");
@@ -71,6 +75,7 @@
     showError("");
     try {
       await request("", { token, password });
+      window.history.replaceState({}, document.title, window.location.pathname);
       form.reset();
       form.classList.add("is-hidden");
       message.classList.add("success");

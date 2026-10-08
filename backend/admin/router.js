@@ -27,7 +27,7 @@ const studentColumns = `id, login, display_name, account_status, created_at,
   last_login_at, activated_at, disabled_at, archived_at`;
 
 function publicStudent(row) {
-  return {
+  const student = {
     id: String(row.id),
     login: row.login,
     name: row.display_name,
@@ -38,6 +38,11 @@ function publicStudent(row) {
     disabledAt: row.disabled_at,
     archivedAt: row.archived_at,
   };
+  if (Object.hasOwn(row, "activation_link_status")) {
+    student.activationExpiresAt = row.activation_expires_at ?? null;
+    student.activationLinkStatus = row.activation_link_status;
+  }
+  return student;
 }
 
 function studentId(value) {
@@ -95,10 +100,26 @@ function createAdminRouter(pool, config) {
     "/students",
     asyncHandler(async (req, res) => {
       const { rows } = await pool.query(
-        `SELECT ${studentColumns}
-           FROM users
-          WHERE role = 'student'
-          ORDER BY archived_at NULLS FIRST, created_at DESC, id DESC`,
+        `SELECT u.id, u.login, u.display_name, u.account_status, u.created_at,
+                u.last_login_at, u.activated_at, u.disabled_at, u.archived_at,
+                activation.expires_at AS activation_expires_at,
+                CASE
+                  WHEN activation.id IS NULL THEN 'none'
+                  WHEN activation.used_at IS NOT NULL THEN 'used'
+                  WHEN activation.revoked_at IS NOT NULL THEN 'revoked'
+                  WHEN activation.expires_at <= NOW() THEN 'expired'
+                  ELSE 'valid'
+                END AS activation_link_status
+           FROM users AS u
+           LEFT JOIN LATERAL (
+             SELECT id, expires_at, used_at, revoked_at
+               FROM account_tokens
+              WHERE user_id = u.id AND purpose = 'activation'
+              ORDER BY created_at DESC, id DESC
+              LIMIT 1
+           ) AS activation ON TRUE
+          WHERE u.role = 'student'
+          ORDER BY u.archived_at NULLS FIRST, u.created_at DESC, u.id DESC`,
       );
       res.set("Cache-Control", "no-store").json({ students: rows.map(publicStudent) });
     }),
@@ -129,7 +150,11 @@ function createAdminRouter(pool, config) {
           });
           await audit(client, req.auth.user.id, "student.created", row.id, { login: row.login });
           return {
-            student: publicStudent(row),
+            student: publicStudent({
+              ...row,
+              activation_expires_at: token.expiresAt,
+              activation_link_status: "valid",
+            }),
             activationUrl: linkFor(config, "/activate/", token.rawToken),
             expiresAt: token.expiresAt,
           };
@@ -218,7 +243,12 @@ function createAdminRouter(pool, config) {
           );
         }
         await audit(client, req.auth.user.id, `student.${action}`, id, { status: nextStatus });
-        return publicStudent(updated.rows[0]);
+        return publicStudent({
+          ...updated.rows[0],
+          ...(nextStatus === "pending_activation"
+            ? { activation_expires_at: null, activation_link_status: "revoked" }
+            : {}),
+        });
       });
       res.set("Cache-Control", "no-store").json({ student });
     });

@@ -28,6 +28,17 @@
     return new Intl.DateTimeFormat("ru-RU", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
   }
 
+  function activationNote(student) {
+    if (student.status !== "pending_activation") return "";
+    if (student.activationLinkStatus === "valid" && student.activationExpiresAt) {
+      return `<span class="activation-expiry">Ссылка действует до ${date(student.activationExpiresAt)}</span>`;
+    }
+    if (student.activationLinkStatus === "expired") {
+      return `<span class="activation-expiry is-expired">Срок ссылки истёк</span>`;
+    }
+    return `<span class="activation-expiry">Нужна новая ссылка активации</span>`;
+  }
+
   async function api(path, options = {}) {
     const response = await fetch(`/api/admin${path}`, {
       credentials: "same-origin",
@@ -66,7 +77,7 @@
     tableState.hidden = true;
     list.innerHTML = students.map((student) => `
       <tr>
-        <td><span class="student-name">${escapeHtml(student.name)}</span><span class="student-login">${escapeHtml(student.login)}</span></td>
+        <td><span class="student-name">${escapeHtml(student.name)}</span><span class="student-login">${escapeHtml(student.login)}</span>${activationNote(student)}</td>
         <td><span class="status status-${student.status}">${statusNames[student.status] || escapeHtml(student.status)}</span></td>
         <td>${date(student.createdAt)}</td><td>${date(student.lastLoginAt)}</td>
         <td><div class="actions">${actions(student)}</div></td>
@@ -102,9 +113,12 @@
     form.elements.name.focus();
   }
 
-  function showLink(url, title) {
+  function showLink(url, title, expiresAt) {
     generatedLink.value = url;
     document.querySelector("[data-link-title]").textContent = title;
+    document.querySelector("[data-link-expiry]").textContent = expiresAt
+      ? `Действует до ${date(expiresAt)}.`
+      : "";
     document.querySelector("[data-copy-message]").textContent = "";
     linkDialog.showModal();
   }
@@ -126,13 +140,13 @@
         body: JSON.stringify({ name: form.elements.name.value, login: form.elements.login.value }),
       });
       if (id) {
-        students = students.map((student) => student.id === id ? payload.student : student);
+        students = students.map((student) => student.id === id ? { ...student, ...payload.student } : student);
       } else {
         students.unshift(payload.student);
       }
       render();
       dialog.close();
-      if (payload.activationUrl) showLink(payload.activationUrl, "Ссылка для активации");
+      if (payload.activationUrl) showLink(payload.activationUrl, "Ссылка для активации", payload.expiresAt);
     } catch (requestError) {
       error.textContent = requestError.message;
     } finally {
@@ -156,10 +170,18 @@
       };
       const payload = await api(`/students/${student.id}/${routes[button.dataset.action]}`, { method: "POST" });
       if (payload.student) {
-        students = students.map((item) => item.id === student.id ? payload.student : item);
+        students = students.map((item) => item.id === student.id ? { ...item, ...payload.student } : item);
         render();
       }
-      if (payload.url) showLink(payload.url, button.dataset.action === "reset" ? "Ссылка для смены пароля" : "Ссылка для активации");
+      if (payload.url) {
+        if (button.dataset.action === "activation") {
+          students = students.map((item) => item.id === student.id ? {
+            ...item, activationExpiresAt: payload.expiresAt, activationLinkStatus: "valid",
+          } : item);
+          render();
+        }
+        showLink(payload.url, button.dataset.action === "reset" ? "Ссылка для смены пароля" : "Ссылка для активации", payload.expiresAt);
+      }
     } catch (error) {
       message.textContent = error.message;
       button.disabled = false;

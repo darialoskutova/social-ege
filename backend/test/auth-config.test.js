@@ -75,3 +75,15 @@ test("public origin must be one of the exact allowed origins", () => {
     assert.throws(() => readAuthConfig(), /also be present/);
   });
 });
+
+test("account token TTL rejects invalid configuration instead of silently changing it", () => {
+  withEnvironment({ ACCOUNT_TOKEN_TTL_HOURS: "13.5" }, () => {
+    assert.throws(() => readAuthConfig(), /ACCOUNT_TOKEN_TTL_HOURS/);
+  });
+  withEnvironment({ ACCOUNT_TOKEN_TTL_HOURS: "0" }, () => {
+    assert.throws(() => readAuthConfig(), /ACCOUNT_TOKEN_TTL_HOURS/);
+  });
+  withEnvironment({ ACCOUNT_TOKEN_TTL_HOURS: "169" }, () => {
+    assert.throws(() => readAuthConfig(), /ACCOUNT_TOKEN_TTL_HOURS/);
+  });
+});

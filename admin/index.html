@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261008-token-ttl">
 </head>
 <body>
   <header class="admin-header">
@@ -66,13 +66,13 @@
   <dialog class="admin-dialog" data-link-dialog>
     <div class="dialog-body">
       <div class="dialog-heading"><h2 data-link-title>Ссылка готова</h2><button type="button" class="close-button" data-close-link aria-label="Закрыть">×</button></div>
-      <p>Передайте её ученику. Ссылка одноразовая и действует 72 часа.</p>
+      <p>Передайте её ученику. Ссылка одноразовая. <span data-link-expiry></span></p>
       <label class="sr-only" for="generated-link">Ссылка</label><input class="generated-link" id="generated-link" data-generated-link readonly>
       <p class="form-message" data-copy-message role="status" aria-live="polite"></p>
       <div class="dialog-actions"><button class="secondary-button" type="button" data-close-link>Закрыть</button><button class="primary-button" type="button" data-copy-link>Скопировать</button></div>
     </div>
   </dialog>
 
-  <script src="/admin/admin.js" defer></script>
+  <script src="/admin/admin.js?v=20261008-token-ttl" defer></script>
 </body>
 </html>

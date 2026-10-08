@@ -133,10 +133,15 @@ Raw account tokens are generated with `crypto.randomBytes(32)`, returned only
 inside the newly created link and never stored in PostgreSQL. The database
 stores a SHA-256 token hash. Each token expires after 72 hours by default, is
 single-use, and a replacement revokes older unused tokens of the same purpose.
+Both `created_at` and `expires_at` are calculated by PostgreSQL; validation
+uses the same database clock and `TIMESTAMPTZ`, without local timezone offsets
+or a separate Node.js clock.
 Generated browser links put the raw token after `#token=` so it is not sent in
 the initial HTTP request or included in ordinary Nginx access logs. The page
-submits it only inside the API request body and removes it from the address bar
-immediately. These pages load no analytics.
+submits it only inside the API request body. It keeps the fragment across a
+reload or a browser-restored tab and removes it immediately after successful
+activation or password reset. These pages load no analytics. The admin list
+shows only the current activation-link status and expiry, never its raw token.
 
 Password creation and reset share the same server-side 12–256 character
 policy and existing Argon2id implementation. A successful password reset also

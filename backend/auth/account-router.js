@@ -19,25 +19,37 @@ const submitSchema = z.object({
   password: passwordSchema,
 }).strict();
 
-function invalidLink() {
-  return new HttpError(400, "invalid_account_link", "Ссылка недействительна или истекла");
+function invalidLink(reason = "invalid") {
+  const error = new HttpError(400, "invalid_account_link", "Ссылка недействительна или истекла");
+  error.accountTokenReason = reason;
+  return error;
 }
 
-async function findToken(client, rawToken, purpose, lock = false) {
+function accountTokenState(row, purpose, requiredStatus) {
+  if (!row) return "invalid";
+  if (row.purpose !== purpose) return "wrong_purpose";
+  if (row.account_status === "archived") return "account_archived";
+  if (row.account_status === "blocked") return "account_blocked";
+  if (row.used_at) return "used";
+  if (row.revoked_at) return "revoked";
+  if (!row.is_unexpired) return "expired";
+  if (row.account_status !== requiredStatus) return "account_state_changed";
+  return "valid";
+}
+
+async function inspectToken(client, rawToken, purpose, requiredStatus, lock = false) {
   const { rows } = await client.query(
     `SELECT t.id AS token_id, t.user_id, u.login, u.display_name,
-            u.account_status, u.password_hash
+            u.account_status, u.password_hash, t.purpose, t.expires_at,
+            t.used_at, t.revoked_at, (t.expires_at > NOW()) AS is_unexpired
        FROM account_tokens AS t
        JOIN users AS u ON u.id = t.user_id
       WHERE t.token_hash = $1
-        AND t.purpose = $2
-        AND t.used_at IS NULL
-        AND t.revoked_at IS NULL
-        AND t.expires_at > NOW()
       LIMIT 1${lock ? " FOR UPDATE OF t, u" : ""}`,
-    [hashAccountToken(rawToken), purpose],
+    [hashAccountToken(rawToken)],
   );
-  return rows[0] ?? null;
+  const row = rows[0] ?? null;
+  return { row, state: accountTokenState(row, purpose, requiredStatus) };
 }
 
 function publicAccount(row) {
@@ -74,8 +86,11 @@ function createAccountRouter(pool, config) {
       asyncHandler(async (req, res) => {
         const parsed = validateSchema.safeParse(req.body);
         if (!parsed.success) throw invalidLink();
-        const row = await findToken(pool, parsed.data.token, flow.purpose);
-        if (!row || row.account_status !== flow.requiredStatus) throw invalidLink();
+        const inspected = await inspectToken(
+          pool, parsed.data.token, flow.purpose, flow.requiredStatus,
+        );
+        if (inspected.state !== "valid") throw invalidLink(inspected.state);
+        const { row } = inspected;
         res.set("Cache-Control", "no-store").json({ account: publicAccount(row) });
       }),
     );
@@ -91,12 +106,17 @@ function createAccountRouter(pool, config) {
           throw invalidLink();
         }
 
-        const preflight = await findToken(pool, parsed.data.token, flow.purpose);
-        if (!preflight || preflight.account_status !== flow.requiredStatus) throw invalidLink();
+        const preflight = await inspectToken(
+          pool, parsed.data.token, flow.purpose, flow.requiredStatus,
+        );
+        if (preflight.state !== "valid") throw invalidLink(preflight.state);
         const passwordHash = await hashPassword(parsed.data.password);
         const account = await withTransaction(pool, async (client) => {
-          const row = await findToken(client, parsed.data.token, flow.purpose, true);
-          if (!row || row.account_status !== flow.requiredStatus) throw invalidLink();
+          const inspected = await inspectToken(
+            client, parsed.data.token, flow.purpose, flow.requiredStatus, true,
+          );
+          if (inspected.state !== "valid") throw invalidLink(inspected.state);
+          const { row } = inspected;
 
           if (flow.purpose === "activation") {
             await client.query(
@@ -153,4 +173,4 @@ function createAccountRouter(pool, config) {
   return router;
 }
 
-module.exports = { createAccountRouter };
+module.exports = { accountTokenState, createAccountRouter };

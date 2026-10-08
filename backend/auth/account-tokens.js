@@ -24,15 +24,22 @@ async function revokeActiveTokens(client, userId, purpose) {
 }
 
 async function createOneTimeToken(client, { userId, purpose, createdBy, ttlHours }) {
+  if (!Number.isInteger(ttlHours) || ttlHours < 1 || ttlHours > 24 * 7) {
+    throw new Error("Account token TTL must be an integer between 1 and 168 hours");
+  }
   await revokeActiveTokens(client, userId, purpose);
   const { rawToken, tokenHash } = generateAccountToken();
-  const expiresAt = new Date(Date.now() + ttlHours * 60 * 60 * 1000);
-  await client.query(
+  const { rows } = await client.query(
     `INSERT INTO account_tokens (user_id, token_hash, purpose, expires_at, created_by)
-     VALUES ($1, $2, $3, $4, $5)`,
-    [userId, tokenHash, purpose, expiresAt, createdBy],
+     VALUES ($1, $2, $3, NOW() + ($4::INTEGER * INTERVAL '1 hour'), $5)
+     RETURNING created_at, expires_at`,
+    [userId, tokenHash, purpose, ttlHours, createdBy],
   );
-  return { rawToken, expiresAt };
+  return {
+    rawToken,
+    createdAt: rows[0].created_at,
+    expiresAt: rows[0].expires_at,
+  };
 }
 
 module.exports = {
