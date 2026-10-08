@@ -1591,22 +1591,6 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-file small {
     backdrop-filter: none;
 }
 
-/* Safari can repaint nested sticky translucent panels on different subpixels
-   while scrolling. Stable compositor layers prevent that visible jitter. */
-#appView .sidebar,
-#appView #lessonPage .lesson-section-tabs {
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    will-change: transform;
-}
-
-#appView .sidebar {
-    -webkit-transform: translate3d(0, 0, 0) !important;
-    transform: translate3d(0, 0, 0) !important;
-}
-
 #appView #lessonPage .lesson-section-tab {
     transition: border-color 160ms ease, background-color 160ms ease,
         color 160ms ease, box-shadow 160ms ease;
@@ -2093,10 +2077,11 @@ html {
     scrollbar-gutter: stable;
 }
 
-/* A sticky element must stay in the normal layout layer. The previous
-   translate3d/will-change combination caused Safari to repaint it on
-   fractional pixels while scrolling. An explicit height also removes the
-   conflict between the original 80px header and the later 76px override. */
+/* Keep sticky navigation in the normal layout layer. Do not reintroduce
+   translate/backface/will-change promotion here: after an authenticated view
+   is revealed, WebKit can retain that compositor layer on fractional pixels
+   and visibly jitter during slow scrolling. The explicit integer geometry
+   also removes the old 80px/76px height conflict. */
 #appView .sidebar {
     position: sticky;
     top: 0;
