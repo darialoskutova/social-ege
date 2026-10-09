@@ -16,6 +16,10 @@ URLs, SSH keys or other secrets.
   schema without creating accounts or importing test answer keys.
 - `scripts/apply-stage-3-auth-foundation.sh` tests and installs authentication
   primitives while explicitly keeping production login disabled until HTTPS.
+- `systemd/social-ege-uploads.conf` grants the hardened service write access
+  only to `/opt/social-ege/var/uploads` for submitted homework and mocks.
+- `STAGE-5-MOCK-UPLOADS.md` records the guarded migration and release steps for
+  versioned thematic mocks and private file uploads.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

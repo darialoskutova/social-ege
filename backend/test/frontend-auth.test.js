@@ -25,6 +25,7 @@ test("cabinet view checks the server session and cannot open without an authenti
   assert.match(frontend, /learningRequest\("\/progress"\)/);
   assert.match(frontend, /learningRequest\("\/test-attempts"\)/);
   assert.match(frontend, /learningRequest\("\/homework-submissions"\)/);
+  assert.match(frontend, /learningRequest\("\/mock-submissions"\)/);
 });
 
 test("B/C/E: startup waits for the server session and restores the cabinet without a landing flash", () => {
@@ -39,7 +40,8 @@ test("B/C/E: startup waits for the server session and restores the cabinet witho
 
 test("learning records use protected APIs instead of browser storage", () => {
   assert.match(frontend, /learningRequest\("\/test-attempts", \{/);
-  assert.match(frontend, /learningRequest\("\/homework-submissions", \{/);
+  assert.match(frontend, /fetch\("\/api\/learning\/homework-submissions\/file"/);
+  assert.match(frontend, /fetch\("\/api\/learning\/mock-submissions\/file"/);
   assert.match(frontend, /learningRequest\(`\/test-drafts\/\$\{encodeURIComponent\(testId\)\}`/);
   assert.doesNotMatch(frontend, /readUserJson\(storage\.(?:works|testAttempts|testDrafts|messages)/);
   assert.doesNotMatch(frontend, /writeUserJson\(storage\.(?:works|testAttempts|testDrafts|messages)/);

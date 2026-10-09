@@ -9,12 +9,19 @@
   const linkDialog = document.querySelector("[data-link-dialog]");
   const generatedLink = document.querySelector("[data-generated-link]");
   let students = [];
+  let mockSubmissions = [];
 
   const statusNames = {
     pending_activation: "Ожидает активации",
     active: "Активен",
     blocked: "Заблокирован",
     archived: "В архиве",
+  };
+  const submissionStatusNames = {
+    submitted: "Отправлено",
+    in_review: "На проверке",
+    needs_revision: "Нужно исправить",
+    accepted: "Проверено",
   };
 
   function escapeHtml(value) {
@@ -84,13 +91,41 @@
       </tr>`).join("");
   }
 
+  function formatBytes(value) {
+    const bytes = Number(value || 0);
+    if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} КБ`;
+    return `${(bytes / (1024 * 1024)).toFixed(1).replace(".", ",")} МБ`;
+  }
+
+  function renderMockSubmissions() {
+    const body = document.querySelector("[data-mock-submission-list]");
+    const state = document.querySelector("[data-mock-submission-state]");
+    if (!mockSubmissions.length) {
+      body.innerHTML = "";
+      state.hidden = false;
+      state.textContent = "Работ по пробникам пока нет";
+      return;
+    }
+    state.hidden = true;
+    body.innerHTML = mockSubmissions.map((submission) => `
+      <tr>
+        <td><span class="student-name">${escapeHtml(submission.studentName)}</span><span class="student-login">${escapeHtml(submission.studentLogin)}</span></td>
+        <td><span class="student-name">${escapeHtml(submission.mock?.title || submission.mockId)}</span><span class="student-login">Версия ${escapeHtml(submission.mockVersion)}</span></td>
+        <td><span class="submission-file-name">${escapeHtml(submission.fileName)}</span><span class="student-login">${formatBytes(submission.sizeBytes)} · редакция ${submission.fileRevision}</span></td>
+        <td>${date(submission.updatedAt || submission.submittedAt)}<span class="status status-${escapeHtml(submission.status)}">${submissionStatusNames[submission.status] || escapeHtml(submission.status)}</span></td>
+        <td><a class="action-button submission-download" href="${escapeHtml(submission.downloadUrl)}">Скачать</a></td>
+      </tr>`).join("");
+  }
+
   async function load() {
     try {
       const access = await api("/access");
       document.querySelector("[data-admin-name]").textContent = access.user.name;
-      const payload = await api("/students");
+      const [payload, mockPayload] = await Promise.all([api("/students"), api("/mock-submissions")]);
       students = payload.students;
+      mockSubmissions = mockPayload.submissions;
       render();
+      renderMockSubmissions();
     } catch (error) {
       document.querySelectorAll("[data-panel], .admin-tabs").forEach((element) => element.classList.add("is-hidden"));
       const state = document.querySelector("[data-access-state]");
@@ -215,12 +250,14 @@
 
   document.querySelectorAll("[data-tab]").forEach((tab) => tab.addEventListener("click", () => {
     document.querySelectorAll("[data-tab]").forEach((item) => item.classList.toggle("is-active", item === tab));
-    const studentsPanel = document.querySelector("[data-panel='students']");
+    const requestedPanel = document.querySelector(`[data-panel='${tab.dataset.tab}']`);
     const placeholder = document.querySelector("[data-panel='placeholder']");
-    const isStudents = tab.dataset.tab === "students";
-    studentsPanel.classList.toggle("is-hidden", !isStudents);
-    placeholder.classList.toggle("is-hidden", isStudents);
-    if (!isStudents) document.querySelector("[data-placeholder-title]").textContent = tab.textContent;
+    document.querySelectorAll("[data-panel]").forEach((panel) => {
+      if (panel === placeholder) return;
+      panel.classList.toggle("is-hidden", panel !== requestedPanel);
+    });
+    placeholder.classList.toggle("is-hidden", Boolean(requestedPanel));
+    if (!requestedPanel) document.querySelector("[data-placeholder-title]").textContent = tab.textContent;
   }));
 
   load();

@@ -12,6 +12,7 @@ const {
 const { asyncHandler } = require("../lib/async-handler");
 const { HttpError } = require("../lib/http-error");
 const { withTransaction } = require("../lib/transaction");
+const { readUploadConfig, sendStoredFile } = require("../learning/file-storage");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -107,7 +108,7 @@ async function audit(client, actorId, action, targetId, metadata = {}) {
   );
 }
 
-function createAdminRouter(pool, config) {
+function createAdminRouter(pool, config, suppliedUploadConfig = readUploadConfig()) {
   const router = express.Router();
 
   router.use((req, res, next) => {
@@ -125,6 +126,60 @@ function createAdminRouter(pool, config) {
   router.get("/access", (req, res) => {
     res.set("Cache-Control", "no-store").json({ user: req.auth.user });
   });
+
+  router.get(
+    "/mock-submissions",
+    asyncHandler(async (req, res) => {
+      const { rows } = await pool.query(
+        `SELECT s.id, s.mock_id, s.mock_version, s.mock_snapshot,
+                s.original_filename, s.mime_type, s.size_bytes, s.file_revision,
+                s.student_comment, s.status, s.teacher_comment,
+                s.submitted_at, s.updated_at,
+                u.login, u.display_name, u.first_name, u.last_name, u.middle_name
+           FROM mock_submissions AS s
+           JOIN users AS u ON u.id = s.user_id
+          ORDER BY s.updated_at DESC, s.id DESC`,
+      );
+      res.set("Cache-Control", "no-store").json({
+        submissions: rows.map((row) => ({
+          id: String(row.id),
+          studentName: row.display_name,
+          studentLogin: row.login,
+          firstName: row.first_name,
+          lastName: row.last_name,
+          middleName: row.middle_name,
+          mockId: row.mock_id,
+          mockVersion: row.mock_version,
+          mock: row.mock_snapshot,
+          fileName: row.original_filename,
+          mimeType: row.mime_type,
+          sizeBytes: Number(row.size_bytes),
+          fileRevision: row.file_revision,
+          studentComment: row.student_comment,
+          teacherComment: row.teacher_comment,
+          status: row.status,
+          submittedAt: row.submitted_at,
+          updatedAt: row.updated_at,
+          downloadUrl: `/api/admin/mock-submissions/${row.id}/file`,
+        })),
+      });
+    }),
+  );
+
+  router.get(
+    "/mock-submissions/:submissionId/file",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.submissionId);
+      const { rows } = await pool.query(
+        `SELECT object_key, original_filename, mime_type, size_bytes
+           FROM mock_submissions
+          WHERE id = $1`,
+        [id],
+      );
+      if (!rows[0]) throw new HttpError(404, "submission_not_found", "Работа не найдена");
+      await sendStoredFile(res, suppliedUploadConfig, rows[0]);
+    }),
+  );
 
   router.get(
     "/students",

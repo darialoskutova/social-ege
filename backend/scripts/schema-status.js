@@ -7,6 +7,7 @@ const expectedTables = [
   "auth_sessions",
   "account_tokens",
   "homework_submissions",
+  "mock_submissions",
   "schema_migrations",
   "teacher_messages",
   "test_attempts",

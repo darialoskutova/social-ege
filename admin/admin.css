@@ -34,9 +34,16 @@ body { min-height: 100vh; }
 .status-pending_activation { color: var(--blue); background: #e7eef8; }
 .status-blocked { color: var(--danger); background: #fae8ec; }
 .status-archived { color: #555e6d; background: #eceef2; }
+.status-submitted { color: var(--blue); background: #e7eef8; }
+.status-in_review { color: #6d4700; background: #f6edd7; }
+.status-needs_revision { color: var(--danger); background: #fae8ec; }
+.status-accepted { color: #155b38; background: #e4f4eb; }
 .actions { display: flex; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
 .action-button { min-height: 36px; padding: 7px 10px; color: var(--blue); border: 1px solid #bcc7d8; border-radius: 7px; background: white; font-size: 13px; font-weight: 700; cursor: pointer; }
 .action-button.danger { color: var(--danger); border-color: #dfb6bf; }
+.submission-file-name { display: block; max-width: 280px; overflow-wrap: anywhere; font-weight: 750; }
+.submission-download { display: inline-flex; align-items: center; justify-content: center; color: var(--blue); text-decoration: none; }
+.mock-submission-table td:nth-child(4) .status { display: flex; width: fit-content; margin-top: 7px; }
 .table-state { padding: 34px 20px; color: var(--muted); text-align: center; }
 .placeholder-note { max-width: 720px; padding: 24px 0; color: var(--muted); border-top: 2px solid var(--burgundy); font-size: 17px; line-height: 1.6; }
 .access-state { max-width: 620px; padding: 34px; border: 1px solid var(--line); background: white; }

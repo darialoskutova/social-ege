@@ -21,6 +21,7 @@
       <button class="admin-tab" type="button" data-tab="materials">Материалы</button>
       <button class="admin-tab" type="button" data-tab="results">Результаты</button>
       <button class="admin-tab" type="button" data-tab="homework">Домашние работы</button>
+      <button class="admin-tab" type="button" data-tab="mock-submissions">Работы по пробникам</button>
     </nav>
 
     <main class="admin-main">
@@ -36,6 +37,19 @@
             <tbody data-student-list></tbody>
           </table>
           <div class="table-state" data-table-state>Загружаем список…</div>
+        </div>
+      </section>
+
+      <section class="is-hidden" data-panel="mock-submissions">
+        <div class="section-heading">
+          <div><h1>Работы по пробникам</h1><p>Последние файлы, отправленные учениками через платформу.</p></div>
+        </div>
+        <div class="student-table-wrap">
+          <table class="student-table mock-submission-table">
+            <thead><tr><th>Ученик</th><th>Пробник</th><th>Файл</th><th>Отправлено</th><th><span class="sr-only">Скачать</span></th></tr></thead>
+            <tbody data-mock-submission-list></tbody>
+          </table>
+          <div class="table-state" data-mock-submission-state>Загружаем работы…</div>
         </div>
       </section>
 
@@ -76,6 +90,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261008-student-identity" defer></script>
+  <script src="/admin/admin.js?v=20271009-mock-submissions" defer></script>
 </body>
 </html>

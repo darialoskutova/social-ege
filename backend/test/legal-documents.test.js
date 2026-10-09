@@ -33,7 +33,7 @@ test("A-E: landing and offer expose the same current prices", () => {
   assert.deepEqual(offerPrices, landingPrices);
 });
 
-test("privacy policy matches structured student identity and metadata-only homework uploads", () => {
+test("privacy policy matches structured identity and conditional homework file uploads", () => {
   assert.match(privacyHtml, /фамилия, имя, отчество — если указано, логин/);
   assert.match(privacyHtml, /сведения о прикрепляемых файлах,[^;]+; при использовании функции загрузки файлов — файлы домашних работ/);
   assert.doesNotMatch(privacyHtml, /В обязательном профиле Ученика не запрашиваются ФИО/);

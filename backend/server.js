@@ -10,6 +10,7 @@ const { createAccountRouter } = require("./auth/account-router");
 const { readAuthConfig } = require("./auth/config");
 const { createAuthRouter } = require("./auth/router");
 const { createLearningRouter } = require("./learning/router");
+const { readUploadConfig } = require("./learning/file-storage");
 const { HttpError } = require("./lib/http-error");
 
 require("dotenv").config({
@@ -22,6 +23,7 @@ const port = Number(process.env.PORT || 3000);
 const databaseUrl = process.env.DATABASE_URL;
 const databaseSsl = process.env.DATABASE_SSL === "true";
 const authConfig = readAuthConfig();
+const uploadConfig = readUploadConfig();
 
 function firstConfigured(...names) {
   for (const name of names) {
@@ -97,8 +99,8 @@ app.get("/health", async (req, res) => {
 
 app.use("/api/auth", createAuthRouter(pool, authConfig));
 app.use("/api/account", createAccountRouter(pool, authConfig));
-app.use("/api/admin", createAdminRouter(pool, authConfig));
-app.use("/api/learning", createLearningRouter(pool, authConfig));
+app.use("/api/admin", createAdminRouter(pool, authConfig, uploadConfig));
+app.use("/api/learning", createLearningRouter(pool, authConfig, uploadConfig));
 
 app.use((req, res) => {
   res.status(404).json({ error: { code: "not_found", message: "Ресурс не найден" } });

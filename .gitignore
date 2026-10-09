@@ -11,6 +11,8 @@ backend/logs/
 backend/tmp/
 backend/coverage/
 backend/uploads/
+var/uploads/
+tools/mock-bank/.private/
 backend/*.log
 *.pem
 *.key

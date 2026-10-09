@@ -164,6 +164,31 @@ the authenticated session and rejects unexpected fields such as `user_id`.
 - `POST /api/learning/test-attempts`
 - `GET /api/learning/homework-submissions`
 - `POST /api/learning/homework-submissions`
+- `POST /api/learning/homework-submissions/file` — real PDF/JPEG/PNG upload
+- `GET /api/learning/homework-submissions/:id/file` — owner-only download
+- `GET /api/learning/mock-submissions`
+- `POST /api/learning/mock-submissions/file` — versioned thematic mock upload
+- `GET /api/learning/mock-submissions/:id/file` — owner-only download
+
+File upload requests send the file as the raw request body. Context is passed
+through URL-encoded `X-File-Name`, `X-Topic-Id` or `X-Mock-Id` / `X-Mock-Version`,
+and optional `X-Student-Comment` headers. The server validates the extension,
+MIME type, binary signature and size. Files receive random internal names and
+are never served from the public web root.
+
+Runtime settings:
+
+- `UPLOAD_STORAGE_DIR` (production default documented as `/opt/social-ege/var/uploads`)
+- `UPLOAD_MAX_BYTES` (default 15 MiB; maximum accepted configuration is 50 MiB)
+
+With the hardened systemd unit, create the private directory with mode `0700`
+for the service user and install `deploy/systemd/social-ege-uploads.conf` as
+`/etc/systemd/system/social-ege.service.d/uploads.conf` before restart.
+
+Admin endpoints:
+
+- `GET /api/admin/mock-submissions`
+- `GET /api/admin/mock-submissions/:id/file`
 - `GET /api/learning/messages`
 - `POST /api/learning/messages`
 
