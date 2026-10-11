@@ -90,6 +90,62 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20271009-mock-submissions" defer></script>
+  <dialog class="admin-dialog study-plan-dialog" data-study-plan-dialog>
+    <div class="dialog-body study-plan-dialog-body">
+      <div class="dialog-heading">
+        <div><p class="dialog-kicker">Учебный план</p><h2 data-study-plan-title>Настройка расписания</h2></div>
+        <button type="button" class="close-button" data-close-study-plan aria-label="Закрыть">×</button>
+      </div>
+
+      <form class="study-plan-form" data-study-plan-form>
+        <div class="study-plan-fields">
+          <div class="field study-plan-topic-field">
+            <label for="study-plan-start-topic">Стартовая тема</label>
+            <select id="study-plan-start-topic" name="startTopicId" required></select>
+          </div>
+          <fieldset class="weekday-fieldset">
+            <legend>Учебные дни</legend>
+            <div class="weekday-options" data-weekday-options>
+              <label><input type="checkbox" name="lessonWeekday" value="1">Пн</label>
+              <label><input type="checkbox" name="lessonWeekday" value="2">Вт</label>
+              <label><input type="checkbox" name="lessonWeekday" value="3">Ср</label>
+              <label><input type="checkbox" name="lessonWeekday" value="4">Чт</label>
+              <label><input type="checkbox" name="lessonWeekday" value="5">Пт</label>
+              <label><input type="checkbox" name="lessonWeekday" value="6">Сб</label>
+              <label><input type="checkbox" name="lessonWeekday" value="7">Вс</label>
+            </div>
+          </fieldset>
+          <div class="field">
+            <label for="study-plan-effective">Начать с даты <small>— необязательно</small></label>
+            <input id="study-plan-effective" name="effectiveFrom" type="date">
+          </div>
+          <div class="field">
+            <label for="study-plan-target">Закончить программу до <small>— ориентир</small></label>
+            <input id="study-plan-target" name="targetEndDate" type="date">
+          </div>
+        </div>
+        <p class="form-message study-plan-form-message" data-study-plan-message role="status" aria-live="polite"></p>
+        <div class="dialog-actions study-plan-form-actions">
+          <button class="secondary-button" type="button" data-study-plan-preview>Предварительный расчёт</button>
+          <button class="primary-button" type="submit">Сохранить план</button>
+        </div>
+      </form>
+
+      <section class="study-plan-preview" data-study-plan-preview-panel hidden aria-live="polite"></section>
+
+      <section class="study-plan-current" data-study-plan-current hidden>
+        <div class="study-plan-section-heading">
+          <div><h3>Будущие события</h3><p>Перенос одного события не сдвигает остальное расписание.</p></div>
+          <div class="study-plan-recalculate">
+            <label for="study-plan-recalculate-date">Пересчитать с даты</label>
+            <div><input id="study-plan-recalculate-date" type="date"><button class="secondary-button" type="button" data-study-plan-recalculate>Пересчитать</button></div>
+          </div>
+        </div>
+        <div class="study-plan-event-list" data-study-plan-events></div>
+      </section>
+    </div>
+  </dialog>
+
+  <script src="/admin/admin.js?v=20261011-study-plan" defer></script>
 </body>
 </html>

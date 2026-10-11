@@ -60,6 +60,22 @@
     font-size: 11px;
 }
 
+#appView .study-current-topic > div {
+    min-width: 0;
+}
+
+#appView .study-current-topic > div > strong,
+#appView .study-current-topic > div > small {
+    display: block;
+}
+
+#appView .study-current-topic > div > small {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.35;
+}
+
 /* Theme checklist: two real navigation controls and one mood illustration. */
 #appView #lessonPage .topic-progress-panel {
     grid-template-columns: minmax(220px, .72fr) minmax(360px, 1.28fr) 138px;

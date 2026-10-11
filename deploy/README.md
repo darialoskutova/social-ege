@@ -20,6 +20,8 @@ URLs, SSH keys or other secrets.
   only to `/opt/social-ege/var/uploads` for submitted homework and mocks.
 - `STAGE-5-MOCK-UPLOADS.md` records the guarded migration and release steps for
   versioned thematic mocks and private file uploads.
+- `STAGE-6-PERSONAL-STUDY-PLANS.md` records the guarded release of per-student
+  server-side schedules and migration `006_personal_study_plans.sql`.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

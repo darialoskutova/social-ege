@@ -17,6 +17,7 @@ const {
   sendStoredFile,
 } = require("./file-storage");
 const { findMock } = require("./mock-catalog");
+const defaultStudyPlanService = require("../study-plan/service");
 
 const stableKey = z.string().trim().min(1).max(120).regex(/^[a-z0-9_-]+$/);
 const topicKey = stableKey.max(100);
@@ -240,7 +241,12 @@ function serializeMessage(row, user) {
   };
 }
 
-function createLearningRouter(pool, config, suppliedUploadConfig = readUploadConfig()) {
+function createLearningRouter(
+  pool,
+  config,
+  suppliedUploadConfig = readUploadConfig(),
+  studyPlanService = defaultStudyPlanService,
+) {
   const router = express.Router();
   router.use(requireSecureTransport(config));
   router.use(requireAllowedOrigin(config));
@@ -249,6 +255,11 @@ function createLearningRouter(pool, config, suppliedUploadConfig = readUploadCon
     res.set("Cache-Control", "no-store");
     next();
   });
+
+  router.get("/study-plan", asyncHandler(async (req, res) => {
+    const result = await studyPlanService.getStudyPlan(pool, req.auth.user.id);
+    res.json(result);
+  }));
 
   router.get("/progress", asyncHandler(async (req, res) => {
     const { rows } = await pool.query(

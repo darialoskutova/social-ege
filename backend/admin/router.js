@@ -13,6 +13,7 @@ const { asyncHandler } = require("../lib/async-handler");
 const { HttpError } = require("../lib/http-error");
 const { withTransaction } = require("../lib/transaction");
 const { readUploadConfig, sendStoredFile } = require("../learning/file-storage");
+const defaultStudyPlanService = require("../study-plan/service");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -39,6 +40,28 @@ const updateStudentSchema = z.object({
   .refine((value) => !hasIdentity(value) || (value.firstName && value.lastName))
   .refine((value) => !hasIdentity(value) || displayName(value).length <= 120);
 const studentIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
+const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine((value) => {
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day, 12));
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day;
+});
+const studyPlanSchema = z.object({
+  startTopicId: z.string().regex(/^[a-z0-9_-]{1,100}$/),
+  lessonWeekdays: z.array(z.number().int().min(1).max(7)).min(1).max(7),
+  effectiveFrom: dateSchema.nullable().optional(),
+  targetEndDate: dateSchema.nullable().optional(),
+  recalculateFrom: dateSchema.optional(),
+}).strict();
+const eventChangeSchema = z.discriminatedUnion("action", [
+  z.object({ action: z.literal("move"), date: dateSchema }).strict(),
+  z.object({ action: z.literal("set_deadline"), date: dateSchema }).strict(),
+  z.object({ action: z.literal("replace"), date: dateSchema }).strict(),
+  z.object({ action: z.literal("cancel") }).strict(),
+  z.object({ action: z.literal("restore") }).strict(),
+]);
+const recalculateSchema = z.object({ fromDate: dateSchema }).strict();
 
 function hasIdentity(value) {
   return value.firstName !== undefined
@@ -108,7 +131,21 @@ async function audit(client, actorId, action, targetId, metadata = {}) {
   );
 }
 
-function createAdminRouter(pool, config, suppliedUploadConfig = readUploadConfig()) {
+async function ensureAdminStudent(pool, id) {
+  const { rows } = await pool.query(
+    `SELECT id FROM users
+      WHERE id = $1 AND role = 'student' AND account_status <> 'archived'`,
+    [id],
+  );
+  if (!rows[0]) throw new HttpError(404, "student_not_found", "Ученик не найден");
+}
+
+function createAdminRouter(
+  pool,
+  config,
+  suppliedUploadConfig = readUploadConfig(),
+  studyPlanService = defaultStudyPlanService,
+) {
   const router = express.Router();
 
   router.use((req, res, next) => {
@@ -126,6 +163,93 @@ function createAdminRouter(pool, config, suppliedUploadConfig = readUploadConfig
   router.get("/access", (req, res) => {
     res.set("Cache-Control", "no-store").json({ user: req.auth.user });
   });
+
+  router.get("/course-catalog", (req, res) => {
+    res.set("Cache-Control", "no-store").json({ topics: studyPlanService.publicCourseCatalog() });
+  });
+
+  router.get(
+    "/students/:studentId/study-plan",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      await ensureAdminStudent(pool, id);
+      const result = await studyPlanService.getStudyPlan(pool, id);
+      res.set("Cache-Control", "no-store").json(result);
+    }),
+  );
+
+  router.post(
+    "/students/:studentId/study-plan/preview",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      const parsed = studyPlanSchema.safeParse(req.body);
+      if (!parsed.success) throw new HttpError(400, "invalid_study_plan", "Проверьте настройки учебного плана");
+      await ensureAdminStudent(pool, id);
+      let preview;
+      try {
+        preview = studyPlanService.previewStudyPlan({
+          ...parsed.data,
+          lessonsPerTopic: 2,
+          timezone: "Europe/Moscow",
+        });
+      } catch {
+        throw new HttpError(400, "invalid_study_plan", "Проверьте настройки учебного плана");
+      }
+      res.set("Cache-Control", "no-store").json(preview);
+    }),
+  );
+
+  router.put(
+    "/students/:studentId/study-plan",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      const parsed = studyPlanSchema.safeParse(req.body);
+      if (!parsed.success) throw new HttpError(400, "invalid_study_plan", "Проверьте настройки учебного плана");
+      try {
+        studyPlanService.previewStudyPlan({
+          ...parsed.data,
+          lessonsPerTopic: 2,
+          timezone: "Europe/Moscow",
+        });
+      } catch {
+        throw new HttpError(400, "invalid_study_plan", "Проверьте настройки учебного плана");
+      }
+      const result = await studyPlanService.saveStudyPlan(pool, id, {
+        ...parsed.data,
+        lessonsPerTopic: 2,
+        timezone: "Europe/Moscow",
+      }, req.auth.user.id, { recalculateFrom: parsed.data.recalculateFrom });
+      res.set("Cache-Control", "no-store").json(result);
+    }),
+  );
+
+  router.patch(
+    "/students/:studentId/study-plan/events/:eventId",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      const eventId = studentId(req.params.eventId);
+      const parsed = eventChangeSchema.safeParse(req.body);
+      if (!parsed.success) throw new HttpError(400, "invalid_schedule_change", "Проверьте изменение расписания");
+      const result = await studyPlanService.changeStudyEvent(pool, id, eventId, parsed.data, req.auth.user.id);
+      res.set("Cache-Control", "no-store").json(result);
+    }),
+  );
+
+  router.post(
+    "/students/:studentId/study-plan/recalculate",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      const parsed = recalculateSchema.safeParse(req.body);
+      if (!parsed.success) throw new HttpError(400, "invalid_recalculation_date", "Укажите дату пересчёта");
+      const result = await studyPlanService.recalculateStudyPlan(
+        pool,
+        id,
+        parsed.data.fromDate,
+        req.auth.user.id,
+      );
+      res.set("Cache-Control", "no-store").json(result);
+    }),
+  );
 
   router.get(
     "/mock-submissions",

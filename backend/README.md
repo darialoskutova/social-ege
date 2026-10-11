@@ -149,6 +149,40 @@ revokes all existing sessions for that student. Blocking or archiving revokes
 sessions and preserves all learning data; unblocking restores the same user ID
 and password. Archiving is non-destructive.
 
+## Personal study plans
+
+Migration `006_personal_study_plans.sql` is additive. It creates
+`student_study_plans` for each student's plan settings and
+`study_schedule_events` for generated lessons, deadlines and mandatory
+thematic mocks. It does not alter or remove users, progress, test attempts,
+homework submissions or mock submissions.
+
+The course order is shared by the browser and backend through
+`data/course-topics.js`. A new plan uses two lessons per topic. Test deadlines
+are set to 23:59 Europe/Moscow on the day before the next lesson; second-part
+deadlines and thematic mock deadlines are set three calendar days after the
+relevant lesson. A target end date produces a warning when the generated plan
+runs longer, but never truncates the programme.
+
+The authenticated student route is:
+
+- `GET /api/learning/study-plan`.
+
+The owner ID always comes from the server session. Administrative plan routes
+all require `role=admin`:
+
+- `GET /api/admin/course-catalog`;
+- `GET /api/admin/students/:studentId/study-plan`;
+- `POST /api/admin/students/:studentId/study-plan/preview`;
+- `PUT /api/admin/students/:studentId/study-plan`;
+- `PATCH /api/admin/students/:studentId/study-plan/events/:eventId`;
+- `POST /api/admin/students/:studentId/study-plan/recalculate`.
+
+Moving, cancelling, restoring or replacing one event is recorded without
+deleting its history. Explicit recalculation replaces only eligible future
+generated events. Past, completed, submitted and cancelled work is preserved.
+No new environment variable is required.
+
 ## Learning data API
 
 Every route below requires a valid server session. State-changing requests

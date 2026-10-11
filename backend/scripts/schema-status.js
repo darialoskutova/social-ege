@@ -9,6 +9,8 @@ const expectedTables = [
   "homework_submissions",
   "mock_submissions",
   "schema_migrations",
+  "student_study_plans",
+  "study_schedule_events",
   "teacher_messages",
   "test_attempts",
   "test_drafts",
