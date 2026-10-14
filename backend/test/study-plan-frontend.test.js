@@ -40,6 +40,18 @@ test("admin exposes preview, weekday selection and explicit future recalculation
   assert.match(adminJs, /study-plan\/preview/);
   assert.match(adminJs, /data-event-action/);
   assert.match(adminJs, /Пересчитать только будущие события/);
+  assert.match(adminJs, /Тем в программе/);
+  assert.match(adminJs, /Настройки изменены — обновите предварительный расчёт/);
+});
+
+test("teacher workspace starts with the unified inbox and keeps account operations in settings", () => {
+  assert.match(adminHtml, /data-tab="inbox"[^>]*>Входящие/);
+  assert.match(adminHtml, /data-panel="students"/);
+  assert.match(adminHtml, /data-panel="schedule"/);
+  assert.match(adminHtml, /data-panel="settings"/);
+  assert.match(adminJs, /api\("\/inbox"\)/);
+  assert.match(adminJs, /submissions\/\$\{type\}\/\$\{id\}\/review/);
+  assert.doesNotMatch(adminHtml, /Этот раздел появится на следующем этапе/);
 });
 
 test("006 migration is additive and isolated from auth, progress and submissions", () => {

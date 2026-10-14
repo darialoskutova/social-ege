@@ -30,7 +30,7 @@ function config() {
 function poolFixture(users) {
   const state = {
     users, sessions: new Map(), mocks: [], homework: [], progress: new Map(),
-    nextMockId: 1, nextHomeworkId: 1,
+    audits: [], nextMockId: 1, nextHomeworkId: 1,
   };
 
   async function query(sql, values = []) {
@@ -64,7 +64,7 @@ function poolFixture(users) {
       state.progress.set(`${values[0]}:${values[1]}`, row);
       return { rows: [row] };
     }
-    if (normalized.startsWith("SELECT id, object_key, status FROM mock_submissions")) {
+    if (normalized.startsWith("SELECT id, object_key, status") && normalized.includes("FROM mock_submissions")) {
       return { rows: state.mocks.filter((row) => row.user_id === String(values[0]) && row.mock_id === values[1] && row.mock_version === values[2]) };
     }
     if (normalized.startsWith("INSERT INTO mock_submissions")) {
@@ -77,12 +77,13 @@ function poolFixture(users) {
       state.mocks.push(row);
       return { rows: [row] };
     }
-    if (normalized.startsWith("UPDATE mock_submissions")) {
+    if (normalized.startsWith("UPDATE mock_submissions") && normalized.includes("mock_snapshot = $4::JSONB")) {
       const row = state.mocks.find((item) => item.id === values[0] && item.user_id === String(values[1]) && item.mock_version === values[2]);
       Object.assign(row, {
         mock_snapshot: JSON.parse(values[3]), object_key: values[4], original_filename: values[5],
         mime_type: values[6], size_bytes: values[7], student_comment: values[8],
-        file_revision: row.file_revision + 1, submitted_at: new Date(), updated_at: new Date(),
+        file_revision: row.file_revision + 1, status: "submitted", teacher_comment: "",
+        reviewed_at: null, reviewed_by: null, submitted_at: new Date(), updated_at: new Date(),
       });
       return { rows: [row] };
     }
@@ -95,22 +96,57 @@ function poolFixture(users) {
     if (normalized.startsWith("SELECT object_key") && normalized.includes("FROM mock_submissions")) {
       return { rows: state.mocks.filter((row) => String(row.id) === String(values[0])) };
     }
-    if (normalized.startsWith("SELECT id, object_key, status FROM homework_submissions")) {
+    if (normalized.startsWith("SELECT object_key") && normalized.includes("FROM homework_submissions") && normalized.includes("user_id = $2")) {
+      return { rows: state.homework.filter((row) => String(row.id) === String(values[0]) && row.user_id === String(values[1])) };
+    }
+    if (normalized.startsWith("SELECT object_key") && normalized.includes("FROM homework_submissions")) {
+      return { rows: state.homework.filter((row) => String(row.id) === String(values[0])) };
+    }
+    if (normalized.startsWith("SELECT id, object_key, status") && normalized.includes("FROM homework_submissions")) {
       return { rows: state.homework.filter((row) => row.user_id === String(values[0]) && row.topic_key === values[1]).slice(-1) };
     }
     if (normalized.startsWith("INSERT INTO homework_submissions") && normalized.includes("updated_at")) {
       const row = {
         id: state.nextHomeworkId++, user_id: String(values[0]), topic_key: values[1], object_key: values[2],
         original_filename: values[3], mime_type: values[4], size_bytes: values[5], student_comment: values[6],
-        status: "submitted", teacher_comment: "", submitted_at: new Date(), updated_at: new Date(),
+        file_revision: 1, status: "submitted", teacher_comment: "", reviewed_at: null,
+        reviewed_by: null, submitted_at: new Date(), updated_at: new Date(),
       };
       state.homework.push(row);
       return { rows: [row] };
     }
-    if (normalized.startsWith("UPDATE homework_submissions")) {
+    if (normalized.startsWith("UPDATE homework_submissions") && normalized.includes("object_key = $3")) {
       const row = state.homework.find((item) => item.id === values[0] && item.user_id === String(values[1]));
-      Object.assign(row, { object_key: values[2], original_filename: values[3], mime_type: values[4], size_bytes: values[5], student_comment: values[6], submitted_at: new Date(), updated_at: new Date() });
+      Object.assign(row, { object_key: values[2], original_filename: values[3], mime_type: values[4], size_bytes: values[5], student_comment: values[6], file_revision: row.file_revision + 1, status: "submitted", teacher_comment: "", reviewed_at: null, reviewed_by: null, submitted_at: new Date(), updated_at: new Date() });
       return { rows: [row] };
+    }
+    if (normalized.startsWith("SELECT s.id, s.user_id, s.topic_key")) {
+      return { rows: state.homework.filter((row) => !values[0] || row.user_id === String(values[0])).map((row) => {
+        const user = users.find((item) => String(item.id) === row.user_id);
+        return { ...row, login: user.login, display_name: user.display_name };
+      }) };
+    }
+    if (normalized.startsWith("SELECT s.id, s.user_id, s.mock_id")) {
+      return { rows: state.mocks.filter((row) => !values[0] || row.user_id === String(values[0])).map((row) => {
+        const user = users.find((item) => String(item.id) === row.user_id);
+        return { ...row, login: user.login, display_name: user.display_name };
+      }) };
+    }
+    if (normalized.startsWith("UPDATE mock_submissions SET status = $2")) {
+      const row = state.mocks.find((item) => String(item.id) === String(values[0]));
+      if (!row) return { rows: [] };
+      Object.assign(row, { status: values[1], teacher_comment: values[2], reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
+      return { rows: [{ user_id: row.user_id }] };
+    }
+    if (normalized.startsWith("UPDATE homework_submissions SET status = $2")) {
+      const row = state.homework.find((item) => String(item.id) === String(values[0]));
+      if (!row) return { rows: [] };
+      Object.assign(row, { status: values[1], teacher_comment: values[2], reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
+      return { rows: [{ user_id: row.user_id }] };
+    }
+    if (normalized.startsWith("INSERT INTO audit_log")) {
+      state.audits.push({ sql: normalized, values });
+      return { rows: [] };
     }
     throw new Error(`Unexpected query: ${normalized}`);
   }
@@ -214,6 +250,8 @@ test("secure homework and mock uploads store real files with owner/admin access"
     assert.deepEqual(Buffer.from(await ownFile.arrayBuffer()), PDF);
     const adminFile = await fetch(`${server.baseUrl}/api/admin/mock-submissions/${createdPayload.submission.id}/file`, { headers: { cookie: admin } });
     assert.equal(adminFile.status, 200);
+    assert.equal(adminFile.headers.get("cache-control"), "private, no-store");
+    assert.equal(adminFile.headers.get("x-content-type-options"), "nosniff");
     assert.deepEqual(Buffer.from(await adminFile.arrayBuffer()), PDF);
 
     const replaced = await upload(server, "/api/learning/mock-submissions/file", studentA, Buffer.concat([PDF, Buffer.from("revision")]), headers);
@@ -225,6 +263,30 @@ test("secure homework and mock uploads store real files with owner/admin access"
     assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, PDF, headers)).status, 409);
     assert.equal(fs.readdirSync(directory).length, 1);
 
+    const needsRevision = await fetch(`${server.baseUrl}/api/admin/submissions/mock/${createdPayload.submission.id}/review`, {
+      method: "PATCH", headers: { origin: ORIGIN, cookie: admin, "content-type": "application/json" },
+      body: JSON.stringify({ status: "needs_revision", teacherComment: "Исправьте аргумент" }),
+    });
+    assert.equal(needsRevision.status, 200);
+    assert.equal(pool.state.mocks[0].teacher_comment, "Исправьте аргумент");
+    assert.ok(pool.state.mocks[0].reviewed_at);
+    assert.equal(pool.state.mocks[0].reviewed_by, "3");
+
+    const corrected = await upload(server, "/api/learning/mock-submissions/file", studentA, Buffer.concat([PDF, Buffer.from("corrected")]), headers);
+    assert.equal(corrected.status, 201);
+    assert.equal((await corrected.json()).submission.fileRevision, 3);
+    assert.equal(pool.state.mocks[0].status, "submitted");
+    assert.equal(pool.state.mocks[0].teacher_comment, "");
+    assert.equal(pool.state.mocks[0].reviewed_at, null);
+    assert.ok(pool.state.audits.some((item) => item.sql.includes("submission.revision_uploaded")));
+
+    const accepted = await fetch(`${server.baseUrl}/api/admin/submissions/mock/${createdPayload.submission.id}/review`, {
+      method: "PATCH", headers: { origin: ORIGIN, cookie: admin, "content-type": "application/json" },
+      body: JSON.stringify({ status: "accepted", teacherComment: "Принято" }),
+    });
+    assert.equal(accepted.status, 200);
+    assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, PDF, headers)).status, 409);
+
     assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, Buffer.from("not pdf"), headers)).status, 415);
     assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, Buffer.alloc(2048), headers)).status, 413);
     assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, PDF, { ...headers, "x-file-name": encodeURIComponent("../bad.pdf") })).status, 400);
@@ -235,6 +297,29 @@ test("secure homework and mock uploads store real files with owner/admin access"
     assert.equal(homework.status, 201);
     assert.equal(pool.state.homework[0].user_id, "1");
     assert.ok(fs.existsSync(path.join(directory, pool.state.homework[0].object_key)));
+    const homeworkPayload = await homework.json();
+    const homeworkRoute = `/api/learning/homework-submissions/${homeworkPayload.submission.id}/file`;
+    assert.equal((await fetch(`${server.baseUrl}${homeworkRoute}`, { headers: { cookie: studentB } })).status, 404);
+    assert.equal((await fetch(`${server.baseUrl}/api/admin/homework-submissions/${homeworkPayload.submission.id}/file`, { headers: { cookie: admin } })).status, 200);
+
+    const homeworkNeedsRevision = await fetch(`${server.baseUrl}/api/admin/submissions/homework/${homeworkPayload.submission.id}/review`, {
+      method: "PATCH", headers: { origin: ORIGIN, cookie: admin, "content-type": "application/json" },
+      body: JSON.stringify({ status: "needs_revision", teacherComment: "Добавьте второй пример" }),
+    });
+    assert.equal(homeworkNeedsRevision.status, 200);
+    const homeworkCorrection = await upload(server, "/api/learning/homework-submissions/file", studentA, Buffer.concat([PDF, Buffer.from("homework revision")]), {
+      "x-topic-id": "pol29", "x-student-comment": encodeURIComponent("исправлено"),
+    });
+    assert.equal(homeworkCorrection.status, 201);
+    assert.equal((await homeworkCorrection.json()).submission.fileRevision, 2);
+    assert.equal(pool.state.homework[0].status, "submitted");
+    assert.equal(pool.state.homework[0].teacher_comment, "");
+
+    const inbox = await fetch(`${server.baseUrl}/api/admin/inbox`, { headers: { cookie: admin } });
+    assert.equal(inbox.status, 200);
+    const inboxPayload = await inbox.json();
+    assert.ok(inboxPayload.submissions.some((item) => item.type === "homework" && item.studentLogin === "student_a"));
+    assert.equal((await fetch(`${server.baseUrl}/api/admin/inbox`, { headers: { cookie: studentA } })).status, 403);
   } finally {
     await server.close();
     fs.rmSync(directory, { recursive: true, force: true });

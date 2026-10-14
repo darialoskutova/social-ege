@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261008-student-identity">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261013-workspace">
 </head>
 <body>
   <header class="admin-header">
@@ -17,45 +17,60 @@
 
   <div class="admin-layout">
     <nav class="admin-tabs" aria-label="Разделы панели">
-      <button class="admin-tab is-active" type="button" data-tab="students">Ученики</button>
-      <button class="admin-tab" type="button" data-tab="materials">Материалы</button>
-      <button class="admin-tab" type="button" data-tab="results">Результаты</button>
-      <button class="admin-tab" type="button" data-tab="homework">Домашние работы</button>
-      <button class="admin-tab" type="button" data-tab="mock-submissions">Работы по пробникам</button>
+      <button class="admin-tab is-active" type="button" data-tab="inbox">Входящие <span class="tab-count" data-inbox-count hidden>0</span></button>
+      <button class="admin-tab" type="button" data-tab="students">Ученики</button>
+      <button class="admin-tab" type="button" data-tab="schedule">Расписание</button>
+      <button class="admin-tab" type="button" data-tab="settings">Настройки</button>
     </nav>
 
     <main class="admin-main">
-      <section data-panel="students">
+      <section data-panel="inbox">
+        <div class="section-heading"><div><h1>Входящие</h1><p>Домашние задания и пробники, которые ждут проверки.</p></div></div>
+        <div class="inbox-summary" data-inbox-summary aria-label="Количество работ по статусам"></div>
+        <div class="filter-bar">
+          <label>Статус<select data-inbox-filter="status"><option value="">Все статусы</option><option value="submitted">Новые</option><option value="in_review">На проверке</option><option value="needs_revision">На доработке</option><option value="accepted">Принятые</option></select></label>
+          <label>Ученик<select data-inbox-filter="student"><option value="">Все ученики</option></select></label>
+          <label>Тип<select data-inbox-filter="type"><option value="">Все работы</option><option value="homework">Вторая часть</option><option value="mock">Пробники</option></select></label>
+        </div>
+        <p class="admin-message" data-inbox-message role="status" aria-live="polite"></p>
+        <div class="inbox-list" data-inbox-list></div>
+        <div class="table-state" data-inbox-state>Загружаем работы…</div>
+      </section>
+
+      <section class="is-hidden" data-panel="students">
+        <div class="section-heading"><div><h1>Ученики</h1><p>Учебный план, выполненные работы и прогресс каждого ученика.</p></div></div>
+        <div data-student-browse>
+          <div class="student-table-wrap">
+            <table class="student-table student-overview-table">
+              <thead><tr><th>Ученик</th><th>Статус</th><th>Текущая тема</th><th>Следующее занятие</th><th>Прогресс</th><th>Ждут проверки</th><th><span class="sr-only">Открыть</span></th></tr></thead>
+              <tbody data-student-list></tbody>
+            </table>
+            <div class="table-state" data-table-state>Загружаем список…</div>
+          </div>
+        </div>
+        <section class="student-detail" data-student-detail hidden aria-live="polite"></section>
+      </section>
+
+      <section class="is-hidden" data-panel="schedule">
+        <div class="section-heading"><div><h1>Расписание</h1><p>Занятия и дедлайны всех учеников в одной ленте.</p></div></div>
+        <div class="filter-bar">
+          <label>Ученик<select data-schedule-filter="student"><option value="">Все ученики</option></select></label>
+          <label>Событие<select data-schedule-filter="type"><option value="">Все события</option><option value="lesson">Занятия</option><option value="test_deadline">Тесты</option><option value="homework_deadline">Вторая часть</option><option value="thematic_mock">Пробники</option></select></label>
+          <label>Показывать<select data-schedule-filter="period"><option value="future">Текущие и будущие</option><option value="all">Всё расписание</option></select></label>
+        </div>
+        <p class="admin-message" data-schedule-message role="status" aria-live="polite"></p>
+        <div class="schedule-list" data-schedule-list></div>
+        <div class="table-state" data-schedule-state>Загружаем расписание…</div>
+      </section>
+
+      <section class="is-hidden" data-panel="settings">
         <div class="section-heading">
-          <div><h1>Ученики</h1><p>Аккаунты, доступ и ссылки для самостоятельной установки пароля.</p></div>
+          <div><h1>Настройки</h1><p>Создание аккаунтов и редкие действия с доступом.</p></div>
           <button class="primary-button" type="button" data-create-student>Добавить ученика</button>
         </div>
         <p class="admin-message" data-admin-message role="status" aria-live="polite"></p>
-        <div class="student-table-wrap">
-          <table class="student-table">
-            <thead><tr><th>Ученик</th><th>Статус</th><th>Создан</th><th>Последний вход</th><th><span class="sr-only">Действия</span></th></tr></thead>
-            <tbody data-student-list></tbody>
-          </table>
-          <div class="table-state" data-table-state>Загружаем список…</div>
-        </div>
-      </section>
-
-      <section class="is-hidden" data-panel="mock-submissions">
-        <div class="section-heading">
-          <div><h1>Работы по пробникам</h1><p>Последние файлы, отправленные учениками через платформу.</p></div>
-        </div>
-        <div class="student-table-wrap">
-          <table class="student-table mock-submission-table">
-            <thead><tr><th>Ученик</th><th>Пробник</th><th>Файл</th><th>Отправлено</th><th><span class="sr-only">Скачать</span></th></tr></thead>
-            <tbody data-mock-submission-list></tbody>
-          </table>
-          <div class="table-state" data-mock-submission-state>Загружаем работы…</div>
-        </div>
-      </section>
-
-      <section class="is-hidden" data-panel="placeholder">
-        <h1 data-placeholder-title></h1>
-        <div class="placeholder-note">Этот раздел появится на следующем этапе. Сейчас панель безопасно работает только с аккаунтами учеников.</div>
+        <div class="settings-list" data-settings-list></div>
+        <div class="table-state" data-settings-state>Загружаем аккаунты…</div>
       </section>
 
       <section class="access-state is-hidden" data-access-state>
@@ -92,60 +107,27 @@
 
   <dialog class="admin-dialog study-plan-dialog" data-study-plan-dialog>
     <div class="dialog-body study-plan-dialog-body">
-      <div class="dialog-heading">
-        <div><p class="dialog-kicker">Учебный план</p><h2 data-study-plan-title>Настройка расписания</h2></div>
-        <button type="button" class="close-button" data-close-study-plan aria-label="Закрыть">×</button>
-      </div>
-
+      <div class="dialog-heading"><div><p class="dialog-kicker">Учебный план</p><h2 data-study-plan-title>Настройка расписания</h2></div><button type="button" class="close-button" data-close-study-plan aria-label="Закрыть">×</button></div>
       <form class="study-plan-form" data-study-plan-form>
         <div class="study-plan-fields">
-          <div class="field study-plan-topic-field">
-            <label for="study-plan-start-topic">Стартовая тема</label>
-            <select id="study-plan-start-topic" name="startTopicId" required></select>
-          </div>
-          <fieldset class="weekday-fieldset">
-            <legend>Учебные дни</legend>
-            <div class="weekday-options" data-weekday-options>
-              <label><input type="checkbox" name="lessonWeekday" value="1">Пн</label>
-              <label><input type="checkbox" name="lessonWeekday" value="2">Вт</label>
-              <label><input type="checkbox" name="lessonWeekday" value="3">Ср</label>
-              <label><input type="checkbox" name="lessonWeekday" value="4">Чт</label>
-              <label><input type="checkbox" name="lessonWeekday" value="5">Пт</label>
-              <label><input type="checkbox" name="lessonWeekday" value="6">Сб</label>
-              <label><input type="checkbox" name="lessonWeekday" value="7">Вс</label>
-            </div>
-          </fieldset>
-          <div class="field">
-            <label for="study-plan-effective">Начать с даты <small>— необязательно</small></label>
-            <input id="study-plan-effective" name="effectiveFrom" type="date">
-          </div>
-          <div class="field">
-            <label for="study-plan-target">Закончить программу до <small>— ориентир</small></label>
-            <input id="study-plan-target" name="targetEndDate" type="date">
-          </div>
+          <div class="field study-plan-topic-field"><label for="study-plan-start-topic">Стартовая тема</label><select id="study-plan-start-topic" name="startTopicId" required></select></div>
+          <fieldset class="weekday-fieldset"><legend>Учебные дни</legend><div class="weekday-options" data-weekday-options>
+            <label><input type="checkbox" name="lessonWeekday" value="1">Пн</label><label><input type="checkbox" name="lessonWeekday" value="2">Вт</label><label><input type="checkbox" name="lessonWeekday" value="3">Ср</label><label><input type="checkbox" name="lessonWeekday" value="4">Чт</label><label><input type="checkbox" name="lessonWeekday" value="5">Пт</label><label><input type="checkbox" name="lessonWeekday" value="6">Сб</label><label><input type="checkbox" name="lessonWeekday" value="7">Вс</label>
+          </div></fieldset>
+          <div class="field"><label for="study-plan-effective">Начать с даты <small>— необязательно</small></label><input id="study-plan-effective" name="effectiveFrom" type="date"></div>
+          <div class="field"><label for="study-plan-target">Закончить программу до <small>— ориентир</small></label><input id="study-plan-target" name="targetEndDate" type="date"></div>
         </div>
         <p class="form-message study-plan-form-message" data-study-plan-message role="status" aria-live="polite"></p>
-        <div class="dialog-actions study-plan-form-actions">
-          <button class="secondary-button" type="button" data-study-plan-preview>Предварительный расчёт</button>
-          <button class="primary-button" type="submit">Сохранить план</button>
-        </div>
+        <div class="dialog-actions study-plan-form-actions"><button class="secondary-button" type="button" data-study-plan-preview>Предварительный расчёт</button><button class="primary-button" type="submit">Сохранить план</button></div>
       </form>
-
       <section class="study-plan-preview" data-study-plan-preview-panel hidden aria-live="polite"></section>
-
       <section class="study-plan-current" data-study-plan-current hidden>
-        <div class="study-plan-section-heading">
-          <div><h3>Будущие события</h3><p>Перенос одного события не сдвигает остальное расписание.</p></div>
-          <div class="study-plan-recalculate">
-            <label for="study-plan-recalculate-date">Пересчитать с даты</label>
-            <div><input id="study-plan-recalculate-date" type="date"><button class="secondary-button" type="button" data-study-plan-recalculate>Пересчитать</button></div>
-          </div>
-        </div>
+        <div class="study-plan-section-heading"><div><h3>Будущие события</h3><p>Перенос одного события не сдвигает остальное расписание.</p></div><div class="study-plan-recalculate"><label for="study-plan-recalculate-date">Пересчитать с даты</label><div><input id="study-plan-recalculate-date" type="date"><button class="secondary-button" type="button" data-study-plan-recalculate>Пересчитать</button></div></div></div>
         <div class="study-plan-event-list" data-study-plan-events></div>
       </section>
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261011-study-plan" defer></script>
+  <script src="/admin/admin.js?v=20261013-workspace" defer></script>
 </body>
 </html>

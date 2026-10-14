@@ -22,6 +22,8 @@ URLs, SSH keys or other secrets.
   versioned thematic mocks and private file uploads.
 - `STAGE-6-PERSONAL-STUDY-PLANS.md` records the guarded release of per-student
   server-side schedules and migration `006_personal_study_plans.sql`.
+- `STAGE-7-TEACHER-WORKSPACE.md` records the allowlisted admin workspace
+  release, submission review flow and revision checks; it adds no migration.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

@@ -165,14 +165,36 @@ function serializeHomework(row, user) {
     fileName: row.original_filename,
     mimeType: row.mime_type || null,
     sizeBytes: row.size_bytes === null ? null : Number(row.size_bytes),
+    fileRevision: Number(row.file_revision || 1),
     hasFile: Boolean(row.object_key),
     downloadUrl: row.object_key ? `/api/learning/homework-submissions/${row.id}/file` : null,
     studentComment: row.student_comment,
     teacherComment: row.teacher_comment,
     status: statuses[row.status] || "Отправлено",
+    statusCode: row.status,
     createdAt: row.submitted_at,
     updatedAt: row.updated_at || row.submitted_at,
   };
+}
+
+async function preserveReviewHistory(client, userId, type, row) {
+  if (row.status !== "needs_revision") return;
+  await client.query(
+    `INSERT INTO audit_log (actor_user_id, action, target_type, target_id, metadata)
+     VALUES ($1, 'submission.revision_uploaded', $2, $3, $4::JSONB)`,
+    [
+      userId,
+      `${type}_submission`,
+      String(row.id),
+      JSON.stringify({
+        previousRevision: Number(row.file_revision || 1),
+        previousStatus: row.status,
+        teacherComment: row.teacher_comment || "",
+        reviewedAt: row.reviewed_at || null,
+        reviewedBy: row.reviewed_by ? String(row.reviewed_by) : null,
+      }),
+    ],
+  );
 }
 
 function serializeMockSubmission(row, user) {
@@ -382,7 +404,7 @@ function createLearningRouter(
   router.get("/homework-submissions", asyncHandler(async (req, res) => {
     const { rows } = await pool.query(
       `SELECT id, topic_key, object_key, original_filename, mime_type, size_bytes,
-              student_comment, status, teacher_comment, submitted_at, updated_at
+              file_revision, student_comment, status, teacher_comment, submitted_at, updated_at
          FROM homework_submissions
         WHERE user_id = $1
         ORDER BY submitted_at DESC, id DESC`,
@@ -400,7 +422,7 @@ function createLearningRouter(
     try {
       result = await transaction(pool, async (client) => {
         const previousResult = await client.query(
-          `SELECT id, object_key, status
+          `SELECT id, object_key, status, file_revision, teacher_comment, reviewed_at, reviewed_by
              FROM homework_submissions
             WHERE user_id = $1 AND topic_key = $2
             ORDER BY submitted_at DESC, id DESC
@@ -411,18 +433,22 @@ function createLearningRouter(
         const previous = previousResult.rows[0];
         let row;
         if (previous) {
-          if (previous.status !== "submitted") {
+          if (!["submitted", "needs_revision"].includes(previous.status)) {
             throw new HttpError(409, "submission_locked", "Работа уже принята на проверку");
           }
+          await preserveReviewHistory(client, req.auth.user.id, "homework", previous);
           replacedObjectKey = previous.object_key;
           const updated = await client.query(
             `UPDATE homework_submissions
                 SET object_key = $3, original_filename = $4, mime_type = $5,
                     size_bytes = $6, student_comment = $7, file_revision = file_revision + 1,
+                    status = 'submitted', teacher_comment = '',
+                    reviewed_at = NULL, reviewed_by = NULL,
                     submitted_at = NOW(), updated_at = NOW()
               WHERE id = $1 AND user_id = $2
               RETURNING id, topic_key, object_key, original_filename, mime_type, size_bytes,
-                        student_comment, status, teacher_comment, submitted_at, updated_at`,
+                        file_revision, student_comment, status, teacher_comment,
+                        submitted_at, updated_at`,
             [previous.id, req.auth.user.id, uploaded.objectKey, uploaded.originalFilename,
               uploaded.mimeType, uploaded.sizeBytes, studentComment],
           );
@@ -434,7 +460,8 @@ function createLearningRouter(
                student_comment, submitted_at, updated_at
              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
              RETURNING id, topic_key, object_key, original_filename, mime_type, size_bytes,
-                       student_comment, status, teacher_comment, submitted_at, updated_at`,
+                       file_revision, student_comment, status, teacher_comment,
+                       submitted_at, updated_at`,
             [req.auth.user.id, topic, uploaded.objectKey, uploaded.originalFilename,
               uploaded.mimeType, uploaded.sizeBytes, studentComment],
           );
@@ -528,7 +555,7 @@ function createLearningRouter(
     try {
       submission = await transaction(pool, async (client) => {
         const previousResult = await client.query(
-          `SELECT id, object_key, status
+          `SELECT id, object_key, status, file_revision, teacher_comment, reviewed_at, reviewed_by
              FROM mock_submissions
             WHERE user_id = $1 AND mock_id = $2 AND mock_version = $3
             FOR UPDATE`,
@@ -538,15 +565,18 @@ function createLearningRouter(
         let row;
         const snapshot = JSON.stringify(mock);
         if (previous) {
-          if (previous.status !== "submitted") {
+          if (!["submitted", "needs_revision"].includes(previous.status)) {
             throw new HttpError(409, "submission_locked", "Работа уже принята на проверку");
           }
+          await preserveReviewHistory(client, req.auth.user.id, "mock", previous);
           replacedObjectKey = previous.object_key;
           const updated = await client.query(
             `UPDATE mock_submissions
                 SET mock_snapshot = $4::JSONB, object_key = $5, original_filename = $6,
                     mime_type = $7, size_bytes = $8, student_comment = $9,
-                    file_revision = file_revision + 1, submitted_at = NOW(), updated_at = NOW()
+                    file_revision = file_revision + 1, status = 'submitted', teacher_comment = '',
+                    reviewed_at = NULL, reviewed_by = NULL,
+                    submitted_at = NOW(), updated_at = NOW()
               WHERE id = $1 AND user_id = $2 AND mock_version = $3
               RETURNING id, mock_id, mock_version, mock_snapshot, object_key,
                         original_filename, mime_type, size_bytes, file_revision,

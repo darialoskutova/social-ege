@@ -4,6 +4,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const {
   changeStudyEvent,
+  previewStudyPlan,
   recalculateStudyPlan,
   saveStudyPlan,
 } = require("../study-plan/service");
@@ -306,4 +307,38 @@ test("changing weekdays resumes from the first future lesson instead of replayin
   assert.equal(result.nextLesson.lessonPart, 2);
   assert.equal(result.nextLesson.scheduledDate, "2026-10-21");
   assert.equal(pool.state.events.find((event) => event.id === 1).status, "scheduled");
+});
+
+test("changing start topic rebuilds only the future from part one of the new topic", async () => {
+  const pool = fixture();
+  const later = { now: new Date("2026-10-19T22:00:00Z") };
+  const pastSnapshot = JSON.stringify(pool.state.events.filter((event) => event.scheduled_date < "2026-10-20"));
+  const result = await saveStudyPlan(pool, "1", {
+    startTopicId: "law43",
+    lessonWeekdays: [1, 3, 5],
+    effectiveFrom: "2026-10-13",
+    targetEndDate: null,
+    lessonsPerTopic: 2,
+    timezone: "Europe/Moscow",
+  }, "9", later);
+  assert.equal(result.plan.startTopicId, "law43");
+  assert.equal(result.nextLesson.topicId, "law43");
+  assert.equal(result.nextLesson.lessonPart, 1);
+  assert.equal(result.nextLesson.scheduledDate, "2026-10-21");
+  assert.equal(JSON.stringify(pool.state.events.filter((event) => event.scheduled_date < "2026-10-20")), pastSnapshot);
+});
+
+test("preview is pure and does not mutate stored plan or events", () => {
+  const pool = fixture();
+  const snapshot = JSON.stringify(pool.state);
+  const preview = previewStudyPlan({
+    startTopicId: "law43",
+    lessonWeekdays: [2, 4],
+    effectiveFrom: "2026-10-20",
+    targetEndDate: null,
+    lessonsPerTopic: 2,
+    timezone: "Europe/Moscow",
+  }, NOW);
+  assert.equal(preview.settings.startTopicId, "law43");
+  assert.equal(JSON.stringify(pool.state), snapshot);
 });

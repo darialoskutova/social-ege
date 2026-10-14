@@ -62,6 +62,11 @@ const eventChangeSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("restore") }).strict(),
 ]);
 const recalculateSchema = z.object({ fromDate: dateSchema }).strict();
+const submissionTypeSchema = z.enum(["homework", "mock"]);
+const reviewSchema = z.object({
+  status: z.enum(["in_review", "needs_revision", "accepted"]),
+  teacherComment: z.string().trim().max(4000).default(""),
+}).strict();
 
 function hasIdentity(value) {
   return value.firstName !== undefined
@@ -71,6 +76,12 @@ function hasIdentity(value) {
 
 function displayName(value) {
   return [value.lastName, value.firstName, value.middleName].filter(Boolean).join(" ");
+}
+
+function dateOnly(value) {
+  if (!value) return null;
+  if (value instanceof Date) return value.toISOString().slice(0, 10);
+  return String(value).slice(0, 10);
 }
 
 const studentColumns = `id, login, display_name, first_name, last_name, middle_name,
@@ -91,6 +102,14 @@ function publicStudent(row) {
     activatedAt: row.activated_at,
     disabledAt: row.disabled_at,
     archivedAt: row.archived_at,
+    currentTopicId: row.current_topic_id ?? null,
+    nextLesson: row.next_lesson_date ? {
+      date: dateOnly(row.next_lesson_date),
+      topicId: row.current_topic_id,
+      lessonPart: row.next_lesson_part === null ? null : Number(row.next_lesson_part),
+    } : null,
+    completedSteps: Number(row.completed_steps || 0),
+    waitingReviewCount: Number(row.waiting_review_count || 0),
   };
   if (Object.hasOwn(row, "activation_link_status")) {
     student.activationExpiresAt = row.activation_expires_at ?? null;
@@ -124,11 +143,78 @@ function linkFor(config, path, rawToken) {
 }
 
 async function audit(client, actorId, action, targetId, metadata = {}) {
+  return auditTarget(client, actorId, action, "user", targetId, metadata);
+}
+
+async function auditTarget(client, actorId, action, targetType, targetId, metadata = {}) {
   await client.query(
     `INSERT INTO audit_log (actor_user_id, action, target_type, target_id, metadata)
-     VALUES ($1, $2, 'user', $3, $4::jsonb)`,
-    [actorId, action, String(targetId), JSON.stringify(metadata)],
+     VALUES ($1, $2, $3, $4, $5::jsonb)`,
+    [actorId, action, targetType, String(targetId), JSON.stringify(metadata)],
   );
+}
+
+function serializeAdminSubmission(row, type) {
+  const isMock = type === "mock";
+  return {
+    id: String(row.id),
+    type,
+    studentId: String(row.user_id),
+    studentName: row.display_name,
+    studentLogin: row.login,
+    topicId: isMock ? null : row.topic_key,
+    mockId: isMock ? row.mock_id : null,
+    mockVersion: isMock ? row.mock_version : null,
+    mock: isMock ? row.mock_snapshot : null,
+    title: isMock ? (row.mock_snapshot?.title || row.mock_id) : row.topic_key,
+    fileName: row.original_filename,
+    mimeType: row.mime_type,
+    sizeBytes: row.size_bytes === null ? null : Number(row.size_bytes),
+    fileRevision: Number(row.file_revision || 1),
+    hasFile: Boolean(row.object_key),
+    studentComment: row.student_comment || "",
+    teacherComment: row.teacher_comment || "",
+    status: row.status,
+    submittedAt: row.submitted_at,
+    updatedAt: row.updated_at || row.submitted_at,
+    reviewedAt: row.reviewed_at || null,
+    reviewedBy: row.reviewed_by ? String(row.reviewed_by) : null,
+    downloadUrl: row.object_key
+      ? `/api/admin/${isMock ? "mock" : "homework"}-submissions/${row.id}/file`
+      : null,
+  };
+}
+
+async function loadAdminSubmissions(pool, { userId = null } = {}) {
+  const filter = userId ? "WHERE s.user_id = $1" : "";
+  const values = userId ? [userId] : [];
+  const homework = await pool.query(
+      `SELECT s.id, s.user_id, s.topic_key, s.object_key, s.original_filename, s.mime_type,
+              s.size_bytes, s.file_revision, s.student_comment, s.status,
+              s.teacher_comment, s.submitted_at, s.updated_at, s.reviewed_at,
+              s.reviewed_by, u.login, u.display_name
+         FROM homework_submissions AS s
+         JOIN users AS u ON u.id = s.user_id
+         ${filter}
+        ORDER BY s.updated_at DESC, s.id DESC`,
+      values,
+    );
+  const mocks = await pool.query(
+      `SELECT s.id, s.user_id, s.mock_id, s.mock_version, s.mock_snapshot, s.object_key,
+              s.original_filename, s.mime_type, s.size_bytes, s.file_revision,
+              s.student_comment, s.status, s.teacher_comment, s.submitted_at,
+              s.updated_at, s.reviewed_at, s.reviewed_by, u.login, u.display_name
+         FROM mock_submissions AS s
+         JOIN users AS u ON u.id = s.user_id
+         ${filter}
+        ORDER BY s.updated_at DESC, s.id DESC`,
+      values,
+    );
+  return [
+    ...homework.rows.map((row) => serializeAdminSubmission(row, "homework")),
+    ...mocks.rows.map((row) => serializeAdminSubmission(row, "mock")),
+  ].sort((left, right) => new Date(right.updatedAt) - new Date(left.updatedAt)
+    || Number(right.id) - Number(left.id));
 }
 
 async function ensureAdminStudent(pool, id) {
@@ -167,6 +253,139 @@ function createAdminRouter(
   router.get("/course-catalog", (req, res) => {
     res.set("Cache-Control", "no-store").json({ topics: studyPlanService.publicCourseCatalog() });
   });
+
+  router.get(
+    "/inbox",
+    asyncHandler(async (req, res) => {
+      const submissions = await loadAdminSubmissions(pool);
+      const counts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0 };
+      submissions.forEach((submission) => {
+        if (Object.hasOwn(counts, submission.status)) counts[submission.status] += 1;
+      });
+      res.set("Cache-Control", "no-store").json({ submissions, counts });
+    }),
+  );
+
+  router.get(
+    "/homework-submissions",
+    asyncHandler(async (req, res) => {
+      const submissions = (await loadAdminSubmissions(pool))
+        .filter((submission) => submission.type === "homework");
+      res.set("Cache-Control", "no-store").json({ submissions });
+    }),
+  );
+
+  router.patch(
+    "/submissions/:type/:submissionId/review",
+    asyncHandler(async (req, res) => {
+      const typeResult = submissionTypeSchema.safeParse(req.params.type);
+      const parsed = reviewSchema.safeParse(req.body);
+      if (!typeResult.success || !parsed.success) {
+        throw new HttpError(400, "invalid_review", "Проверьте статус и комментарий");
+      }
+      const id = studentId(req.params.submissionId);
+      const type = typeResult.data;
+      const table = type === "mock" ? "mock_submissions" : "homework_submissions";
+      const submission = await withTransaction(pool, async (client) => {
+        const updated = await client.query(
+          `UPDATE ${table}
+              SET status = $2, teacher_comment = $3, reviewed_at = NOW(),
+                  reviewed_by = $4, updated_at = NOW()
+            WHERE id = $1
+            RETURNING user_id`,
+          [id, parsed.data.status, parsed.data.teacherComment, req.auth.user.id],
+        );
+        if (!updated.rows[0]) {
+          throw new HttpError(404, "submission_not_found", "Работа не найдена");
+        }
+        await auditTarget(client, req.auth.user.id, "submission.reviewed", `${type}_submission`, id, {
+          status: parsed.data.status,
+          studentId: String(updated.rows[0].user_id),
+          teacherComment: parsed.data.teacherComment,
+        });
+        const items = await loadAdminSubmissions(client, { userId: updated.rows[0].user_id });
+        return items.find((item) => item.type === type && item.id === String(id));
+      });
+      res.set("Cache-Control", "no-store").json({ submission });
+    }),
+  );
+
+  router.get(
+    "/students/:studentId/details",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.studentId);
+      const studentResult = await pool.query(
+        `SELECT ${studentColumns}
+           FROM users
+          WHERE id = $1 AND role = 'student'`,
+        [id],
+      );
+      if (!studentResult.rows[0]) throw new HttpError(404, "student_not_found", "Ученик не найден");
+      const [plan, works, progressResult, attemptsResult] = await Promise.all([
+        studyPlanService.getStudyPlan(pool, id),
+        loadAdminSubmissions(pool, { userId: id }),
+        pool.query(
+          `SELECT topic_key, test_completed_at, homework_submitted_at, updated_at
+             FROM user_progress
+            WHERE user_id = $1
+            ORDER BY updated_at DESC, topic_key`,
+          [id],
+        ),
+        pool.query(
+          `SELECT id, topic_key, test_key, score, max_score, percentage,
+                  incorrect_question_ids, submitted_at
+             FROM test_attempts
+            WHERE user_id = $1
+            ORDER BY submitted_at DESC, id DESC`,
+          [id],
+        ),
+      ]);
+      res.set("Cache-Control", "no-store").json({
+        student: publicStudent(studentResult.rows[0]),
+        studyPlan: plan,
+        works,
+        progress: progressResult.rows.map((row) => ({
+          topicId: row.topic_key,
+          testCompletedAt: row.test_completed_at,
+          homeworkSubmittedAt: row.homework_submitted_at,
+          updatedAt: row.updated_at,
+        })),
+        tests: attemptsResult.rows.map((row) => ({
+          id: String(row.id),
+          topicId: row.topic_key,
+          testId: row.test_key,
+          score: row.score,
+          maxScore: row.max_score,
+          percentage: row.percentage === null ? null : Number(row.percentage),
+          incorrectQuestionIds: row.incorrect_question_ids,
+          submittedAt: row.submitted_at,
+        })),
+      });
+    }),
+  );
+
+  router.get(
+    "/schedule",
+    asyncHandler(async (req, res) => {
+      const { rows } = await pool.query(
+        `SELECT e.id, e.user_id, e.event_type, e.topic_id, e.test_key, e.lesson_part,
+                e.mock_id, e.mock_version, e.scheduled_date, e.original_scheduled_date,
+                e.deadline_at, e.status, e.source, e.change_note, e.created_at,
+                e.updated_at, e.cancelled_at, e.completed_at,
+                u.login, u.display_name
+           FROM study_schedule_events AS e
+           JOIN users AS u ON u.id = e.user_id
+          WHERE e.status <> 'superseded' AND u.role = 'student'
+          ORDER BY e.scheduled_date, e.id`,
+      );
+      res.set("Cache-Control", "no-store").json({
+        events: rows.map((row) => ({
+          ...studyPlanService.serializeEvent(row),
+          student: { id: String(row.user_id), name: row.display_name, login: row.login },
+        })),
+      });
+    }),
+  );
 
   router.get(
     "/students/:studentId/study-plan",
@@ -291,6 +510,21 @@ function createAdminRouter(
   );
 
   router.get(
+    "/homework-submissions/:submissionId/file",
+    asyncHandler(async (req, res) => {
+      const id = studentId(req.params.submissionId);
+      const { rows } = await pool.query(
+        `SELECT object_key, original_filename, mime_type, size_bytes
+           FROM homework_submissions
+          WHERE id = $1 AND object_key IS NOT NULL`,
+        [id],
+      );
+      if (!rows[0]) throw new HttpError(404, "submission_not_found", "Работа не найдена");
+      await sendStoredFile(res, suppliedUploadConfig, rows[0]);
+    }),
+  );
+
+  router.get(
     "/mock-submissions/:submissionId/file",
     asyncHandler(async (req, res) => {
       const id = studentId(req.params.submissionId);
@@ -312,6 +546,11 @@ function createAdminRouter(
         `SELECT u.id, u.login, u.display_name, u.first_name, u.last_name, u.middle_name,
                 u.account_status, u.created_at,
                 u.last_login_at, u.activated_at, u.disabled_at, u.archived_at,
+                next_lesson.topic_id AS current_topic_id,
+                next_lesson.scheduled_date AS next_lesson_date,
+                next_lesson.lesson_part AS next_lesson_part,
+                COALESCE(progress.completed_steps, 0) AS completed_steps,
+                COALESCE(waiting.waiting_review_count, 0) AS waiting_review_count,
                 activation.expires_at AS activation_expires_at,
                 CASE
                   WHEN activation.id IS NULL THEN 'none'
@@ -328,6 +567,29 @@ function createAdminRouter(
               ORDER BY created_at DESC, id DESC
               LIMIT 1
            ) AS activation ON TRUE
+           LEFT JOIN LATERAL (
+             SELECT topic_id, scheduled_date, lesson_part
+               FROM study_schedule_events
+              WHERE user_id = u.id AND event_type = 'lesson' AND status = 'scheduled'
+                AND scheduled_date >= (NOW() AT TIME ZONE 'Europe/Moscow')::DATE
+              ORDER BY scheduled_date, id
+              LIMIT 1
+           ) AS next_lesson ON TRUE
+           LEFT JOIN LATERAL (
+             SELECT COUNT(*) FILTER (WHERE test_completed_at IS NOT NULL)
+                    + COUNT(*) FILTER (WHERE homework_submitted_at IS NOT NULL) AS completed_steps
+               FROM user_progress
+              WHERE user_id = u.id
+           ) AS progress ON TRUE
+           LEFT JOIN LATERAL (
+             SELECT COUNT(*) AS waiting_review_count
+               FROM (
+                 SELECT status FROM homework_submissions WHERE user_id = u.id
+                 UNION ALL
+                 SELECT status FROM mock_submissions WHERE user_id = u.id
+               ) AS work
+              WHERE status IN ('submitted', 'in_review')
+           ) AS waiting ON TRUE
           WHERE u.role = 'student'
           ORDER BY u.archived_at NULLS FIRST, u.created_at DESC, u.id DESC`,
       );
