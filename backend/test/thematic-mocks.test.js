@@ -4,11 +4,16 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 const { mocks: backendMocks } = require("../learning/mock-catalog");
 
 const root = path.resolve(__dirname, "../..");
 const manifestText = fs.readFileSync(path.join(root, "data/thematic-mocks.json"), "utf8");
 const manifest = JSON.parse(manifestText);
+const publicManifestText = fs.readFileSync(path.join(root, "data/thematic-mocks.js"), "utf8");
+const publicManifestContext = { window: {} };
+vm.runInNewContext(publicManifestText, publicManifestContext);
+const publicMocks = JSON.parse(JSON.stringify(publicManifestContext.window.THEMATIC_MOCKS));
 const indexText = fs.readFileSync(path.join(root, "data/webium-task-index.json"), "utf8");
 const index = JSON.parse(indexText);
 const scores = [1, 2, 1, 2, 2, 2, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 4, 3, 4, 6];
@@ -89,5 +94,31 @@ test("backend catalog and public manifest describe the same immutable versions",
   for (const mock of manifest.mocks) {
     const backendMock = backendMocks.find((item) => item.mockId === mock.mock_id);
     assert.equal(backendMock.downloadPath, mock.download_path);
+  }
+});
+
+test("public thematic mock links cover five sections and point to the current DOCX files", () => {
+  const expectedSections = ["economics", "human_society", "law", "politics", "social_relations"];
+  assert.equal(publicMocks.length, 15);
+  assert.deepEqual([...new Set(publicMocks.map((mock) => mock.focus_section))].sort(), expectedSections);
+  assert.deepEqual(
+    publicMocks.map((mock) => `${mock.mock_id}:${mock.download_path}`).sort(),
+    manifest.mocks.map((mock) => `${mock.mock_id}:${mock.download_path}`).sort(),
+  );
+
+  for (const section of expectedSections) {
+    assert.deepEqual(
+      publicMocks.filter((mock) => mock.focus_section === section).map((mock) => mock.variant).sort(),
+      [1, 2, 3],
+    );
+  }
+
+  for (const mock of publicMocks) {
+    assert.equal(mock.download_path, mock.download_path.normalize("NFC"), `${mock.mock_id} path must use NFC`);
+    assert.match(path.basename(mock.download_path), /^№[1-3] Пробный ЕГЭ .+\.docx$/);
+    assert.notEqual(mock.title.trim(), "Тематический пробник · Прав");
+    const file = path.join(root, mock.download_path);
+    assert.ok(fs.existsSync(file), `${mock.download_path} exists`);
+    assert.equal(fs.readFileSync(file).subarray(0, 2).toString("ascii"), "PK");
   }
 });
