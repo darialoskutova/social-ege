@@ -1,5 +1,7 @@
-// Generated scoring data. Correct answers are revealed by the interface after submission.
-window.EGE_TEST_SCORE_HASHES = {
+"use strict";
+
+// Private scoring source. This file is installed only with the backend.
+module.exports = {
   "schemaVersion": 1,
   "generatedAt": "2026-10-01T08:50:47Z",
   "normalization": "nfkc-trim-lowercase-yo-whitespace",

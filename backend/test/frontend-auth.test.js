@@ -5,7 +5,8 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const frontend = fs.readFileSync(path.resolve(__dirname, "../../index.html"), "utf8");
+const root = path.resolve(__dirname, "../..");
+const frontend = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
 test("login form sends credentials to the backend instead of accepting frontend-only identity", () => {
   assert.match(frontend, /id="studentPassword"[^>]+type="password"/);
@@ -57,7 +58,12 @@ test("logout is performed by the backend before the local cabinet is closed", ()
 test("H-O: a completed attempt is restored from backend data and retry is explicit", () => {
   assert.match(frontend, /frontendState\.selectTestState\(test\.id, learningState\.testDrafts, learningState\.testAttempts\)/);
   assert.match(frontend, /restoreCompletedTest\(test, form, testState\.attempt\)/);
-  assert.match(frontend, /frontendState\.buildCompletedAttemptResult\(test, attempt, testScoreData\)/);
+  assert.match(frontend, /frontendState\.buildCompletedAttemptResult\(test, attempt\)/);
+  assert.match(frontend, /learningRequest\(`\/tests\/\$\{encodeURIComponent\(topicTest\.id\)\}`\)/);
+  assert.doesNotMatch(frontend, /tests-score-hashes\.js/);
+  assert.doesNotMatch(frontend, /scorePoints:\s*result/);
+  assert.equal(fs.existsSync(path.join(root, "data/tests-score-hashes.js")), false);
+  assert.equal(fs.existsSync(path.join(root, "data/tests-public.js")), false);
   assert.match(frontend, /form\.querySelector\('button\[type="submit"\]'\)\.textContent = "Пройти ещё раз"/);
   assert.match(frontend, /if \(event\.currentTarget\.dataset\.reviewed === "true"\)[\s\S]+clearTestReview\(event\.currentTarget\)[\s\S]+return;/);
 });

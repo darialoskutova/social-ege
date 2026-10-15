@@ -29,6 +29,21 @@ test("course catalog is the single ordered source used by frontend and backend",
   assert.deepEqual(courseTopics.map((topic) => topic.lesson), Array.from({ length: 56 }, (_, index) => index + 1));
 });
 
+test("every configured lesson material uses a Linux-safe canonical URL path", () => {
+  const notes = sourceTopics.filter((topic) => topic.notes);
+  assert.equal(notes.length, 42);
+  for (const topic of sourceTopics) {
+    for (const field of ["notes", "homework"]) {
+      const materialPath = topic[field];
+      if (!materialPath) continue;
+      assert.equal(materialPath, materialPath.normalize("NFC"), `${topic.id}.${field} must use NFC`);
+      assert.equal(materialPath.startsWith("/"), false, `${topic.id}.${field} must stay relative`);
+      assert.equal(materialPath.split("/").includes(".."), false, `${topic.id}.${field} must not traverse directories`);
+      assert.equal(materialPath.includes("\\"), false, `${topic.id}.${field} must use URL separators`);
+    }
+  }
+});
+
 test("A/B: every topic gets two lessons and Tue/Thu schedules part 1 then part 2", () => {
   const result = plan({ lessonWeekdays: [2, 4] });
   const lessons = topicEvents(result, "pol35", "lesson");

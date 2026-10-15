@@ -14,6 +14,7 @@ const { HttpError } = require("../lib/http-error");
 const { withTransaction } = require("../lib/transaction");
 const { readUploadConfig, sendStoredFile } = require("../learning/file-storage");
 const defaultStudyPlanService = require("../study-plan/service");
+const defaultTestService = require("../tests/service");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -231,6 +232,7 @@ function createAdminRouter(
   config,
   suppliedUploadConfig = readUploadConfig(),
   studyPlanService = defaultStudyPlanService,
+  testService = defaultTestService,
 ) {
   const router = express.Router();
 
@@ -253,6 +255,35 @@ function createAdminRouter(
   router.get("/course-catalog", (req, res) => {
     res.set("Cache-Control", "no-store").json({ topics: studyPlanService.publicCourseCatalog() });
   });
+
+  router.get(
+    "/tests",
+    asyncHandler(async (req, res) => {
+      const tests = await testService.listTests(pool);
+      res.set("Cache-Control", "no-store").json({ tests });
+    }),
+  );
+
+  router.get(
+    "/tests/:testId",
+    asyncHandler(async (req, res) => {
+      const test = await testService.getAdminTest(pool, req.params.testId);
+      res.set("Cache-Control", "no-store").json({ test });
+    }),
+  );
+
+  router.put(
+    "/tests/:testId",
+    asyncHandler(async (req, res) => {
+      const test = await testService.updateTest(
+        pool,
+        req.params.testId,
+        req.body,
+        req.auth.user.id,
+      );
+      res.set("Cache-Control", "no-store").json({ test });
+    }),
+  );
 
   router.get(
     "/inbox",

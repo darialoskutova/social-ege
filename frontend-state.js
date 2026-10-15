@@ -69,25 +69,12 @@
       : { kind: "new", history: [] };
   }
 
-  function buildCompletedAttemptResult(test, attempt, scoreData) {
-    const submittedAnswers = attempt?.submittedAnswers && typeof attempt.submittedAnswers === "object"
-      ? attempt.submittedAnswers
+  function buildCompletedAttemptResult(test, attempt) {
+    const review = attempt?.review && typeof attempt.review === "object" ? attempt.review : null;
+    const questionResults = review?.questionResults && typeof review.questionResults === "object"
+      ? review.questionResults
       : {};
-    const incorrectIds = new Set(Array.isArray(attempt?.incorrectQuestionIds) ? attempt.incorrectQuestionIds : []);
-    const answerKeys = scoreData?.tests?.[test?.id]?.answers || {};
-    const gradableEntries = Object.entries(answerKeys).filter(([, answer]) => Number(answer?.points) > 0);
-    const hasReviewData = Object.keys(submittedAnswers).length > 0 || incorrectIds.size > 0;
-    const questionResults = {};
-
-    if (hasReviewData) {
-      for (const [questionId, answerKey] of gradableEntries) {
-        questionResults[questionId] = {
-          isCorrect: !incorrectIds.has(questionId),
-          submittedAnswers: Array.isArray(submittedAnswers[questionId]) ? submittedAnswers[questionId] : [],
-          acceptedAnswers: Array.isArray(answerKey.acceptedAnswers) ? answerKey.acceptedAnswers : [],
-        };
-      }
-    }
+    const hasReviewData = Object.keys(questionResults).length > 0;
 
     const earnedPoints = Number.isInteger(attempt?.scorePoints) ? attempt.scorePoints : null;
     const totalPoints = Number.isInteger(attempt?.scoreTotal) ? attempt.scoreTotal : null;
@@ -103,9 +90,11 @@
         earnedPoints,
         totalPoints,
         percent,
-        correctQuestions: hasReviewData ? gradableEntries.length - incorrectIds.size : null,
-        gradedQuestions: hasReviewData ? gradableEntries.length : null,
-        ungradedPoints: totalPoints === null ? 0 : Math.max(0, Number(test?.totalPoints || 0) - totalPoints),
+        correctQuestions: hasReviewData ? Number(review.correctQuestions) : null,
+        gradedQuestions: hasReviewData ? Number(review.gradedQuestions) : null,
+        ungradedPoints: hasReviewData
+          ? Number(review.ungradedPoints || 0)
+          : totalPoints === null ? 0 : Math.max(0, Number(test?.totalPoints || 0) - totalPoints),
         questionResults,
       },
     };

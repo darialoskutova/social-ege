@@ -125,7 +125,8 @@ function fixture(overrides = {}) {
     if (normalized.startsWith("UPDATE study_schedule_events AS e")) {
       state.events.forEach((event) => {
         if (event.user_id === String(values[0]) && event.scheduled_date >= values[1]
-          && event.status === "scheduled" && !submitted(event)) event.status = "superseded";
+          && event.status === "scheduled"
+          && (!normalized.includes("AND NOT (") || !submitted(event))) event.status = "superseded";
       });
       return { rows: [] };
     }
@@ -172,9 +173,12 @@ function fixture(overrides = {}) {
       return { rows: [] };
     }
     if (normalized.startsWith("INSERT INTO study_schedule_events")) {
-      state.events.push(baseEvent(state.nextId++, values[1], values[2], values[7], {
-        testKey: values[3], lessonPart: values[4], mockId: values[5], mockVersion: values[6], deadlineAt: values[8],
-      }));
+      for (let offset = 1; offset < values.length; offset += 8) {
+        state.events.push(baseEvent(state.nextId++, values[offset], values[offset + 1], values[offset + 6], {
+          testKey: values[offset + 2], lessonPart: values[offset + 3], mockId: values[offset + 4],
+          mockVersion: values[offset + 5], deadlineAt: values[offset + 7],
+        }));
+      }
       return { rows: [] };
     }
     if (normalized.startsWith("UPDATE student_study_plans SET generated_at")) return { rows: [] };
@@ -326,6 +330,54 @@ test("changing start topic rebuilds only the future from part one of the new top
   assert.equal(result.nextLesson.lessonPart, 1);
   assert.equal(result.nextLesson.scheduledDate, "2026-10-21");
   assert.equal(JSON.stringify(pool.state.events.filter((event) => event.scheduled_date < "2026-10-20")), pastSnapshot);
+});
+
+test("law48 to soc9 makes the new topic the first stored future lesson and hides stale deadlines", async () => {
+  const pool = fixture({
+    plan: {
+      ...fixture().state.plan,
+      start_topic_id: "law48",
+      effective_from: "2026-10-13",
+    },
+    events: [
+      baseEvent(1, "lesson", "law47", "2026-10-18", { lessonPart: 2, status: "completed" }),
+      baseEvent(2, "lesson", "law48", "2026-10-20", { lessonPart: 1 }),
+      baseEvent(3, "test_deadline", "law48", "2026-10-21", { testKey: "test-48" }),
+      baseEvent(4, "lesson", "law48", "2026-10-22", { lessonPart: 2 }),
+      baseEvent(5, "homework_deadline", "law48", "2026-10-25"),
+    ],
+    attempts: [{ user_id: "1", topic_key: "law48", score: 7 }],
+  });
+  const attemptSnapshot = JSON.stringify(pool.state.attempts);
+  const result = await saveStudyPlan(pool, "1", {
+    startTopicId: "soc9",
+    lessonWeekdays: [1, 3, 5],
+    effectiveFrom: "2026-10-13",
+    targetEndDate: null,
+    lessonsPerTopic: 2,
+    timezone: "Europe/Moscow",
+  }, "9", { now: new Date("2026-10-19T22:00:00Z") });
+
+  assert.equal(pool.state.plan.start_topic_id, "soc9");
+  assert.equal(result.nextLesson.topicId, "soc9");
+  assert.equal(result.nextLesson.lessonPart, 1);
+  assert.equal(result.summary.firstLessonDate, result.nextLesson.scheduledDate);
+  assert.equal(pool.state.events.find((event) => event.id === 1).status, "completed");
+  assert.equal(pool.state.events.find((event) => event.id === 3).status, "superseded");
+  assert.equal(pool.state.events.find((event) => event.id === 2).status, "superseded");
+  assert.equal(pool.state.events.find((event) => event.id === 4).status, "superseded");
+  assert.equal(pool.state.events.find((event) => event.id === 5).status, "superseded");
+  assert.equal(result.events.some((event) => ["2", "3", "4", "5"].includes(event.id)), false);
+  assert.equal(JSON.stringify(pool.state.attempts), attemptSnapshot);
+});
+
+test("recalculating the same future range does not leave duplicate active event keys", async () => {
+  const pool = fixture();
+  await recalculateStudyPlan(pool, "1", "2026-10-17", "9", NOW);
+  await recalculateStudyPlan(pool, "1", "2026-10-17", "9", NOW);
+  const active = pool.state.events.filter((event) => event.status !== "superseded" && event.scheduled_date >= "2026-10-17");
+  const keys = active.map((event) => `${event.event_type}:${event.topic_id || event.mock_id}:${event.lesson_part || event.mock_version || ""}`);
+  assert.equal(new Set(keys).size, keys.length);
 });
 
 test("preview is pure and does not mutate stored plan or events", () => {

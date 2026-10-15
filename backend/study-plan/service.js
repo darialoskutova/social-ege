@@ -133,6 +133,7 @@ async function getStudyPlan(pool, userId, options = {}) {
       events: [],
       nextLesson: null,
       nextDeadline: null,
+      summary: null,
       message: "Расписание пока не настроено преподавателем",
     };
   }
@@ -146,6 +147,7 @@ async function getStudyPlan(pool, userId, options = {}) {
     events,
     nextLesson,
     nextDeadline,
+    summary: summarizeStoredEvents(events, today, dateOnly(planRow.target_end_date)),
     message: null,
   };
 }
@@ -185,13 +187,13 @@ async function protectedEventKeys(client, userId, fromDate) {
   })));
 }
 
-async function supersedeMutableFuture(client, userId, fromDate) {
+async function supersedeMutableFuture(client, userId, fromDate, { preserveSubmitted = true } = {}) {
   await client.query(
     `UPDATE study_schedule_events AS e
         SET status = 'superseded', updated_at = NOW(),
             change_note = CASE WHEN change_note = '' THEN 'future_recalculation' ELSE change_note END
       WHERE e.user_id = $1 AND e.scheduled_date >= $2 AND e.status = 'scheduled'
-        AND NOT (
+        ${preserveSubmitted ? `AND NOT (
           (e.event_type = 'test_deadline' AND EXISTS (
              SELECT 1 FROM test_attempts t
               WHERE t.user_id = e.user_id AND t.topic_key = e.topic_id))
@@ -202,26 +204,51 @@ async function supersedeMutableFuture(client, userId, fromDate) {
              SELECT 1 FROM mock_submissions m
               WHERE m.user_id = e.user_id AND m.mock_id = e.mock_id
                 AND m.mock_version = e.mock_version))
-        )`,
+        )` : ""}`,
     [userId, fromDate],
   );
 }
 
 async function insertGeneratedEvents(client, userId, events, fromDate, protectedKeys) {
-  let inserted = 0;
-  for (const event of events) {
-    if (event.scheduledDate < fromDate || protectedKeys.has(eventKey(event))) continue;
-    await client.query(
-      `INSERT INTO study_schedule_events (
-         user_id, event_type, topic_id, test_key, lesson_part, mock_id, mock_version,
-         scheduled_date, deadline_at, status, source
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::DATE, $9::TIMESTAMPTZ,
-                 'scheduled', 'generated')`,
-      [userId, ...generatedRow(event)],
-    );
-    inserted += 1;
-  }
-  return inserted;
+  const selected = events.filter((event) => event.scheduledDate >= fromDate
+    && !protectedKeys.has(eventKey(event)));
+  if (!selected.length) return 0;
+  const values = [userId];
+  const rows = selected.map((event, index) => {
+    const offset = 2 + (index * 8);
+    values.push(...generatedRow(event));
+    return `($1, $${offset}, $${offset + 1}, $${offset + 2}, $${offset + 3},
+      $${offset + 4}, $${offset + 5}, $${offset + 6}::DATE, $${offset + 7}::TIMESTAMPTZ,
+      'scheduled', 'generated')`;
+  });
+  await client.query(
+    `INSERT INTO study_schedule_events (
+       user_id, event_type, topic_id, test_key, lesson_part, mock_id, mock_version,
+       scheduled_date, deadline_at, status, source
+     ) VALUES ${rows.join(",")}`,
+    values,
+  );
+  return selected.length;
+}
+
+function summarizeStoredEvents(events, fromDate, targetEndDate, warnings = []) {
+  const active = events.filter((event) => event.status === "scheduled"
+    && event.scheduledDate >= fromDate);
+  const lessons = active.filter((event) => event.eventType === "lesson");
+  const dates = active.map((event) => event.scheduledDate).sort();
+  const expectedEndDate = dates.at(-1) || null;
+  const missingLessonSlots = targetEndDate
+    ? lessons.filter((event) => event.scheduledDate > targetEndDate).length
+    : 0;
+  return {
+    firstLessonDate: lessons[0]?.scheduledDate || null,
+    expectedEndDate,
+    topicCount: new Set(lessons.map((event) => event.topicId).filter(Boolean)).size,
+    lessonCount: lessons.length,
+    thematicMockCount: active.filter((event) => event.eventType === "thematic_mock").length,
+    missingLessonSlots,
+    warnings,
+  };
 }
 
 async function writeAudit(client, actorId, action, userId, metadata = {}) {
@@ -245,6 +272,7 @@ async function saveStudyPlan(pool, userId, settings, actorId, options = {}) {
       ? (options.recalculateFrom || today)
       : "0001-01-01";
     let generated = validated;
+    let startTopicChanged = false;
     let effectiveFrom = validated.settings.effectiveFrom;
     if (existing) {
       const { rows } = await client.query(
@@ -255,7 +283,7 @@ async function saveStudyPlan(pool, userId, settings, actorId, options = {}) {
         [userId, fromDate],
       );
       const firstFuture = rows[0] || null;
-      const startTopicChanged = validated.settings.startTopicId !== existing.start_topic_id;
+      startTopicChanged = validated.settings.startTopicId !== existing.start_topic_id;
       const requestedEffectiveChanged = dateOnly(settings.effectiveFrom) !== dateOnly(existing.effective_from);
       if (!firstFuture && !startTopicChanged) {
         generated = null;
@@ -279,8 +307,14 @@ async function saveStudyPlan(pool, userId, settings, actorId, options = {}) {
           : dateOnly(existing.effective_from);
       }
     }
-    const protectedKeys = existing ? await protectedEventKeys(client, userId, fromDate) : new Set();
-    if (existing) await supersedeMutableFuture(client, userId, fromDate);
+    const protectedKeys = existing && !startTopicChanged
+      ? await protectedEventKeys(client, userId, fromDate)
+      : new Set();
+    if (existing) {
+      await supersedeMutableFuture(client, userId, fromDate, {
+        preserveSubmitted: !startTopicChanged,
+      });
+    }
     await client.query(
       `INSERT INTO student_study_plans (
          user_id, start_topic_id, effective_from, target_end_date,
@@ -305,9 +339,15 @@ async function saveStudyPlan(pool, userId, settings, actorId, options = {}) {
       fromDate: existing ? fromDate : null,
       insertedEvents: inserted,
     });
+    const stored = await getStudyPlan(client, userId, options);
     return {
-      ...(await getStudyPlan(client, userId, options)),
-      summary: generated?.summary || null,
+      ...stored,
+      summary: summarizeStoredEvents(
+        stored.events,
+        existing ? fromDate : stored.plan.effectiveFrom,
+        stored.plan.targetEndDate,
+        generated?.summary?.warnings || [],
+      ),
     };
   });
 }
@@ -505,7 +545,14 @@ async function recalculateStudyPlan(pool, userId, fromDate, actorId, options = {
       [userId],
     );
     await writeAudit(client, actorId, "study_plan.recalculated", userId, { fromDate, insertedEvents: inserted });
-    return { ...(await getStudyPlan(client, userId, options)), summary: generated.summary, warnings: generated.summary.warnings };
+    const stored = await getStudyPlan(client, userId, options);
+    const summary = summarizeStoredEvents(
+      stored.events,
+      fromDate,
+      stored.plan.targetEndDate,
+      generated.summary.warnings,
+    );
+    return { ...stored, summary, warnings: summary.warnings };
   });
 }
 

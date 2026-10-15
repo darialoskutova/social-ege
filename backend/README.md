@@ -2,7 +2,8 @@
 
 Private API deployed in small, reversible stages. It contains a database-backed
 health check, server-side sessions and protected persistence for student
-learning data. Server-side test scoring remains a later stage.
+learning data. Test definitions, answer keys, versioning and scoring are kept
+on the backend; answer keys are not shipped with the public frontend.
 
 ## Configuration
 
@@ -66,9 +67,10 @@ activated, and creates `account_tokens` for activation and password-reset
 links. Existing active users remain active; previously disabled users become
 blocked. The migration does not delete users or learning records.
 
-Homework file bytes are not uploaded in this stage. Only the filename, MIME
-type, byte size and existing student comment are persisted. Test answer keys
-are still not stored by these routes and must not be added to the public API.
+Migration `007_editable_tests.sql` is additive. It creates the current editable
+test overrides and their version history, then adds the test version and an
+immutable result snapshot to future `test_attempts`. Existing attempts remain
+unchanged with null values in the new columns.
 
 ## Authentication boundary
 
@@ -191,6 +193,8 @@ the authenticated session and rejects unexpected fields such as `user_id`.
 
 - `GET /api/learning/progress`
 - `PUT /api/learning/progress/:topicId`
+- `GET /api/learning/tests`
+- `GET /api/learning/tests/:testId`
 - `GET /api/learning/test-drafts`
 - `PUT /api/learning/test-drafts/:testId`
 - `DELETE /api/learning/test-drafts/:testId`
@@ -218,6 +222,26 @@ Runtime settings:
 With the hardened systemd unit, create the private directory with mode `0700`
 for the service user and install `deploy/systemd/social-ege-uploads.conf` as
 `/etc/systemd/system/social-ege.service.d/uploads.conf` before restart.
+
+## Test editing and scoring
+
+Baseline definitions and private answer keys are installed with the backend in
+`backend/tests/`. An admin edit creates a database-backed override in
+`editable_tests`, appends the new immutable revision to
+`editable_test_versions`, and records `test.updated` in `audit_log`. No new
+environment variable is required.
+
+All `/api/admin/tests*` routes use the existing admin router boundary, so they
+require a valid session and `role=admin`:
+
+- `GET /api/admin/tests`;
+- `GET /api/admin/tests/:testId`;
+- `PUT /api/admin/tests/:testId`.
+
+Students receive only test content and metadata through the protected learning
+routes. A normal submitted attempt is scored against the current server-side
+answer key. Its score, test version and result review are stored together, so a
+later admin edit cannot recalculate or change that historical attempt.
 
 Admin endpoints:
 
@@ -257,7 +281,10 @@ student updates.
 
 ## Current boundary
 
-Full file upload, teacher/admin review endpoints and server-side scoring are not
-implemented in this stage. In particular, `data/tests-score-hashes.js` remains
-an identified security issue and must later be replaced by server-side scoring
-without shipping answer keys to browsers.
+The application now has private homework/mock file upload, teacher review and
+server-side test scoring. The public `data/tests-score-hashes.js` and
+`data/tests-public.js` assets have been removed; deployment must also remove
+their obsolete copies from the Nginx document root. Baseline answer keys remain
+version-controlled backend source, so repository access must be treated as
+trusted and their earlier public Git history cannot be retroactively hidden by
+this release.

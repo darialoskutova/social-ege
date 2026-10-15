@@ -23,7 +23,7 @@ test("session restoration does not remove all views from layout before reveal", 
   const checkingRule = indexHtml.match(/html\.auth-checking \.view,[\s\S]*?\}/)?.[0] || "";
   assert.match(checkingRule, /visibility:\s*hidden\s*!important/);
   assert.doesNotMatch(checkingRule, /display:\s*none/);
-  assert.match(indexHtml, /cabinet\.css\?v=20261008-sticky-stable/);
+  assert.match(indexHtml, /cabinet\.css\?v=20261014-test-editor/);
 });
 
 test("cabinet header geometry is not recalculated by a scroll listener", () => {

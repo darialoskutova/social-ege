@@ -20,6 +20,10 @@
   const generatedLink = document.querySelector("[data-generated-link]");
   const studyPlanDialog = document.querySelector("[data-study-plan-dialog]");
   const studyPlanForm = document.querySelector("[data-study-plan-form]");
+  const testBrowser = document.querySelector("[data-test-browser]");
+  const testList = document.querySelector("[data-test-list]");
+  const testEditor = document.querySelector("[data-test-editor]");
+  const testEditorForm = document.querySelector("[data-test-editor-form]");
 
   let students = [];
   let submissions = [];
@@ -30,6 +34,8 @@
   let activeStudyPlan = null;
   let activeStudentDetails = null;
   let previewSignature = null;
+  let adminTests = [];
+  let activeAdminTest = null;
 
   const statusNames = {
     pending_activation: "Ожидает активации", active: "Активен",
@@ -268,6 +274,88 @@
     </article>`).join("");
   }
 
+  function renderAdminTests() {
+    const query = document.querySelector("[data-test-search]").value.trim().toLocaleLowerCase("ru");
+    const filtered = adminTests.filter((test) => !query
+      || String(test.lesson).includes(query)
+      || test.title.toLocaleLowerCase("ru").includes(query));
+    const state = document.querySelector("[data-tests-state]");
+    state.hidden = Boolean(filtered.length);
+    state.textContent = adminTests.length ? "По запросу тестов нет" : "Тесты не найдены";
+    testList.innerHTML = filtered.map((test) => `<article class="test-admin-row">
+      <span class="test-admin-number">Тема ${String(test.lesson).padStart(2, "0")}</span>
+      <div><h2>${escapeHtml(test.title)}</h2><p>${escapeHtml(test.id)} · ${test.questionCount} вопросов · версия ${test.version}</p></div>
+      <button class="action-button" type="button" data-edit-test="${escapeHtml(test.id)}">Редактировать</button>
+    </article>`).join("");
+  }
+
+  function questionEditor(question) {
+    const typeNames = { checkbox: "Несколько ответов", radio: "Один ответ", select: "Один ответ", text: "Текстовый ответ" };
+    if (!question.editable) {
+      return `<article class="test-question-editor is-readonly" data-editor-question="${escapeHtml(question.id)}"><header><strong>Задание ${question.number}</strong><span>${escapeHtml(typeNames[question.type] || question.type)}</span></header><p>${escapeHtml(question.prompt)}</p><p class="test-editor-error">Этот тип пока доступен только для чтения.</p></article>`;
+    }
+    const answerEditor = question.type === "text"
+      ? `<label class="test-answer-key-field">Верные ответы <small>— один вариант на строку</small><textarea data-accepted-answers rows="3">${escapeHtml((question.acceptedAnswers || []).join("\n"))}</textarea></label>`
+      : `<fieldset class="test-option-editor"><legend>Варианты и верный ответ</legend>${question.options.map((option) => `<label class="test-option-line"><input type="${question.type === "checkbox" ? "checkbox" : "radio"}" name="correct-${escapeHtml(question.id)}" value="${escapeHtml(option.id)}" ${option.correct ? "checked" : ""} aria-label="Верный ответ"><input type="text" value="${escapeHtml(option.text)}" data-option-id="${escapeHtml(option.id)}" maxlength="2000" required></label>`).join("")}</fieldset>`;
+    return `<article class="test-question-editor" data-editor-question="${escapeHtml(question.id)}" data-question-type="${escapeHtml(question.type)}"><header><strong>Задание ${question.number}</strong><span>${escapeHtml(typeNames[question.type] || question.type)} · ${question.points} б.</span></header><label>Текст вопроса<textarea data-question-prompt rows="3" maxlength="10000" required>${escapeHtml(question.prompt)}</textarea></label>${answerEditor}<p class="test-editor-error" data-question-error></p></article>`;
+  }
+
+  function renderAdminTestEditor(test) {
+    activeAdminTest = test;
+    testBrowser.hidden = true;
+    testEditor.hidden = false;
+    document.querySelector("[data-test-editor-id]").textContent = `${test.id} · версия ${test.version}`;
+    document.querySelector("[data-test-editor-title]").textContent = `Тема ${String(test.lesson).padStart(2, "0")} · ${test.title}`;
+    document.querySelector("[data-test-editor-meta]").textContent = `${test.questionCount} вопросов. Изменения применяются только к новым попыткам.`;
+    document.querySelector("[data-test-editor-message]").textContent = "";
+    document.querySelector("[data-test-editor-questions]").innerHTML = test.questions.map(questionEditor).join("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function openAdminTest(testId) {
+    document.querySelector("[data-tests-message]").textContent = "Загружаем тест…";
+    try {
+      const payload = await api(`/tests/${encodeURIComponent(testId)}`);
+      document.querySelector("[data-tests-message]").textContent = "";
+      renderAdminTestEditor(payload.test);
+    } catch (error) {
+      document.querySelector("[data-tests-message]").textContent = error.message;
+    }
+  }
+
+  function editorPayload() {
+    let valid = true;
+    const questions = [...document.querySelectorAll("[data-editor-question]")].map((card) => {
+      const source = activeAdminTest.questions.find((question) => question.id === card.dataset.editorQuestion);
+      if (!source?.editable) return { id: source.id, type: source.type, prompt: source.prompt };
+      const error = card.querySelector("[data-question-error]");
+      const prompt = card.querySelector("[data-question-prompt]").value.trim();
+      let message = prompt ? "" : "Введите текст вопроса.";
+      const result = { id: source.id, type: source.type, prompt };
+      if (source.type === "text") {
+        result.acceptedAnswers = card.querySelector("[data-accepted-answers]").value.split("\n").map((value) => value.trim()).filter(Boolean);
+        if (!result.acceptedAnswers.length) message ||= "Укажите хотя бы один верный ответ.";
+        if (new Set(result.acceptedAnswers.map((value) => value.toLocaleLowerCase("ru"))).size !== result.acceptedAnswers.length) message ||= "Уберите повторяющиеся верные ответы.";
+      } else {
+        result.options = [...card.querySelectorAll("[data-option-id]")].map((input) => ({
+          id: input.dataset.optionId,
+          text: input.value.trim(),
+          correct: card.querySelector(`[name="correct-${source.id}"][value="${input.dataset.optionId}"]`).checked,
+        }));
+        const correctCount = result.options.filter((option) => option.correct).length;
+        if (result.options.some((option) => !option.text)) message ||= "Заполните все варианты.";
+        if (new Set(result.options.map((option) => option.text.toLocaleLowerCase("ru"))).size !== result.options.length) message ||= "Варианты не должны повторяться.";
+        if (source.type === "checkbox" && correctCount < 1) message ||= "Отметьте верные ответы.";
+        if (["radio", "select"].includes(source.type) && correctCount !== 1) message ||= "Отметьте ровно один верный ответ.";
+      }
+      error.textContent = message;
+      card.classList.toggle("has-error", Boolean(message));
+      if (message) valid = false;
+      return result;
+    });
+    return valid ? { questions } : null;
+  }
+
   function showAccessError(error) {
     document.querySelectorAll("[data-panel], .admin-tabs").forEach((element) => element.classList.add("is-hidden"));
     document.querySelector("[data-access-state]").classList.remove("is-hidden");
@@ -280,15 +368,16 @@
     try {
       const access = await api("/access");
       document.querySelector("[data-admin-name]").textContent = access.user.name;
-      const [studentPayload, inboxPayload, catalogPayload, schedulePayload] = await Promise.all([
-        api("/students"), api("/inbox"), api("/course-catalog"), api("/schedule"),
+      const [studentPayload, inboxPayload, catalogPayload, schedulePayload, testsPayload] = await Promise.all([
+        api("/students"), api("/inbox"), api("/course-catalog"), api("/schedule"), api("/tests"),
       ]);
       students = studentPayload.students;
       submissions = inboxPayload.submissions;
       inboxCounts = inboxPayload.counts;
       courseTopics = catalogPayload.topics || [];
       scheduleEvents = schedulePayload.events || [];
-      updateFilterOptions(); renderInbox(); renderStudents(); renderSettings(); renderSchedule();
+      adminTests = testsPayload.tests || [];
+      updateFilterOptions(); renderInbox(); renderStudents(); renderSettings(); renderSchedule(); renderAdminTests();
     } catch (error) { showAccessError(error); }
   }
 
@@ -374,6 +463,16 @@
     document.getElementById("study-plan-recalculate-date").value ||= today;
   }
 
+  function applyStudyPlanForm(plan) {
+    studyPlanForm.elements.startTopicId.value = plan?.startTopicId || courseTopics[0]?.id || "";
+    studyPlanForm.elements.effectiveFrom.value = plan?.effectiveFrom || "";
+    studyPlanForm.elements.targetEndDate.value = plan?.targetEndDate || "";
+    const selectedDays = new Set(plan?.lessonWeekdays || [2, 4]);
+    studyPlanForm.querySelectorAll("input[name='lessonWeekday']").forEach((input) => {
+      input.checked = selectedDays.has(Number(input.value));
+    });
+  }
+
   async function openStudyPlan(student) {
     activePlanStudent = student;
     previewSignature = null;
@@ -385,11 +484,7 @@
     try {
       const payload = await api(`/students/${student.id}/study-plan`);
       const plan = payload.plan;
-      studyPlanForm.elements.startTopicId.value = plan?.startTopicId || courseTopics[0]?.id || "";
-      studyPlanForm.elements.effectiveFrom.value = plan?.effectiveFrom || "";
-      studyPlanForm.elements.targetEndDate.value = plan?.targetEndDate || "";
-      const selectedDays = new Set(plan?.lessonWeekdays || [2, 4]);
-      studyPlanForm.querySelectorAll("input[name='lessonWeekday']").forEach((input) => { input.checked = selectedDays.has(Number(input.value)); });
+      applyStudyPlanForm(plan);
       document.querySelector("[data-study-plan-message]").textContent = plan ? "Настройки загружены. Изменения пересчитывают только будущее." : "Расписание пока не настроено.";
       renderStudyPlanEvents(payload);
     } catch (error) { document.querySelector("[data-study-plan-message]").textContent = error.message; }
@@ -402,6 +497,43 @@
   document.querySelectorAll("[data-tab]").forEach((tab) => tab.addEventListener("click", () => activatePanel(tab.dataset.tab)));
   document.querySelectorAll("[data-inbox-filter]").forEach((filter) => filter.addEventListener("change", renderInbox));
   document.querySelectorAll("[data-schedule-filter]").forEach((filter) => filter.addEventListener("change", renderSchedule));
+  document.querySelector("[data-test-search]").addEventListener("input", renderAdminTests);
+  testList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-edit-test]");
+    if (button) openAdminTest(button.dataset.editTest);
+  });
+  document.querySelector("[data-close-test-editor]").addEventListener("click", () => {
+    activeAdminTest = null;
+    testEditor.hidden = true;
+    testBrowser.hidden = false;
+  });
+  testEditorForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const payload = editorPayload();
+    const status = document.querySelector("[data-test-editor-message]");
+    if (!payload) {
+      status.textContent = "Исправьте отмеченные вопросы.";
+      document.querySelector(".test-question-editor.has-error")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    const button = document.querySelector("[data-save-test]");
+    button.disabled = true;
+    button.textContent = "Сохраняем…";
+    status.textContent = "";
+    try {
+      await api(`/tests/${encodeURIComponent(activeAdminTest.id)}`, { method: "PUT", body: JSON.stringify(payload) });
+      const refreshed = await api(`/tests/${encodeURIComponent(activeAdminTest.id)}`);
+      adminTests = (await api("/tests")).tests || [];
+      renderAdminTests();
+      renderAdminTestEditor(refreshed.test);
+      document.querySelector("[data-test-editor-message]").textContent = "Тест сохранён. Новая версия загружена с сервера.";
+    } catch (error) {
+      status.textContent = error.message;
+    } finally {
+      button.disabled = false;
+      button.textContent = "Сохранить тест";
+    }
+  });
   document.querySelector("[data-inbox-summary]").addEventListener("click", (event) => {
     const button = event.target.closest("[data-quick-status]"); if (!button) return;
     const filter = document.querySelector("[data-inbox-filter='status']");
@@ -492,7 +624,9 @@
     if (activeStudyPlan?.plan && !window.confirm("Пересчитать только будущие события? Прошлое и выполненные работы останутся без изменений.")) return;
     const submit = studyPlanForm.querySelector("button[type='submit']"); submit.disabled = true;
     try {
-      const payload = await api(`/students/${activePlanStudent.id}/study-plan`, { method: "PUT", body: JSON.stringify(planFormValue()) });
+      await api(`/students/${activePlanStudent.id}/study-plan`, { method: "PUT", body: JSON.stringify(planFormValue()) });
+      const payload = await api(`/students/${activePlanStudent.id}/study-plan`);
+      applyStudyPlanForm(payload.plan);
       renderStudyPlanEvents(payload); if (payload.summary) renderPlanPreview({ settings: payload.plan, summary: payload.summary });
       previewSignature = JSON.stringify(planFormValue()); status.textContent = "Учебный план сохранён.";
       scheduleEvents = (await api("/schedule")).events; renderSchedule();
@@ -516,7 +650,9 @@
     if (!fromDate || !window.confirm(`Пересчитать только будущие события начиная с ${fromDate}?`)) return;
     event.currentTarget.disabled = true;
     try {
-      const payload = await api(`/students/${activePlanStudent.id}/study-plan/recalculate`, { method: "POST", body: JSON.stringify({ fromDate }) });
+      await api(`/students/${activePlanStudent.id}/study-plan/recalculate`, { method: "POST", body: JSON.stringify({ fromDate }) });
+      const payload = await api(`/students/${activePlanStudent.id}/study-plan`);
+      applyStudyPlanForm(payload.plan);
       renderStudyPlanEvents(payload); if (payload.summary) renderPlanPreview({ settings: payload.plan, summary: payload.summary });
       document.querySelector("[data-study-plan-message]").textContent = payload.warnings?.map((warning) => warning.message || warning).join(" ") || "Будущее расписание пересчитано.";
       scheduleEvents = (await api("/schedule")).events; renderSchedule();

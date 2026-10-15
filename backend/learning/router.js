@@ -18,6 +18,8 @@ const {
 } = require("./file-storage");
 const { findMock } = require("./mock-catalog");
 const defaultStudyPlanService = require("../study-plan/service");
+const defaultTestService = require("../tests/service");
+const { findTopic } = require("../study-plan/course-catalog");
 
 const stableKey = z.string().trim().min(1).max(120).regex(/^[a-z0-9_-]+$/);
 const topicKey = stableKey.max(100);
@@ -41,15 +43,15 @@ const draftSchema = z.object({
 const attemptSchema = z.object({
   topicId: topicKey,
   testId: stableKey,
-  scorePoints: z.number().int().min(0).max(1000).nullable(),
-  scoreTotal: z.number().int().min(1).max(1000).nullable(),
+  scorePoints: z.number().int().min(0).max(1000).nullable().optional(),
+  scoreTotal: z.number().int().min(1).max(1000).nullable().optional(),
   submittedAnswers: answers.default({}),
   incorrectQuestionIds: z.array(stableKey).max(200).default([]),
   legacyClientId: legacyId.optional(),
   legacyCreatedAt: timestamp.optional(),
 }).strict().superRefine((value, context) => {
-  const bothNull = value.scorePoints === null && value.scoreTotal === null;
-  const bothPresent = value.scorePoints !== null && value.scoreTotal !== null;
+  const bothNull = value.scorePoints == null && value.scoreTotal == null;
+  const bothPresent = value.scorePoints != null && value.scoreTotal != null;
   if (!bothNull && !bothPresent) {
     context.addIssue({ code: "custom", message: "Score and maximum score must be supplied together" });
   } else if (bothPresent && value.scorePoints > value.scoreTotal) {
@@ -136,6 +138,10 @@ function serializeAttempt(row) {
     scorePercent: row.percentage === null ? null : Number(row.percentage),
     submittedAnswers: row.submitted_answers,
     incorrectQuestionIds: row.incorrect_question_ids,
+    testVersion: row.test_version === null || row.test_version === undefined
+      ? null
+      : Number(row.test_version),
+    review: row.result_snapshot || null,
     createdAt: row.submitted_at,
   };
 }
@@ -268,6 +274,7 @@ function createLearningRouter(
   config,
   suppliedUploadConfig = readUploadConfig(),
   studyPlanService = defaultStudyPlanService,
+  testService = defaultTestService,
 ) {
   const router = express.Router();
   router.use(requireSecureTransport(config));
@@ -281,6 +288,16 @@ function createLearningRouter(
   router.get("/study-plan", asyncHandler(async (req, res) => {
     const result = await studyPlanService.getStudyPlan(pool, req.auth.user.id);
     res.json(result);
+  }));
+
+  router.get("/tests", asyncHandler(async (req, res) => {
+    const tests = await testService.listTests(pool);
+    res.set("Cache-Control", "no-store").json({ tests });
+  }));
+
+  router.get("/tests/:testId", asyncHandler(async (req, res) => {
+    const test = await testService.getStudentTest(pool, req.params.testId);
+    res.set("Cache-Control", "no-store").json({ test });
   }));
 
   router.get("/progress", asyncHandler(async (req, res) => {
@@ -342,7 +359,8 @@ function createLearningRouter(
   router.get("/test-attempts", asyncHandler(async (req, res) => {
     const { rows } = await pool.query(
       `SELECT id, topic_key, test_key, score, max_score, percentage,
-              submitted_answers, incorrect_question_ids, submitted_at
+              submitted_answers, incorrect_question_ids, test_version,
+              result_snapshot, submitted_at
          FROM test_attempts
         WHERE user_id = $1
         ORDER BY submitted_at DESC, id DESC`,
@@ -353,37 +371,65 @@ function createLearningRouter(
 
   router.post("/test-attempts", asyncHandler(async (req, res) => {
     const data = parse(attemptSchema, req.body);
-    const percentage = data.scorePoints === null
-      ? null
-      : Math.round((data.scorePoints / data.scoreTotal) * 10_000) / 100;
     const result = await transaction(pool, async (client) => {
+      const legacy = Boolean(data.legacyClientId);
+      let scored = null;
+      if (!legacy) {
+        const topic = findTopic(data.topicId);
+        if (!topic || topic.testKey !== data.testId) {
+          throw new HttpError(400, "test_topic_mismatch", "Тест не соответствует теме");
+        }
+        scored = await testService.scoreTest(client, data.testId, data.submittedAnswers);
+      }
+      const scorePoints = legacy ? (data.scorePoints ?? null) : scored.earnedPoints;
+      const scoreTotal = legacy ? (data.scoreTotal ?? null) : scored.totalPoints;
+      const percentage = scorePoints === null
+        ? null
+        : Math.round((scorePoints / scoreTotal) * 10_000) / 100;
+      const incorrectQuestionIds = legacy
+        ? data.incorrectQuestionIds
+        : Object.entries(scored.questionResults)
+          .filter(([, review]) => !review.isCorrect)
+          .map(([questionId]) => questionId);
+      const review = scored ? {
+        version: scored.version,
+        gradedQuestions: scored.gradedQuestions,
+        correctQuestions: scored.correctQuestions,
+        ungradedPoints: scored.ungradedPoints,
+        questionResults: scored.questionResults,
+      } : null;
       const inserted = await client.query(
         `INSERT INTO test_attempts (
            user_id, topic_key, test_key, score, max_score, percentage,
-           submitted_answers, incorrect_question_ids, submitted_at, legacy_client_id
+           submitted_answers, incorrect_question_ids, submitted_at, legacy_client_id,
+           test_version, result_snapshot
          ) VALUES ($1, $2, $3, $4, $5, $6, $7::JSONB, $8::JSONB,
-                   COALESCE($9::TIMESTAMPTZ, NOW()), $10)
+                   COALESCE($9::TIMESTAMPTZ, NOW()), $10, $11, $12::JSONB)
          ON CONFLICT DO NOTHING
          RETURNING id, topic_key, test_key, score, max_score, percentage,
-                   submitted_answers, incorrect_question_ids, submitted_at`,
+                   submitted_answers, incorrect_question_ids, test_version,
+                   result_snapshot, submitted_at`,
         [
           req.auth.user.id,
           data.topicId,
           data.testId,
-          data.scorePoints,
-          data.scoreTotal,
+          scorePoints,
+          scoreTotal,
           percentage,
           JSON.stringify(data.submittedAnswers),
-          JSON.stringify(data.incorrectQuestionIds),
+          JSON.stringify(incorrectQuestionIds),
           data.legacyCreatedAt || null,
           data.legacyClientId || null,
+          scored?.version || null,
+          review ? JSON.stringify(review) : null,
         ],
       );
       let row = inserted.rows[0];
       if (!row && data.legacyClientId) {
         const existing = await client.query(
           `SELECT id, topic_key, test_key, score, max_score, percentage,
-                  submitted_answers, incorrect_question_ids, submitted_at
+                  submitted_answers, incorrect_question_ids, test_version,
+                  result_snapshot, submitted_at
              FROM test_attempts
             WHERE user_id = $1 AND legacy_client_id = $2`,
           [req.auth.user.id, data.legacyClientId],
@@ -396,7 +442,19 @@ function createLearningRouter(
         "DELETE FROM test_drafts WHERE user_id = $1 AND test_key = $2",
         [req.auth.user.id, data.testId],
       );
-      return { attempt: serializeAttempt(row), progress };
+      return {
+        attempt: serializeAttempt(row),
+        progress,
+        result: scored ? {
+          earnedPoints: scored.earnedPoints,
+          totalPoints: scored.totalPoints,
+          percent: scored.percent,
+          correctQuestions: scored.correctQuestions,
+          gradedQuestions: scored.gradedQuestions,
+          ungradedPoints: scored.ungradedPoints,
+          questionResults: scored.questionResults,
+        } : null,
+      };
     });
     res.status(201).json(result);
   }));

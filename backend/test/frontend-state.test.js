@@ -48,12 +48,17 @@ test("I-K: completed review restores answers, errors and score", () => {
     scorePercent: 50,
     submittedAnswers: { q1: ["A"], q2: ["ошибка"] },
     incorrectQuestionIds: ["q2"],
+    review: {
+      correctQuestions: 1,
+      gradedQuestions: 2,
+      ungradedPoints: 0,
+      questionResults: {
+        q1: { isCorrect: true, submittedAnswers: ["A"], acceptedAnswers: ["A"] },
+        q2: { isCorrect: false, submittedAnswers: ["ошибка"], acceptedAnswers: ["B"] },
+      },
+    },
   };
-  const scoreData = { tests: { "test-01": { answers: {
-    q1: { points: 1, acceptedAnswers: ["A"] },
-    q2: { points: 1, acceptedAnswers: ["B"] },
-  } } } };
-  const restored = state.buildCompletedAttemptResult(testDefinition, attempt, scoreData);
+  const restored = state.buildCompletedAttemptResult(testDefinition, attempt);
   assert.equal(restored.hasReviewData, true);
   assert.equal(restored.result.earnedPoints, 1);
   assert.equal(restored.result.totalPoints, 2);
@@ -67,7 +72,6 @@ test("old completed attempts without answer details degrade safely", () => {
   const restored = state.buildCompletedAttemptResult(
     { id: "test-01", totalPoints: 10 },
     { testId: "test-01", scorePoints: 7, scoreTotal: 10, scorePercent: 70, submittedAnswers: {}, incorrectQuestionIds: [] },
-    { tests: { "test-01": { answers: {} } } },
   );
   assert.equal(restored.hasReviewData, false);
   assert.equal(restored.result.earnedPoints, 7);

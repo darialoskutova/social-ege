@@ -24,6 +24,8 @@ URLs, SSH keys or other secrets.
   server-side schedules and migration `006_personal_study_plans.sql`.
 - `STAGE-7-TEACHER-WORKSPACE.md` records the allowlisted admin workspace
   release, submission review flow and revision checks; it adds no migration.
+- `STAGE-8-STUDY-PLAN-AND-TEST-EDITOR.md` records the additive test-editor
+  migration, private answer-key rollout and allowlisted frontend update.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

@@ -1,5 +1,7 @@
+"use strict";
+
 // Generated from Google Forms. Correct answers are intentionally excluded.
-window.EGE_TESTS_PUBLIC = {
+module.exports = {
   "schemaVersion": 1,
   "generatedAt": "2026-10-01T08:50:47Z",
   "testCount": 56,

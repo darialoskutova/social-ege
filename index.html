@@ -5592,24 +5592,6 @@
             font-size: 9px;
         }
 
-        .lesson-section-tab i {
-            display: grid;
-            width: 23px;
-            height: 23px;
-            place-items: center;
-            margin-left: auto;
-            border: 1px solid currentColor;
-            border-radius: 50%;
-            font-size: 11px;
-            font-style: normal;
-        }
-
-        .lesson-section-tab i.is-done {
-            border-color: #8fc296;
-            background: #e7f1e4;
-            color: #315c3a;
-        }
-
         .lesson-panel {
             margin-top: 22px;
         }
@@ -6368,12 +6350,6 @@
             .lesson-section-tab-number {
                 width: 24px;
                 height: 24px;
-            }
-
-            .lesson-section-tab i {
-                width: 20px;
-                height: 20px;
-                margin-left: 0;
             }
 
             .topic-row {
@@ -7383,7 +7359,6 @@
         }
 
         .game-answer.is-correct,
-        .lesson-section-tab i.is-done,
         .topic-row-status.is-complete,
         .status--checked {
             border-color: var(--blue);
@@ -8040,12 +8015,6 @@
             stroke-linecap: round;
             stroke-linejoin: round;
             stroke-width: 1.6;
-        }
-
-        #lessonPage .lesson-section-tab i.is-done {
-            border-color: var(--blue);
-            background: var(--blue-soft);
-            color: var(--blue-dark);
         }
 
         #lessonPage .material-grid {
@@ -10754,7 +10723,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20261008-sticky-stable">
+    <link rel="stylesheet" href="cabinet.css?v=20261014-test-editor">
 </head>
 <body>
 
@@ -11705,10 +11674,10 @@
                                 <span class="lesson-section-tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5c1.2 0 1.5.6 1.5 1.5v13c0-1.2-.7-2-2-2H4zM20 5.5h-6.5c-1.2 0-1.5.6-1.5 1.5v13c0-1.2.7-2 2-2h6z"/></svg></span><span>Материалы</span>
                             </button>
                             <button class="lesson-section-tab" type="button" role="tab" aria-selected="false" data-lesson-tab="test">
-                                <span class="lesson-section-tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17H6zM9 8l1.5 1.5L13 7M15 9h1M9 14l1.5 1.5L13 13M15 15h1"/></svg></span><span>Тест по теме</span><i id="lessonTestTabStatus">○</i>
+                                <span class="lesson-section-tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17H6zM9 8l1.5 1.5L13 7M15 9h1M9 14l1.5 1.5L13 13M15 15h1"/></svg></span><span>Тест по теме</span>
                             </button>
                             <button class="lesson-section-tab" type="button" role="tab" aria-selected="false" data-lesson-tab="homework">
-                                <span class="lesson-section-tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h4"/></svg></span><span>Вторая часть / ДЗ</span><i id="lessonHomeworkTabStatus">○</i>
+                                <span class="lesson-section-tab-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h4"/></svg></span><span>Вторая часть / ДЗ</span>
                             </button>
                         </div>
 
@@ -12096,13 +12065,11 @@
 
     <script src="analytics.js"></script>
     <script src="landing.js?v=20260913-clean2"></script>
-    <script src="data/course-topics.js?v=20261011-study-plan"></script>
-    <script src="data/tests-public.js?v=20261001-all-topics"></script>
-    <script src="data/tests-score-hashes.js?v=20261001-all-topics"></script>
+    <script src="data/course-topics.js?v=20261015-material-paths"></script>
     <script src="data/test-image-transcriptions.js?v=20260930-1"></script>
     <script src="data/practice-games.js?v=20260904-2"></script>
     <script src="data/thematic-mocks.js?v=20271009-1"></script>
-    <script src="frontend-state.js?v=20261007-session-restore"></script>
+    <script src="frontend-state.js?v=20261014-test-editor"></script>
     <script>
         const topics = window.EGE_COURSE_TOPICS || [];
 
@@ -12110,13 +12077,9 @@
         const pages = document.querySelectorAll(".app-page");
         const topicList = document.getElementById("topicList");
         const toast = document.getElementById("toast");
-        const testData = window.EGE_TESTS_PUBLIC || { tests: [], unavailableTests: [] };
-        const testScoreData = window.EGE_TEST_SCORE_HASHES || { tests: {} };
         const testImageTranscriptions = window.EGE_TEST_IMAGE_TRANSCRIPTIONS?.questions || {};
         const frontendState = window.EGE_FRONTEND_STATE;
-        const testsByLesson = new Map(
-            (testData.tests || []).map((test) => [Number(test.lesson), test])
-        );
+        const testsByLesson = new Map();
         const topicSubjectLabels = {
             soc: "Социология",
             eco: "Экономика",
@@ -12466,6 +12429,7 @@
         let currentPage = "dashboard";
         let currentLessonPanel = "materials";
         let currentTest = null;
+        let currentTestReview = null;
         let toastTimer;
         let activeGameKey = null;
         let activeGameQuestions = [];
@@ -13107,7 +13071,19 @@
             }
             const testLesson = Number(topic.testLesson || topic.lesson);
             const topicTest = testsByLesson.get(testLesson) || null;
-            renderEmbeddedTest(topicTest);
+            if (topicTest) {
+                renderTestLoading(topicTest);
+                const requestedTopicId = topic.id;
+                learningRequest(`/tests/${encodeURIComponent(topicTest.id)}`)
+                    .then((payload) => {
+                        if (currentTopic?.id === requestedTopicId) renderEmbeddedTest(payload.test);
+                    })
+                    .catch(() => {
+                        if (currentTopic?.id === requestedTopicId) renderEmbeddedTest(null);
+                    });
+            } else {
+                renderEmbeddedTest(null);
+            }
             document.getElementById("answerFile").value = "";
             document.getElementById("fileLabel").textContent = "Выбрать выполненную работу";
             document.getElementById("studentComment").value = "";
@@ -13195,60 +13171,8 @@
             return /^[\d\s,;.]+$/.test(normalized) ? normalized.replace(/\D/g, "") : normalized;
         }
 
-        async function hashTestAnswer(value) {
-            if (!window.crypto?.subtle) throw new Error("Web Crypto API is unavailable");
-            const bytes = new TextEncoder().encode(normalizeTestAnswer(value));
-            const digest = await window.crypto.subtle.digest("SHA-256", bytes);
-            return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-        }
-
-        async function scoreTestSubmission(test, formData) {
-            const scoringTest = testScoreData.tests?.[test.id];
-            if (!scoringTest) return null;
-
-            let earnedPoints = 0;
-            let gradedQuestions = 0;
-            let correctQuestions = 0;
-            const questionResults = {};
-
-            for (const [questionId, answerKey] of Object.entries(scoringTest.answers)) {
-                if (!answerKey.points) continue;
-                const values = formData.getAll(questionId)
-                    .map((value) => String(value))
-                    .filter((value) => value.trim());
-                const submittedHashes = (await Promise.all(values.map(hashTestAnswer))).sort();
-                const acceptedHashes = [...answerKey.hashes].sort();
-                const isCorrect = answerKey.type === "checkbox"
-                    ? submittedHashes.length === acceptedHashes.length
-                        && submittedHashes.every((hash, index) => hash === acceptedHashes[index])
-                    : submittedHashes.some((hash) => acceptedHashes.includes(hash));
-
-                questionResults[questionId] = {
-                    isCorrect,
-                    submittedAnswers: values,
-                    acceptedAnswers: answerKey.acceptedAnswers || []
-                };
-
-                gradedQuestions += 1;
-                if (isCorrect) {
-                    correctQuestions += 1;
-                    earnedPoints += answerKey.points;
-                }
-            }
-
-            const totalPoints = scoringTest.gradablePoints;
-            return {
-                earnedPoints,
-                totalPoints,
-                percent: totalPoints ? Math.round((earnedPoints / totalPoints) * 100) : 0,
-                correctQuestions,
-                gradedQuestions,
-                ungradedPoints: Math.max(0, Number(test.totalPoints || 0) - totalPoints),
-                questionResults
-            };
-        }
-
         function clearTestReview(form, shouldReset = true) {
+            currentTestReview = null;
             if (shouldReset) form.reset();
             form.dataset.reviewed = "false";
             form.querySelectorAll("input, select").forEach((control) => {
@@ -13268,6 +13192,7 @@
         }
 
         function renderTestReview(result) {
+            currentTestReview = result;
             const form = document.getElementById("authorTestForm");
             Object.entries(result.questionResults).forEach(([questionId, review]) => {
                 const article = Array.from(form.querySelectorAll("[data-test-question-id]"))
@@ -13340,21 +13265,20 @@
         }
 
         function checkTestCorrections() {
-            if (!currentTest) return;
-            const scoringTest = testScoreData.tests?.[currentTest.id];
-            if (!scoringTest) return;
+            if (!currentTest || !currentTestReview) return;
             const correctionFormData = new FormData(document.getElementById("authorTestForm"));
             const cards = Array.from(document.querySelectorAll("[data-correction-question-id]"));
             let correctedCount = 0;
 
             cards.forEach((card) => {
                 const questionId = card.dataset.correctionQuestionId;
-                const answerKey = scoringTest.answers?.[questionId];
-                if (!answerKey) return;
+                const answerReview = currentTestReview.questionResults?.[questionId];
+                if (!answerReview) return;
                 const values = correctionFormData.getAll(`correction-${questionId}`).map(String).filter((value) => value.trim());
                 const submitted = values.map(normalizeTestAnswer).sort();
-                const accepted = (answerKey.acceptedAnswers || []).map(normalizeTestAnswer).sort();
-                const isCorrect = answerKey.type === "checkbox"
+                const accepted = (answerReview.acceptedAnswers || []).map(normalizeTestAnswer).sort();
+                const question = currentTest.questions.find((item) => item.id === questionId);
+                const isCorrect = question?.type === "checkbox"
                     ? submitted.length === accepted.length && submitted.every((value, index) => value === accepted[index])
                     : submitted.some((value) => accepted.includes(value));
                 card.classList.toggle("is-corrected", isCorrect);
@@ -13366,6 +13290,19 @@
             document.getElementById("testCorrectionStatus").textContent = correctedCount === cards.length
                 ? "Все ошибки исправлены."
                 : `Исправлено ${correctedCount} из ${cards.length}.`;
+        }
+
+        function renderTestLoading(test) {
+            currentTest = null;
+            currentTestReview = null;
+            const form = document.getElementById("authorTestForm");
+            clearTestReview(form);
+            document.getElementById("embeddedTestTitle").textContent = test.title || "Тест по теме";
+            document.getElementById("embeddedTestMeta").textContent = "Загружаем задания…";
+            document.getElementById("testQuestions").innerHTML = "";
+            document.getElementById("testInstructions").hidden = true;
+            form.hidden = true;
+            document.getElementById("testUnavailable").hidden = true;
         }
 
         function renderEmbeddedTest(test) {
@@ -13482,7 +13419,7 @@
         }
 
         function restoreCompletedTest(test, form, attempt) {
-            const restored = frontendState.buildCompletedAttemptResult(test, attempt, testScoreData);
+            const restored = frontendState.buildCompletedAttemptResult(test, attempt);
             const { result } = restored;
             restoreTestAnswers(attempt.submittedAnswers || {}, form);
 
@@ -13788,12 +13725,6 @@
                 ? (state.homeworkSubmitted ? "Открыть раздел второй части" : "Перейти к заданию второй части")
                 : "Задание второй части пока не добавлено");
 
-            const testTabStatus = document.getElementById("lessonTestTabStatus");
-            const homeworkTabStatus = document.getElementById("lessonHomeworkTabStatus");
-            testTabStatus.textContent = state.testSubmitted ? "✓" : "○";
-            homeworkTabStatus.textContent = state.homeworkSubmitted ? "✓" : "○";
-            testTabStatus.classList.toggle("is-done", state.testSubmitted);
-            homeworkTabStatus.classList.toggle("is-done", state.homeworkSubmitted);
         }
 
         function normalizeAuthenticatedUser(payload) {
@@ -13873,7 +13804,9 @@
         }
 
         function applyLearningPayloads(payloads) {
-            const [progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload] = payloads;
+            const [testsPayload, progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload] = payloads;
+            testsByLesson.clear();
+            (testsPayload.tests || []).forEach((test) => testsByLesson.set(Number(test.lesson), test));
             learningState = {
                 progress: Object.fromEntries((progressPayload.progress || []).map((item) => [item.topicId, item])),
                 testAttempts: attemptsPayload.attempts || [],
@@ -13890,6 +13823,7 @@
 
         async function fetchLearningData() {
             const payloads = await Promise.all([
+                learningRequest("/tests"),
                 learningRequest("/progress"),
                 learningRequest("/test-attempts"),
                 learningRequest("/test-drafts"),
@@ -13902,7 +13836,7 @@
         }
 
         function legacyTopicForTest(testId) {
-            const test = (testData.tests || []).find((item) => item.id === testId);
+            const test = [...testsByLesson.values()].find((item) => item.id === testId);
             return test ? topics.find((topic) => Number(topic.testLesson || topic.lesson) === Number(test.lesson)) : null;
         }
 
@@ -14593,34 +14527,22 @@
 
             await saveCurrentTestDraft();
 
-            try {
-                result = await scoreTestSubmission(currentTest, formData);
-            } catch (error) {
-                console.error("Automatic test scoring failed", error);
-            }
-
             const submittedAnswers = {};
             for (const [name, rawValue] of formData.entries()) {
                 const value = String(rawValue);
                 if (!value.trim()) continue;
                 (submittedAnswers[name] ||= []).push(value);
             }
-            const incorrectQuestionIds = result
-                ? Object.entries(result.questionResults).filter(([, review]) => !review.isCorrect).map(([id]) => id)
-                : [];
-
             try {
                 const payload = await learningRequest("/test-attempts", {
                     method: "POST",
                     body: {
                         topicId: currentTopic.id,
                         testId: currentTest.id,
-                        scorePoints: result?.earnedPoints ?? null,
-                        scoreTotal: result?.totalPoints ?? null,
-                        submittedAnswers,
-                        incorrectQuestionIds
+                        submittedAnswers
                     }
                 });
+                result = payload.result;
                 learningState.testAttempts.unshift(payload.attempt);
                 learningState.progress[currentTopic.id] = payload.progress;
                 clearCurrentTestDraft(currentTest);

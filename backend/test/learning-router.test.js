@@ -61,6 +61,11 @@ function createPool(users) {
       return { rows: [] };
     }
 
+    if (normalized.startsWith("SELECT test_key, version, definition, answer_key")
+      && normalized.includes("FROM editable_tests")) {
+      return { rows: [] };
+    }
+
     if (normalized.startsWith("SELECT topic_key") && normalized.includes("FROM user_progress")) {
       return { rows: [...state.progress.values()].filter((row) => row.user_id === String(values[0])) };
     }
@@ -108,6 +113,7 @@ function createPool(users) {
         score: values[3], max_score: values[4], percentage: values[5],
         submitted_answers: JSON.parse(values[6]), incorrect_question_ids: JSON.parse(values[7]),
         submitted_at: values[8] ? new Date(values[8]) : new Date(), legacy_client_id: values[9],
+        test_version: values[10], result_snapshot: values[11] ? JSON.parse(values[11]) : null,
       };
       state.attempts.push(row);
       return { rows: [row] };
@@ -249,14 +255,21 @@ test("E: a test attempt and its progress remain available in a new session", asy
     const cookie = await login(server, "student_a", password);
     const saved = await request(server, "/api/learning/test-attempts", {
       method: "POST", cookie,
-      body: { topicId: "soc2", testId: "test-02", scorePoints: 7, scoreTotal: 10, submittedAnswers: { q1: ["ответ"] }, incorrectQuestionIds: ["q2"] },
+      body: {
+        topicId: "soc2",
+        testId: "test-02",
+        scorePoints: 7,
+        scoreTotal: 10,
+        submittedAnswers: { q1: ["заведомо неверный ответ"] },
+      },
     });
     assert.equal(saved.status, 201);
+    assert.equal((await saved.json()).attempt.scorePercent, 0);
     const nextCookie = await login(server, "student_a", password);
     const loaded = await request(server, "/api/learning/test-attempts", { cookie: nextCookie });
     const payload = await loaded.json();
     assert.equal(payload.attempts.length, 1);
-    assert.equal(payload.attempts[0].scorePercent, 70);
+    assert.equal(payload.attempts[0].scorePercent, 0);
   } finally {
     await server.close();
   }
@@ -274,7 +287,7 @@ test("test drafts persist until a confirmed attempt removes them", async () => {
 
     await request(server, "/api/learning/test-attempts", {
       method: "POST", cookie,
-      body: { topicId: "soc4", testId: "test-04", scorePoints: 1, scoreTotal: 1, submittedAnswers: { "test-04-q-001": ["1"] }, incorrectQuestionIds: [] },
+      body: { topicId: "soc4", testId: "test-04", submittedAnswers: { "test-04-q-001": ["1"] } },
     });
     assert.equal((await request(server, "/api/learning/test-drafts", { cookie }).then((response) => response.json())).drafts.length, 0);
   } finally {

@@ -11,6 +11,7 @@ const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
 const adminHtml = fs.readFileSync(path.join(root, "admin/index.html"), "utf8");
 const adminJs = fs.readFileSync(path.join(root, "admin/admin.js"), "utf8");
 const migration = fs.readFileSync(path.join(root, "backend/migrations/006_personal_study_plans.sql"), "utf8");
+const testMigration = fs.readFileSync(path.join(root, "backend/migrations/007_editable_tests.sql"), "utf8");
 
 test("student cabinet loads the personal plan from protected learning API", () => {
   assert.match(index, /learningRequest\("\/study-plan"\)/);
@@ -36,12 +37,37 @@ test("admin exposes preview, weekday selection and explicit future recalculation
   assert.match(adminHtml, /data-study-plan-form/);
   assert.match(adminHtml, /name="lessonWeekday" value="7"/);
   assert.match(adminHtml, /Закончить программу до/);
-  assert.match(adminHtml, /Пересчитать с даты/);
+  assert.match(adminHtml, /Перестроить будущие занятия с даты/);
+  assert.match(adminHtml, /Сохранить изменения расписания/);
   assert.match(adminJs, /study-plan\/preview/);
   assert.match(adminJs, /data-event-action/);
   assert.match(adminJs, /Пересчитать только будущие события/);
   assert.match(adminJs, /Тем в программе/);
   assert.match(adminJs, /Настройки изменены — обновите предварительный расчёт/);
+  assert.match(adminJs, /await api\(`\/students\/\$\{activePlanStudent\.id\}\/study-plan`\)/);
+});
+
+test("topic tabs keep their labels and active state without decorative status circles", () => {
+  assert.match(index, /data-lesson-tab="test"/);
+  assert.match(index, /data-lesson-tab="homework"/);
+  assert.doesNotMatch(index, /lessonTestTabStatus|lessonHomeworkTabStatus/);
+});
+
+test("admin test editor uses a normal form and reloads the persisted test", () => {
+  assert.match(adminHtml, /data-tab="tests"/);
+  assert.match(adminHtml, /data-test-search/);
+  assert.match(adminHtml, /data-test-editor-form/);
+  assert.match(adminJs, /api\(`\/tests\/\$\{encodeURIComponent\(activeAdminTest\.id\)\}`, \{ method: "PUT"/);
+  assert.match(adminJs, /const refreshed = await api\(`\/tests\/\$\{encodeURIComponent\(activeAdminTest\.id\)\}`\)/);
+  assert.doesNotMatch(adminHtml, /<textarea[^>]+JSON/i);
+});
+
+test("007 test-editor migration is additive and snapshots attempts", () => {
+  assert.match(testMigration, /CREATE TABLE editable_tests/);
+  assert.match(testMigration, /CREATE TABLE editable_test_versions/);
+  assert.match(testMigration, /ADD COLUMN test_version INTEGER/);
+  assert.match(testMigration, /ADD COLUMN result_snapshot JSONB/);
+  assert.doesNotMatch(testMigration, /^\s*(?:DROP|TRUNCATE|DELETE)\b/im);
 });
 
 test("teacher workspace starts with the unified inbox and keeps account operations in settings", () => {

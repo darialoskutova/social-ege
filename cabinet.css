@@ -171,13 +171,6 @@
     border-radius: 8px;
 }
 
-#appView #lessonPage .lesson-section-tab i {
-    width: 22px;
-    height: 22px;
-    flex: 0 0 22px;
-    font-size: 11px;
-}
-
 #appView #topicTestSection,
 #appView #uploadForm {
     scroll-margin-top: 172px;
@@ -1156,10 +1149,6 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-seal {
         padding: 7px 6px;
         font-size: 13px;
         text-align: center;
-    }
-
-    #appView #lessonPage .lesson-section-tab i {
-        display: none;
     }
 
     #appView #topicTestSection,
