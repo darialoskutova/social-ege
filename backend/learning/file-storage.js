@@ -8,9 +8,14 @@ const { HttpError } = require("../lib/http-error");
 
 const TYPES = Object.freeze({
   "application/pdf": { extensions: new Set([".pdf"]), extension: ".pdf" },
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {
+    extensions: new Set([".docx"]), extension: ".docx",
+  },
   "image/jpeg": { extensions: new Set([".jpg", ".jpeg"]), extension: ".jpg" },
   "image/png": { extensions: new Set([".png"]), extension: ".png" },
 });
+
+const DEFAULT_MIMES = Object.freeze(["application/pdf", "image/jpeg", "image/png"]);
 
 function integer(name, fallback, minimum, maximum) {
   const raw = process.env[name];
@@ -27,6 +32,7 @@ function readUploadConfig() {
       process.env.UPLOAD_STORAGE_DIR || path.resolve(__dirname, "../../var/uploads"),
     ),
     maxBytes: integer("UPLOAD_MAX_BYTES", 15 * 1024 * 1024, 1024, 50 * 1024 * 1024),
+    allowedMimes: DEFAULT_MIMES,
   });
 }
 
@@ -53,12 +59,13 @@ function originalFilename(req) {
   return value;
 }
 
-function contentType(req, filename) {
+function contentType(req, filename, config) {
   const mime = String(req.get("content-type") || "").split(";", 1)[0].trim().toLowerCase();
   const type = TYPES[mime];
   const extension = path.extname(filename).toLowerCase();
-  if (!type || !type.extensions.has(extension)) {
-    throw new HttpError(415, "unsupported_file_type", "Можно отправить PDF, JPG или PNG");
+  const allowedMimes = config.allowedMimes || DEFAULT_MIMES;
+  if (!type || !allowedMimes.includes(mime) || !type.extensions.has(extension)) {
+    throw new HttpError(415, "unsupported_file_type", "Формат файла не поддерживается");
   }
   return { mime, extension: type.extension };
 }
@@ -67,7 +74,20 @@ function signatureMatches(mime, prefix) {
   if (mime === "application/pdf") return prefix.subarray(0, 5).toString("ascii") === "%PDF-";
   if (mime === "image/png") return prefix.subarray(0, 8).equals(Buffer.from("89504e470d0a1a0a", "hex"));
   if (mime === "image/jpeg") return prefix.length >= 3 && prefix[0] === 0xff && prefix[1] === 0xd8 && prefix[2] === 0xff;
+  if (mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    return prefix.length >= 4 && prefix[0] === 0x50 && prefix[1] === 0x4b
+      && [0x03, 0x05, 0x07].includes(prefix[2]) && [0x04, 0x06, 0x08].includes(prefix[3]);
+  }
   return false;
+}
+
+async function validateContainer(mime, filename) {
+  if (mime !== "application/vnd.openxmlformats-officedocument.wordprocessingml.document") return;
+  const contents = await fsp.readFile(filename);
+  if (!contents.includes(Buffer.from("[Content_Types].xml"))
+    || !contents.includes(Buffer.from("word/document.xml"))) {
+    throw new HttpError(415, "invalid_file_content", "Содержимое файла не соответствует DOCX");
+  }
 }
 
 async function ensureStorage(config) {
@@ -77,7 +97,7 @@ async function ensureStorage(config) {
 
 async function receiveUpload(req, config) {
   const filename = originalFilename(req);
-  const { mime, extension } = contentType(req, filename);
+  const { mime, extension } = contentType(req, filename, config);
   const declaredLength = Number(req.get("content-length") || 0);
   if (declaredLength > config.maxBytes) {
     throw new HttpError(413, "file_too_large", "Файл слишком большой");
@@ -104,6 +124,7 @@ async function receiveUpload(req, config) {
     if (size === 0 || !signatureMatches(mime, prefix)) {
       throw new HttpError(415, "invalid_file_content", "Содержимое файла не соответствует его формату");
     }
+    await validateContainer(mime, temporary);
     await fsp.rename(temporary, destination);
     return { objectKey, originalFilename: filename, mimeType: mime, sizeBytes: size };
   } catch (error) {
@@ -114,7 +135,7 @@ async function receiveUpload(req, config) {
 }
 
 function storagePath(config, objectKey) {
-  if (!/^[0-9a-f-]{36}\.(?:pdf|jpg|png)$/.test(objectKey || "")) {
+  if (!/^[0-9a-f-]{36}\.(?:pdf|docx|jpg|png)$/.test(objectKey || "")) {
     throw new HttpError(404, "file_not_found", "Файл не найден");
   }
   return path.join(config.directory, objectKey);
@@ -155,7 +176,9 @@ async function sendStoredFile(res, config, row) {
 }
 
 module.exports = {
+  TYPES,
   decodeHeader,
+  downloadNameHeader,
   readUploadConfig,
   receiveUpload,
   removeStoredFile,

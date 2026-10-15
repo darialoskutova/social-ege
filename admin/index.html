@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261014-test-editor">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261015-materials">
 </head>
 <body>
   <header class="admin-header">
@@ -21,6 +21,7 @@
       <button class="admin-tab" type="button" data-tab="students">Ученики</button>
       <button class="admin-tab" type="button" data-tab="schedule">Расписание</button>
       <button class="admin-tab" type="button" data-tab="tests">Тесты</button>
+      <button class="admin-tab" type="button" data-tab="materials">Материалы</button>
       <button class="admin-tab" type="button" data-tab="settings">Настройки</button>
     </nav>
 
@@ -93,6 +94,20 @@
         </section>
       </section>
 
+      <section class="is-hidden" data-panel="materials">
+        <div class="section-heading"><div><h1>Материалы</h1><p>Конспекты, задания, планы и пробники, доступные ученикам.</p></div><button class="primary-button" type="button" data-create-material>Добавить материал</button></div>
+        <div class="filter-bar material-filters">
+          <label>Раздел<select data-material-filter="section"><option value="">Все разделы</option></select></label>
+          <label>Тема<select data-material-filter="topic"><option value="">Все темы</option></select></label>
+          <label>Тип<select data-material-filter="type"><option value="">Все типы</option><option value="notes">Конспект</option><option value="section_plan">План по разделу</option><option value="additional">Дополнительный материал</option><option value="homework">Домашнее задание</option><option value="thematic_mock">Тематический пробник</option></select></label>
+          <label>Статус<select data-material-filter="status"><option value="">Все статусы</option><option value="published">Опубликован</option><option value="hidden">Скрыт</option><option value="archived">В архиве</option></select></label>
+          <label class="material-search">Поиск<input type="search" data-material-filter="search" placeholder="Название или файл"></label>
+        </div>
+        <p class="admin-message" data-material-message role="status" aria-live="polite"></p>
+        <div class="material-list" data-material-list></div>
+        <div class="table-state" data-material-state>Загружаем материалы…</div>
+      </section>
+
       <section class="access-state is-hidden" data-access-state>
         <h1>Не удалось открыть панель</h1>
         <p data-access-message></p>
@@ -112,6 +127,26 @@
       <div class="field"><label for="student-login">Логин</label><input id="student-login" name="login" minlength="3" maxlength="64" pattern="[A-Za-z0-9._-]+" autocapitalize="none" autocomplete="off" required><small>Латинские буквы, цифры, точка, дефис или подчёркивание</small></div>
       <p class="form-message" data-dialog-message role="status" aria-live="polite"></p>
       <div class="dialog-actions"><button class="secondary-button" type="button" data-close-dialog>Отмена</button><button class="primary-button" type="submit" data-dialog-submit>Создать</button></div>
+    </form>
+  </dialog>
+
+  <dialog class="admin-dialog material-dialog" data-material-dialog>
+    <form class="dialog-body material-form" data-material-form>
+      <div class="dialog-heading"><h2 data-material-dialog-title>Новый материал</h2><button type="button" class="close-button" data-close-material aria-label="Закрыть">×</button></div>
+      <input type="hidden" name="materialId">
+      <div class="field"><label for="material-title">Название</label><input id="material-title" name="title" maxlength="300" required></div>
+      <div class="material-form-grid">
+        <div class="field"><label for="material-type">Тип</label><select id="material-type" name="type" required><option value="notes">Конспект</option><option value="section_plan">План по разделу</option><option value="additional">Дополнительный материал</option><option value="homework">Домашнее задание</option><option value="thematic_mock">Тематический пробник</option></select></div>
+        <div class="field"><label for="material-section">Раздел</label><select id="material-section" name="sectionId" required></select></div>
+        <div class="field"><label for="material-topic">Тема <small>— при необходимости</small></label><select id="material-topic" name="topicId"><option value="">Без привязки к теме</option></select></div>
+        <div class="field"><label for="material-status">Статус</label><select id="material-status" name="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option><option value="archived">В архиве</option></select></div>
+        <div class="field"><label for="material-order">Порядок</label><input id="material-order" name="sortOrder" type="number" min="-10000" max="10000" value="0"></div>
+      </div>
+      <input id="material-reference" name="referenceKey" type="hidden">
+      <input id="material-version" name="contentVersion" type="hidden">
+      <div class="field"><label for="material-file">Файл <small data-material-file-help>— PDF, DOCX, JPG или PNG; до 25 МБ</small></label><input id="material-file" name="file" type="file" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+      <p class="form-message" data-material-form-message role="status" aria-live="polite"></p>
+      <div class="dialog-actions"><button class="secondary-button" type="button" data-close-material>Отмена</button><button class="primary-button" type="submit" data-save-material>Сохранить материал</button></div>
     </form>
   </dialog>
 
@@ -148,6 +183,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261014-test-editor" defer></script>
+  <script src="/admin/admin.js?v=20261015-materials" defer></script>
 </body>
 </html>

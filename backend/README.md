@@ -223,6 +223,43 @@ With the hardened systemd unit, create the private directory with mode `0700`
 for the service user and install `deploy/systemd/social-ege-uploads.conf` as
 `/etc/systemd/system/social-ege.service.d/uploads.conf` before restart.
 
+## Teacher-managed materials
+
+Migration `008_materials_cms.sql` adds the `materials` catalog. Existing notes,
+homework, section plans and thematic mocks are registered idempotently through
+stable `legacy_key` values; subsequent metadata and publication changes are
+stored in PostgreSQL. New files are kept in private storage and downloaded only
+through authenticated role-aware endpoints.
+
+Runtime settings:
+
+- `MATERIAL_STORAGE_DIR` (production default `/opt/social-ege/var/materials`)
+- `MATERIAL_LEGACY_ROOT` (production default `/var/www/social-ege`)
+- `MATERIAL_MAX_BYTES` (default 25 MiB; maximum 50 MiB)
+
+The service user needs read/write access to `MATERIAL_STORAGE_DIR`. The legacy
+root is read-only and is never returned through the API. Install the updated
+`deploy/systemd/social-ege-uploads.conf` so the hardened unit can write both
+private upload directories.
+
+Admin endpoints (all require `role=admin`):
+
+- `GET /api/admin/materials`
+- `POST /api/admin/materials/file`
+- `PATCH /api/admin/materials/:id`
+- `PUT /api/admin/materials/:id/file`
+- `GET /api/admin/materials/:id/file`
+- `GET /api/admin/students/:studentId/test-attempts/:attemptId`
+
+Student endpoints (authenticated, published materials only):
+
+- `GET /api/learning/materials`
+- `GET /api/learning/materials/:id/file`
+
+Material create, metadata/status changes and file replacement write
+`material.*` entries to the existing `audit_log`. Test-attempt detail is
+read-only and reconstructs questions from the immutable saved test version.
+
 ## Test editing and scoring
 
 Baseline definitions and private answer keys are installed with the backend in

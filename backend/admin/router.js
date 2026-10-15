@@ -15,6 +15,9 @@ const { withTransaction } = require("../lib/transaction");
 const { readUploadConfig, sendStoredFile } = require("../learning/file-storage");
 const defaultStudyPlanService = require("../study-plan/service");
 const defaultTestService = require("../tests/service");
+const defaultMaterialService = require("../materials/service");
+const { readMaterialConfig } = require("../materials/service");
+const { courseTopics } = require("../study-plan/course-catalog");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -68,6 +71,47 @@ const reviewSchema = z.object({
   status: z.enum(["in_review", "needs_revision", "accepted"]),
   teacherComment: z.string().trim().max(4000).default(""),
 }).strict();
+const materialTypeSchema = z.enum(["notes", "section_plan", "additional", "homework", "thematic_mock"]);
+const materialStatusSchema = z.enum(["published", "hidden", "archived"]);
+const materialSectionSchema = z.enum(["human_society", "social_relations", "economics", "politics", "law"]);
+const materialMetadataSchema = z.object({
+  title: z.string().trim().min(1).max(300),
+  type: materialTypeSchema,
+  sectionId: materialSectionSchema,
+  topicId: z.string().trim().regex(/^[a-z0-9_-]{1,100}$/).nullable().optional(),
+  referenceKey: z.string().trim().regex(/^[a-z0-9._-]{1,160}$/).nullable().optional(),
+  contentVersion: z.string().trim().regex(/^[a-z0-9._-]{1,80}$/).nullable().optional(),
+  status: materialStatusSchema,
+  sortOrder: z.number().int().min(-10000).max(10000).default(0),
+}).strict().superRefine((value, context) => {
+  if (["notes", "homework"].includes(value.type) && !value.topicId) {
+    context.addIssue({ code: "custom", path: ["topicId"], message: "Для этого типа нужна тема" });
+  }
+  if (!value.topicId) return;
+  const topic = courseTopics.find((item) => item.id === value.topicId);
+  if (!topic || topic.sectionId !== value.sectionId) {
+    context.addIssue({ code: "custom", path: ["topicId"], message: "Тема не относится к выбранному разделу" });
+  }
+});
+const materialIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
+
+function materialMetadataFromHeader(req) {
+  const raw = req.get("x-material-metadata");
+  if (!raw || raw.length > 6000) throw new HttpError(400, "invalid_material", "Проверьте данные материала");
+  try {
+    const parsed = materialMetadataSchema.safeParse(JSON.parse(decodeURIComponent(raw)));
+    if (!parsed.success) throw new Error("invalid");
+    return parsed.data;
+  } catch {
+    throw new HttpError(400, "invalid_material", "Проверьте данные материала");
+  }
+}
+
+function materialId(value) {
+  const parsed = materialIdSchema.safeParse(value);
+  if (!parsed.success) throw new HttpError(404, "material_not_found", "Материал не найден");
+  return parsed.data;
+}
 
 function hasIdentity(value) {
   return value.firstName !== undefined
@@ -233,6 +277,8 @@ function createAdminRouter(
   suppliedUploadConfig = readUploadConfig(),
   studyPlanService = defaultStudyPlanService,
   testService = defaultTestService,
+  materialService = defaultMaterialService,
+  materialConfig = readMaterialConfig(),
 ) {
   const router = express.Router();
 
@@ -282,6 +328,69 @@ function createAdminRouter(
         req.auth.user.id,
       );
       res.set("Cache-Control", "no-store").json({ test });
+    }),
+  );
+
+  router.get(
+    "/materials",
+    asyncHandler(async (req, res) => {
+      const filters = {};
+      const parsers = {
+        sectionId: materialSectionSchema,
+        type: materialTypeSchema,
+        status: materialStatusSchema,
+        topicId: z.string().trim().regex(/^[a-z0-9_-]{1,100}$/),
+        search: z.string().trim().max(200),
+      };
+      for (const [name, schema] of Object.entries(parsers)) {
+        if (req.query[name] === undefined || req.query[name] === "") continue;
+        const parsed = schema.safeParse(req.query[name]);
+        if (!parsed.success) throw new HttpError(400, "invalid_material_filter", "Проверьте фильтры");
+        filters[name] = parsed.data;
+      }
+      const materials = await materialService.listAdmin(pool, filters);
+      res.set("Cache-Control", "no-store").json({ materials });
+    }),
+  );
+
+  router.post(
+    "/materials/file",
+    asyncHandler(async (req, res) => {
+      const metadata = materialMetadataFromHeader(req);
+      const material = await materialService.create(
+        pool, req.auth.user.id, metadata, req, materialConfig,
+      );
+      res.set("Cache-Control", "no-store").status(201).json({ material });
+    }),
+  );
+
+  router.patch(
+    "/materials/:materialId",
+    asyncHandler(async (req, res) => {
+      const parsed = materialMetadataSchema.safeParse(req.body);
+      if (!parsed.success) throw new HttpError(400, "invalid_material", "Проверьте данные материала");
+      const material = await materialService.update(
+        pool, req.auth.user.id, materialId(req.params.materialId), parsed.data,
+      );
+      res.set("Cache-Control", "no-store").json({ material });
+    }),
+  );
+
+  router.put(
+    "/materials/:materialId/file",
+    asyncHandler(async (req, res) => {
+      const material = await materialService.replaceFile(
+        pool, req.auth.user.id, materialId(req.params.materialId), req, materialConfig,
+      );
+      res.set("Cache-Control", "no-store").json({ material });
+    }),
+  );
+
+  router.get(
+    "/materials/:materialId/file",
+    asyncHandler(async (req, res) => {
+      const material = await materialService.findFile(pool, materialId(req.params.materialId));
+      await materialService.sendFile(res, materialConfig, material);
     }),
   );
 
@@ -364,7 +473,10 @@ function createAdminRouter(
         ),
         pool.query(
           `SELECT id, topic_key, test_key, score, max_score, percentage,
-                  incorrect_question_ids, submitted_at
+                  incorrect_question_ids, test_version, submitted_at,
+                  ROW_NUMBER() OVER (
+                    PARTITION BY test_key ORDER BY submitted_at, id
+                  ) AS attempt_number
              FROM test_attempts
             WHERE user_id = $1
             ORDER BY submitted_at DESC, id DESC`,
@@ -385,12 +497,89 @@ function createAdminRouter(
           id: String(row.id),
           topicId: row.topic_key,
           testId: row.test_key,
+          title: courseTopics.find((topic) => topic.id === row.topic_key)?.title || row.test_key,
+          topicTitle: courseTopics.find((topic) => topic.id === row.topic_key)?.title || row.topic_key,
+          sectionId: courseTopics.find((topic) => topic.id === row.topic_key)?.sectionId || null,
           score: row.score,
           maxScore: row.max_score,
           percentage: row.percentage === null ? null : Number(row.percentage),
           incorrectQuestionIds: row.incorrect_question_ids,
+          testVersion: row.test_version === null ? null : Number(row.test_version),
+          attemptNumber: Number(row.attempt_number),
           submittedAt: row.submitted_at,
         })),
+      });
+    }),
+  );
+
+  router.get(
+    "/students/:studentId/test-attempts/:attemptId",
+    asyncHandler(async (req, res) => {
+      const ownerId = studentId(req.params.studentId);
+      const attemptId = studentId(req.params.attemptId);
+      const { rows } = await pool.query(
+        `SELECT id, user_id, topic_key, test_key, score, max_score, percentage,
+                submitted_answers, incorrect_question_ids, test_version,
+                result_snapshot, submitted_at,
+                (SELECT COUNT(*) FROM test_attempts AS earlier
+                  WHERE earlier.user_id = test_attempts.user_id
+                    AND earlier.test_key = test_attempts.test_key
+                    AND (earlier.submitted_at, earlier.id) <=
+                        (test_attempts.submitted_at, test_attempts.id)) AS attempt_number
+           FROM test_attempts
+          WHERE id = $1 AND user_id = $2`,
+        [attemptId, ownerId],
+      );
+      const row = rows[0];
+      if (!row) throw new HttpError(404, "attempt_not_found", "Попытка не найдена");
+      const topic = courseTopics.find((item) => item.id === row.topic_key);
+      const base = {
+        id: String(row.id),
+        studentId: String(row.user_id),
+        topicId: row.topic_key,
+        sectionId: topic?.sectionId || null,
+        title: topic?.title || row.test_key,
+        topicTitle: topic?.title || row.topic_key,
+        testId: row.test_key,
+        version: row.test_version === null ? null : Number(row.test_version),
+        attemptNumber: Number(row.attempt_number),
+        score: row.score,
+        maxScore: row.max_score,
+        percentage: row.percentage === null ? null : Number(row.percentage),
+        submittedAt: row.submitted_at,
+      };
+      if (!row.test_version || !row.result_snapshot?.questionResults) {
+        res.set("Cache-Control", "no-store").json({
+          attempt: { ...base, detailsAvailable: false, questions: [] },
+          message: "Для этой старой попытки подробные ответы не сохранялись.",
+        });
+        return;
+      }
+      const historical = await testService.getHistoricalTest(pool, row.test_key, row.test_version);
+      if (!historical) {
+        res.set("Cache-Control", "no-store").json({
+          attempt: { ...base, detailsAvailable: false, questions: [] },
+          message: "Версия теста для этой попытки недоступна.",
+        });
+        return;
+      }
+      const reviews = row.result_snapshot.questionResults;
+      const questions = historical.questions.map((question) => {
+        const review = reviews[question.id];
+        return {
+          id: question.id,
+          number: question.number,
+          type: question.type,
+          prompt: question.prompt,
+          options: question.options?.map((option) => ({ id: option.id, text: option.text })) || [],
+          studentAnswers: review?.submittedAnswers || row.submitted_answers?.[question.id] || [],
+          correctAnswers: review?.acceptedAnswers || [],
+          isCorrect: review ? Boolean(review.isCorrect) : null,
+          explanation: question.explanation || null,
+        };
+      });
+      res.set("Cache-Control", "no-store").json({
+        attempt: { ...base, detailsAvailable: true, questions },
       });
     }),
   );

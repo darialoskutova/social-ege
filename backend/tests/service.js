@@ -76,6 +76,21 @@ async function resolvedTest(pool, testId, { forUpdate = false } = {}) {
   return rows[0] ? fromRow(rows[0]) : baseline(id);
 }
 
+async function historicalTest(pool, testId, version) {
+  const id = safeTestId(testId);
+  const numericVersion = Number(version);
+  if (!Number.isInteger(numericVersion) || numericVersion < 1) return null;
+  if (numericVersion === 1) return adminTest(baseline(id));
+  const { rows } = await pool.query(
+    `SELECT test_key, version, definition, answer_key, changed_at AS updated_at,
+            changed_by AS updated_by
+       FROM editable_test_versions
+      WHERE test_key = $1 AND version = $2`,
+    [id, numericVersion],
+  );
+  return rows[0] ? adminTest(fromRow(rows[0])) : null;
+}
+
 function publicTest(resolved) {
   return {
     ...clone(resolved.test),
@@ -108,6 +123,7 @@ function adminTest(resolved) {
         number: question.number,
         type: question.type,
         prompt: question.prompt || "",
+        explanation: question.explanation || null,
         points: Number(key.points || 0),
         editable: ["checkbox", "radio", "select", "text"].includes(question.type),
         options: (question.options || []).map((text, index) => ({
@@ -307,6 +323,7 @@ async function scoreTest(pool, testId, submittedAnswers) {
 module.exports = {
   adminTest,
   getAdminTest: async (pool, testId) => adminTest(await resolvedTest(pool, testId)),
+  getHistoricalTest: historicalTest,
   getStudentTest: async (pool, testId) => publicTest(await resolvedTest(pool, testId)),
   listTests,
   normalizeAnswer,

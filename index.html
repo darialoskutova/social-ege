@@ -11924,6 +11924,7 @@
                                             <a class="library-file" data-section-plan="politics" href="доп материалы/Планы по политике.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по политике</strong><small>Задание № 24</small></span><b>↗</b></a>
                                             <a class="library-file" data-section-plan="law" href="доп материалы/Планы по праву ЕГЭ.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по праву</strong><small>Задание № 24</small></span><b>↗</b></a>
                                         </div>
+                                        <div class="library-file-grid" data-managed-library></div>
                                     </section>
                                 </div>
 
@@ -12465,6 +12466,8 @@
                 works: [],
                 mockSubmissions: [],
                 messages: [],
+                materials: [],
+                materialsLoaded: false,
                 studyPlan: { plan: null, events: [], nextLesson: null, nextDeadline: null }
             };
         }
@@ -12631,6 +12634,12 @@
             ));
         }
 
+        function latestPublishedMaterial(predicate) {
+            return learningState.materials.filter(predicate).sort((left, right) => (
+                new Date(right.updatedAt || right.createdAt) - new Date(left.updatedAt || left.createdAt)
+            ))[0] || null;
+        }
+
         function renderThematicMocks() {
             const mocks = window.THEMATIC_MOCKS || [];
             const groups = new Map();
@@ -12638,6 +12647,8 @@
                 if (!groups.has(mock.focus_section)) groups.set(mock.focus_section, []);
                 groups.get(mock.focus_section).push(mock);
             });
+            const customMocks = learningState.materials.filter((material) => material.type === "thematic_mock"
+                && !mocks.some((mock) => mock.mock_id === material.referenceKey && mock.content_version === material.contentVersion));
             document.querySelector("#practiceVariantsShelf .practice-variants-groups").innerHTML = [...groups.values()].map((items) => `
                 <div class="practice-variants-group">
                     <h3>${escapeHtml(items[0].section_label)}</h3>
@@ -12650,7 +12661,7 @@
                             </button>`;
                         }).join("")}
                     </div>
-                </div>`).join("");
+                </div>`).join("") + (customMocks.length ? `<div class="practice-variants-group"><h3>Дополнительные пробники</h3><div class="library-file-grid variant-list">${customMocks.map((material) => `<a class="library-file variant-row" href="${escapeHtml(material.downloadUrl)}"><span><strong>${escapeHtml(material.title)}</strong><small>${escapeHtml(material.sectionLabel)}</small></span><b>Скачать →</b></a>`).join("")}</div></div>` : "");
             document.querySelector("#practiceVariantsShelf .practice-variants-groups").classList.add("is-ready");
         }
 
@@ -12672,7 +12683,13 @@
             document.getElementById("thematicMockTaskCount").textContent = String(mock.task_count);
             document.getElementById("thematicMockMaxScore").textContent = String(mock.max_score);
             document.getElementById("thematicMockTime").textContent = `${mock.time_minutes} минут`;
-            document.getElementById("thematicMockDownload").href = encodeURI(mock.download_path);
+            const managed = latestPublishedMaterial((item) => item.type === "thematic_mock"
+                && item.referenceKey === mock.mock_id && item.contentVersion === mock.content_version);
+            const download = document.getElementById("thematicMockDownload");
+            const resource = learningState.materialsLoaded ? managed?.downloadUrl : mock.download_path;
+            download.hidden = !resource;
+            if (resource) download.href = encodeURI(resource);
+            else download.removeAttribute("href");
             document.getElementById("mockUploadForm").reset();
             document.getElementById("mockFileLabel").textContent = "Выбрать выполненную работу";
             renderMockSubmissionStatus();
@@ -13063,12 +13080,16 @@
             const sectionName = topicSubjectLabels[topic.subject];
             document.getElementById("lessonEyebrow").textContent = `ЕГЭ · ${sectionName} · тема ${topic.lesson}`;
             document.getElementById("lessonTitle").textContent = topic.title;
-            setMaterialLink("notesLink", topic.notes, "", "Конспект по этой теме пока не добавлен.", "notesCardDescription");
-            setMaterialLink("extraLink", topic.extra, "Подборка для углубления и повторения темы.", "Дополнительные материалы появятся позже.", "extraCardDescription");
+            const managedForTopic = (type) => latestPublishedMaterial((item) => item.topicId === topic.id && item.type === type)?.downloadUrl || null;
+            const notesResource = learningState.materialsLoaded ? managedForTopic("notes") : topic.notes;
+            const extraResource = learningState.materialsLoaded ? managedForTopic("additional") : topic.extra;
+            const homeworkResource = learningState.materialsLoaded ? managedForTopic("homework") : topic.homework;
+            setMaterialLink("notesLink", notesResource, "", "Конспект по этой теме пока не добавлен.", "notesCardDescription");
+            setMaterialLink("extraLink", extraResource, "Подборка для углубления и повторения темы.", "Дополнительные материалы появятся позже.", "extraCardDescription");
             const homeworkPanelDownload = document.getElementById("homeworkPanelDownload");
-            homeworkPanelDownload.hidden = !topic.homework;
-            if (topic.homework) {
-                homeworkPanelDownload.href = encodeURI(topic.homework);
+            homeworkPanelDownload.hidden = !homeworkResource;
+            if (homeworkResource) {
+                homeworkPanelDownload.href = encodeURI(homeworkResource);
             } else {
                 homeworkPanelDownload.removeAttribute("href");
             }
@@ -13807,7 +13828,7 @@
         }
 
         function applyLearningPayloads(payloads) {
-            const [testsPayload, progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload] = payloads;
+            const [testsPayload, progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload, materialsPayload] = payloads;
             testsByLesson.clear();
             (testsPayload.tests || []).forEach((test) => testsByLesson.set(Number(test.lesson), test));
             learningState = {
@@ -13820,8 +13841,29 @@
                 })),
                 mockSubmissions: mockPayload.submissions || [],
                 messages: messagesPayload.messages || [],
+                materials: Array.isArray(materialsPayload.materials) ? materialsPayload.materials : [],
+                materialsLoaded: Array.isArray(materialsPayload.materials),
                 studyPlan: studyPlanPayload
             };
+            applyMaterialCatalog();
+        }
+
+        function applyMaterialCatalog() {
+            if (!learningState.materialsLoaded) return;
+            document.querySelectorAll("[data-section-plan]").forEach((link) => {
+                const sectionMap = { "social-relations": "social_relations", economics: "economics", politics: "politics", law: "law" };
+                const material = latestPublishedMaterial((item) => item.type === "section_plan" && item.sectionId === sectionMap[link.dataset.sectionPlan]);
+                link.classList.toggle("is-unavailable", !material);
+                link.setAttribute("aria-disabled", material ? "false" : "true");
+                if (material) link.href = material.downloadUrl;
+                else link.removeAttribute("href");
+            });
+            const managedLibrary = document.querySelector("[data-managed-library]");
+            if (managedLibrary) {
+                const items = learningState.materials.filter((item) => item.type === "additional" && !item.topicId);
+                managedLibrary.innerHTML = items.map((item) => `<a class="library-file" href="${escapeHtml(item.downloadUrl)}" target="_blank" rel="noopener noreferrer"><span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.sectionLabel)}</small></span><b>↗</b></a>`).join("");
+                managedLibrary.hidden = items.length === 0;
+            }
         }
 
         async function fetchLearningData() {
@@ -13833,7 +13875,8 @@
                 learningRequest("/homework-submissions"),
                 learningRequest("/mock-submissions"),
                 learningRequest("/messages"),
-                learningRequest("/study-plan")
+                learningRequest("/study-plan"),
+                learningRequest("/materials").catch(() => ({ materials: null }))
             ]);
             applyLearningPayloads(payloads);
         }

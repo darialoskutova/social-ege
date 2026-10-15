@@ -20,6 +20,8 @@ const { findMock } = require("./mock-catalog");
 const defaultStudyPlanService = require("../study-plan/service");
 const defaultTestService = require("../tests/service");
 const { findTopic } = require("../study-plan/course-catalog");
+const defaultMaterialService = require("../materials/service");
+const { readMaterialConfig } = require("../materials/service");
 
 const stableKey = z.string().trim().min(1).max(120).regex(/^[a-z0-9_-]+$/);
 const topicKey = stableKey.max(100);
@@ -275,6 +277,8 @@ function createLearningRouter(
   suppliedUploadConfig = readUploadConfig(),
   studyPlanService = defaultStudyPlanService,
   testService = defaultTestService,
+  materialService = defaultMaterialService,
+  materialConfig = readMaterialConfig(),
 ) {
   const router = express.Router();
   router.use(requireSecureTransport(config));
@@ -288,6 +292,18 @@ function createLearningRouter(
   router.get("/study-plan", asyncHandler(async (req, res) => {
     const result = await studyPlanService.getStudyPlan(pool, req.auth.user.id);
     res.json(result);
+  }));
+
+  router.get("/materials", asyncHandler(async (req, res) => {
+    const materials = await materialService.listPublished(pool);
+    res.json({ materials });
+  }));
+
+  router.get("/materials/:materialId/file", asyncHandler(async (req, res) => {
+    const parsed = z.string().regex(/^[1-9]\d{0,18}$/).safeParse(req.params.materialId);
+    if (!parsed.success) throw new HttpError(404, "material_not_found", "Материал не найден");
+    const material = await materialService.findFile(pool, parsed.data, { publishedOnly: true });
+    await materialService.sendFile(res, materialConfig, material);
   }));
 
   router.get("/tests", asyncHandler(async (req, res) => {

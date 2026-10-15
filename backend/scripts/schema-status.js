@@ -9,6 +9,7 @@ const expectedTables = [
   "editable_tests",
   "account_tokens",
   "homework_submissions",
+  "materials",
   "mock_submissions",
   "schema_migrations",
   "student_study_plans",

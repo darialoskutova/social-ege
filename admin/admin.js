@@ -24,6 +24,10 @@
   const testList = document.querySelector("[data-test-list]");
   const testEditor = document.querySelector("[data-test-editor]");
   const testEditorForm = document.querySelector("[data-test-editor-form]");
+  const materialList = document.querySelector("[data-material-list]");
+  const materialState = document.querySelector("[data-material-state]");
+  const materialDialog = document.querySelector("[data-material-dialog]");
+  const materialForm = document.querySelector("[data-material-form]");
 
   let students = [];
   let submissions = [];
@@ -36,6 +40,8 @@
   let previewSignature = null;
   let adminTests = [];
   let activeAdminTest = null;
+  let materials = [];
+  let activeStudentTab = "overview";
 
   const statusNames = {
     pending_activation: "Ожидает активации", active: "Активен",
@@ -48,6 +54,11 @@
   const eventTypeNames = {
     lesson: "Занятие", test_deadline: "Тест",
     homework_deadline: "Вторая часть", thematic_mock: "Пробник",
+  };
+  const materialStatusNames = { published: "Опубликован", hidden: "Скрыт", archived: "В архиве" };
+  const sectionNames = {
+    human_society: "Человек и общество / духовная культура",
+    social_relations: "Социальные отношения", economics: "Экономика", politics: "Политика", law: "Право",
   };
 
   function escapeHtml(value) {
@@ -212,26 +223,66 @@
     return `<div class="detail-list">${works.map((work) => `<div class="detail-line"><div><strong>${work.type === "mock" ? escapeHtml(work.mock?.title || work.mockId) : escapeHtml(topicName(work.topicId))}</strong><span class="secondary-copy">${dateTime(work.updatedAt)} · редакция ${work.fileRevision}</span></div><span class="status status-${work.status}">${submissionStatusNames[work.status] || escapeHtml(work.status)}</span></div>`).join("")}</div>`;
   }
 
-  function detailTests(tests) {
-    if (!tests.length) return `<p class="detail-empty">Результатов тестов пока нет.</p>`;
-    return `<div class="detail-list">${tests.map((attempt) => `<div class="detail-line"><div><strong>${escapeHtml(topicName(attempt.topicId))}</strong><span class="secondary-copy">${dateTime(attempt.submittedAt)}</span></div><strong>${attempt.score === null ? "Результат сохранён" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong></div>`).join("")}</div>`;
-  }
-
   function renderStudentDetail(payload) {
     activeStudentDetails = payload;
-    const { student, studyPlan, works, tests, progress } = payload;
+    const { student } = payload;
     studentBrowse.hidden = true;
     studentDetail.hidden = false;
     studentDetail.innerHTML = `
       <div class="student-detail-header"><div><button class="action-button" type="button" data-close-student>← К списку</button><h2>${escapeHtml(student.name)}</h2><span class="student-login">${escapeHtml(student.login)}</span></div><span class="status status-${student.status}">${statusNames[student.status] || escapeHtml(student.status)}</span></div>
-      <div class="student-detail-grid">
-        <section class="detail-block"><h3>Учебный план</h3>${studyPlan.plan ? `<p>Старт: ${escapeHtml(topicName(studyPlan.plan.startTopicId))}</p><p>Следующее занятие: ${studyPlan.nextLesson ? `${dateOnly(studyPlan.nextLesson.scheduledDate)} · ${escapeHtml(studyPlan.nextLesson.topic?.title || studyPlan.nextLesson.topicId)}` : "не запланировано"}</p>` : `<p class="detail-empty">План пока не настроен.</p>`}<button class="action-button" type="button" data-open-study-plan="${student.id}">Настроить план</button></section>
-        <section class="detail-block"><h3>Прогресс</h3><p><strong>${progress.filter((item) => item.testCompletedAt).length}</strong> тестов выполнено</p><p><strong>${progress.filter((item) => item.homeworkSubmittedAt).length}</strong> заданий второй части отправлено</p></section>
-        <section class="detail-block detail-block-wide"><h3>Работы</h3>${detailWorks(works)}</section>
-        <section class="detail-block detail-block-wide"><h3>Тесты</h3>${detailTests(tests)}</section>
-        <section class="detail-block detail-block-wide"><h3>Аккаунт</h3><div class="detail-actions">${accountActions(student)}</div></section>
-      </div>`;
+      <nav class="student-card-tabs" aria-label="Карточка ученика"><button type="button" data-student-tab="overview">Обзор</button><button type="button" data-student-tab="plan">Учебный план</button><button type="button" data-student-tab="tests">Тесты</button><button type="button" data-student-tab="works">Работы</button></nav>
+      <div data-student-pane></div>`;
+    renderStudentPane(activeStudentTab);
     studentDetail.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function renderStudentPane(name) {
+    if (!activeStudentDetails) return;
+    activeStudentTab = name;
+    studentDetail.querySelectorAll("[data-student-tab]").forEach((button) => button.classList.toggle("is-active", button.dataset.studentTab === name));
+    const { student, studyPlan, works, tests, progress } = activeStudentDetails;
+    const pane = studentDetail.querySelector("[data-student-pane]");
+    if (name === "overview") {
+      const waiting = works.filter((item) => ["submitted", "in_review"].includes(item.status)).length;
+      const recent = [
+        ...tests.map((item) => ({ at: item.submittedAt, text: `Тест · ${item.title}` })),
+        ...works.map((item) => ({ at: item.updatedAt, text: item.type === "mock" ? `Пробник · ${item.mock?.title || item.mockId}` : `Вторая часть · ${topicName(item.topicId)}` })),
+      ].sort((left, right) => new Date(right.at) - new Date(left.at)).slice(0, 4);
+      pane.innerHTML = `<div class="student-detail-grid"><section class="detail-block"><h3>Прогресс</h3><p><strong>${progress.filter((item) => item.testCompletedAt).length}</strong> тестов выполнено</p><p><strong>${progress.filter((item) => item.homeworkSubmittedAt).length}</strong> заданий второй части отправлено</p><p><strong>${waiting}</strong> работ ждут проверки</p></section><section class="detail-block"><h3>Сейчас в плане</h3><p><strong>${studyPlan.nextLesson ? escapeHtml(topicName(studyPlan.nextLesson.topicId)) : "Тема не определена"}</strong></p><p>Следующее занятие: ${studyPlan.nextLesson ? dateOnly(studyPlan.nextLesson.scheduledDate) : "не запланировано"}</p></section><section class="detail-block detail-block-wide"><h3>Последние действия</h3>${recent.length ? `<div class="detail-list">${recent.map((item) => `<div class="detail-line"><strong>${escapeHtml(item.text)}</strong><span class="secondary-copy">${dateTime(item.at)}</span></div>`).join("")}</div>` : `<p class="detail-empty">Действий пока нет.</p>`}</section><section class="detail-block detail-block-wide"><h3>Аккаунт</h3><div class="detail-actions">${accountActions(student)}</div></section></div>`;
+      return;
+    }
+    if (name === "plan") {
+      pane.innerHTML = `<section class="detail-block"><h3>Учебный план</h3>${studyPlan.plan ? `<p>Старт: ${escapeHtml(topicName(studyPlan.plan.startTopicId))}</p><p>Следующее занятие: ${studyPlan.nextLesson ? `${dateOnly(studyPlan.nextLesson.scheduledDate)} · ${escapeHtml(studyPlan.nextLesson.topic?.title || studyPlan.nextLesson.topicId)}` : "не запланировано"}</p>` : `<p class="detail-empty">План пока не настроен.</p>`}<button class="action-button" type="button" data-open-study-plan="${student.id}">Настроить план</button></section>`;
+      return;
+    }
+    if (name === "works") {
+      pane.innerHTML = `<section class="detail-block"><h3>Отправленные работы</h3>${detailWorks(works)}</section>`;
+      return;
+    }
+    const sections = [...new Set(tests.map((attempt) => attempt.sectionId).filter(Boolean))];
+    pane.innerHTML = `<section class="detail-block student-tests"><div class="student-tests-heading"><h3>Попытки тестов</h3><div class="student-test-filters"><label>Раздел<select data-attempt-filter="section"><option value="">Все разделы</option>${sections.map((id) => `<option value="${escapeHtml(id)}">${escapeHtml(sectionNames[id] || id)}</option>`).join("")}</select></label><label>Тема<select data-attempt-filter="topic"><option value="">Все темы</option>${[...new Map(tests.map((attempt) => [attempt.topicId, attempt.title])).entries()].map(([id, title]) => `<option value="${escapeHtml(id)}">${escapeHtml(title)}</option>`).join("")}</select></label></div></div><div data-attempt-list></div></section>`;
+    renderAttemptList();
+  }
+
+  function renderAttemptList() {
+    const target = studentDetail.querySelector("[data-attempt-list]");
+    if (!target || !activeStudentDetails) return;
+    const section = studentDetail.querySelector("[data-attempt-filter='section']")?.value || "";
+    const topic = studentDetail.querySelector("[data-attempt-filter='topic']")?.value || "";
+    const attempts = activeStudentDetails.tests.filter((item) => (!section || item.sectionId === section) && (!topic || item.topicId === topic));
+    target.innerHTML = attempts.length ? `<div class="attempt-list">${attempts.map((attempt) => `<article class="attempt-row"><div><strong>${escapeHtml(attempt.title)}</strong><span class="secondary-copy">${escapeHtml(topicName(attempt.topicId))}</span><span class="secondary-copy">${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber}</span></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong><button class="action-button" type="button" data-open-attempt="${attempt.id}">Посмотреть ответы</button></article>`).join("")}</div>` : `<p class="detail-empty">По выбранным фильтрам попыток нет.</p>`;
+  }
+
+  async function openAttempt(attemptId) {
+    const pane = studentDetail.querySelector("[data-student-pane]");
+    pane.innerHTML = `<div class="table-state">Загружаем ответы…</div>`;
+    try {
+      const payload = await api(`/students/${activeStudentDetails.student.id}/test-attempts/${attemptId}`);
+      const attempt = payload.attempt;
+      pane.innerHTML = `<section class="attempt-detail"><button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="attempt-detail-heading"><div><h3>${escapeHtml(attempt.title)}</h3><p>${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber} · версия ${attempt.version || "не сохранена"}</p></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong></div>${attempt.detailsAvailable ? `<div class="attempt-questions">${attempt.questions.map((question) => `<article class="attempt-question ${question.isCorrect === true ? "is-correct" : question.isCorrect === false ? "is-incorrect" : ""}"><header><strong>Задание ${question.number}</strong><span>${question.isCorrect === true ? "Верно" : question.isCorrect === false ? "Неверно" : "Не проверяется автоматически"}</span></header><p>${escapeHtml(question.prompt)}</p>${question.options.length ? `<ul>${question.options.map((option) => `<li>${escapeHtml(option.text)}</li>`).join("")}</ul>` : ""}<dl><div><dt>Ответ ученика</dt><dd>${question.studentAnswers.length ? question.studentAnswers.map(escapeHtml).join(", ") : "Нет ответа"}</dd></div><div><dt>Верный ответ</dt><dd>${question.correctAnswers.length ? question.correctAnswers.map(escapeHtml).join(", ") : "Не задан для автопроверки"}</dd></div></dl>${question.explanation ? `<p class="attempt-explanation">${escapeHtml(question.explanation)}</p>` : ""}</article>`).join("")}</div>` : `<p class="detail-empty attempt-unavailable">${escapeHtml(payload.message || "Подробные ответы недоступны.")}</p>`}</section>`;
+    } catch (error) {
+      pane.innerHTML = `<button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="table-state">${escapeHtml(error.message)}</div>`;
+    }
   }
 
   async function openStudent(id) {
@@ -364,12 +415,87 @@
       : "Войдите в аккаунт преподавателя и откройте ссылку снова.";
   }
 
+  function fillMaterialOptions() {
+    const sections = Object.entries(sectionNames).map(([id, label]) => `<option value="${id}">${escapeHtml(label)}</option>`).join("");
+    document.querySelector("[data-material-filter='section']").innerHTML = `<option value="">Все разделы</option>${sections}`;
+    materialForm.elements.sectionId.innerHTML = sections;
+    const topics = courseTopics.map((topic) => `<option value="${escapeHtml(topic.id)}" data-section="${escapeHtml(topic.sectionId)}">Тема №${String(topic.lesson).padStart(2, "0")} — ${escapeHtml(topic.title)}</option>`).join("");
+    document.querySelector("[data-material-filter='topic']").innerHTML = `<option value="">Все темы</option>${topics}`;
+    materialForm.elements.topicId.innerHTML = `<option value="">Без привязки к теме</option>${topics}`;
+  }
+
+  function filterMaterialTopicOptions() {
+    const section = materialForm.elements.sectionId.value;
+    [...materialForm.elements.topicId.options].forEach((option) => {
+      option.hidden = Boolean(option.value && option.dataset.section !== section);
+    });
+    const selected = materialForm.elements.topicId.selectedOptions[0];
+    if (selected?.hidden) materialForm.elements.topicId.value = "";
+    materialForm.elements.topicId.required = ["notes", "homework"].includes(materialForm.elements.type.value);
+  }
+
+  function renderMaterials() {
+    const filters = Object.fromEntries([...document.querySelectorAll("[data-material-filter]")].map((element) => [element.dataset.materialFilter, element.value.trim()]));
+    const query = filters.search.toLocaleLowerCase("ru");
+    const filtered = materials.filter((item) => (!filters.section || item.sectionId === filters.section)
+      && (!filters.topic || item.topicId === filters.topic) && (!filters.type || item.type === filters.type)
+      && (!filters.status || item.status === filters.status)
+      && (!query || item.title.toLocaleLowerCase("ru").includes(query) || item.fileName.toLocaleLowerCase("ru").includes(query)));
+    materialState.hidden = Boolean(filtered.length);
+    materialState.textContent = materials.length ? "По выбранным фильтрам материалов нет" : "Материалы пока не добавлены";
+    materialList.innerHTML = filtered.map((item) => `<article class="material-row" data-material-id="${item.id}"><div><strong>${escapeHtml(item.title)}</strong><span class="secondary-copy">${escapeHtml(item.typeLabel)} · ${escapeHtml(item.sectionLabel)}${item.topicId ? ` · ${escapeHtml(topicName(item.topicId))}` : ""}</span><span class="secondary-copy">${escapeHtml(item.fileName)}${item.sizeBytes ? ` · ${formatBytes(item.sizeBytes)}` : ""} · ${dateTime(item.updatedAt || item.createdAt)}</span></div><span class="status status-${item.status}">${materialStatusNames[item.status]}</span><div class="material-actions"><a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a><button class="action-button" type="button" data-edit-material="${item.id}">Редактировать</button>${item.status !== "published" ? `<button class="action-button" type="button" data-material-status="published">Опубликовать</button>` : `<button class="action-button" type="button" data-material-status="hidden">Скрыть</button>`}${item.status !== "archived" ? `<button class="action-button danger" type="button" data-material-status="archived">В архив</button>` : ""}</div></article>`).join("");
+  }
+
+  function materialPayload(form = materialForm) {
+    return {
+      title: form.elements.title.value.trim(),
+      type: form.elements.type.value,
+      sectionId: form.elements.sectionId.value,
+      topicId: form.elements.topicId.value || null,
+      referenceKey: form.elements.referenceKey.value.trim() || null,
+      contentVersion: form.elements.contentVersion.value.trim() || null,
+      status: form.elements.status.value,
+      sortOrder: Number(form.elements.sortOrder.value || 0),
+    };
+  }
+
+  async function uploadMaterial(path, file, metadata = null, method = "POST") {
+    const extension = file.name.toLocaleLowerCase("en").match(/\.[^.]+$/)?.[0] || "";
+    const mimeByExtension = { ".pdf": "application/pdf", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png" };
+    const headers = { "content-type": file.type || mimeByExtension[extension] || "application/octet-stream", "x-file-name": encodeURIComponent(file.name) };
+    if (metadata) headers["x-material-metadata"] = encodeURIComponent(JSON.stringify(metadata));
+    const response = await fetch(`/api/admin${path}`, { method, credentials: "same-origin", headers, body: file });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(payload.error?.message || "Не удалось загрузить файл");
+    return payload;
+  }
+
+  function openMaterialDialog(material = null) {
+    materialForm.reset();
+    materialForm.elements.materialId.value = material?.id || "";
+    materialForm.elements.title.value = material?.title || "";
+    materialForm.elements.type.value = material?.type || "notes";
+    materialForm.elements.sectionId.value = material?.sectionId || "human_society";
+    materialForm.elements.topicId.value = material?.topicId || "";
+    materialForm.elements.status.value = material?.status || "published";
+    materialForm.elements.sortOrder.value = material?.sortOrder || 0;
+    materialForm.elements.referenceKey.value = material?.referenceKey || "";
+    materialForm.elements.contentVersion.value = material?.contentVersion || "";
+    filterMaterialTopicOptions();
+    materialForm.elements.file.required = !material;
+    document.querySelector("[data-material-dialog-title]").textContent = material ? "Изменить материал" : "Новый материал";
+    document.querySelector("[data-material-file-help]").textContent = material ? `— оставить пустым или заменить файл «${material.fileName}»` : "— PDF, DOCX, JPG или PNG; до 25 МБ";
+    document.querySelector("[data-material-form-message]").textContent = "";
+    materialDialog.showModal();
+    materialForm.elements.title.focus();
+  }
+
   async function loadWorkspace() {
     try {
       const access = await api("/access");
       document.querySelector("[data-admin-name]").textContent = access.user.name;
-      const [studentPayload, inboxPayload, catalogPayload, schedulePayload, testsPayload] = await Promise.all([
-        api("/students"), api("/inbox"), api("/course-catalog"), api("/schedule"), api("/tests"),
+      const [studentPayload, inboxPayload, catalogPayload, schedulePayload, testsPayload, materialsPayload] = await Promise.all([
+        api("/students"), api("/inbox"), api("/course-catalog"), api("/schedule"), api("/tests"), api("/materials"),
       ]);
       students = studentPayload.students;
       submissions = inboxPayload.submissions;
@@ -377,7 +503,8 @@
       courseTopics = catalogPayload.topics || [];
       scheduleEvents = schedulePayload.events || [];
       adminTests = testsPayload.tests || [];
-      updateFilterOptions(); renderInbox(); renderStudents(); renderSettings(); renderSchedule(); renderAdminTests();
+      materials = materialsPayload.materials || [];
+      fillMaterialOptions(); updateFilterOptions(); renderInbox(); renderStudents(); renderSettings(); renderSchedule(); renderAdminTests(); renderMaterials();
     } catch (error) { showAccessError(error); }
   }
 
@@ -497,6 +624,9 @@
   document.querySelectorAll("[data-tab]").forEach((tab) => tab.addEventListener("click", () => activatePanel(tab.dataset.tab)));
   document.querySelectorAll("[data-inbox-filter]").forEach((filter) => filter.addEventListener("change", renderInbox));
   document.querySelectorAll("[data-schedule-filter]").forEach((filter) => filter.addEventListener("change", renderSchedule));
+  document.querySelectorAll("[data-material-filter]").forEach((filter) => filter.addEventListener(filter.type === "search" ? "input" : "change", renderMaterials));
+  materialForm.elements.sectionId.addEventListener("change", filterMaterialTopicOptions);
+  materialForm.elements.type.addEventListener("change", filterMaterialTopicOptions);
   document.querySelector("[data-test-search]").addEventListener("input", renderAdminTests);
   testList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-edit-test]");
@@ -554,11 +684,15 @@
     } catch (error) { inboxMessage.textContent = error.message; button.disabled = false; }
   });
   studentList.addEventListener("click", (event) => { const button = event.target.closest("[data-open-student]"); if (button) openStudent(button.dataset.openStudent); });
-  studentDetail.addEventListener("click", (event) => {
+  studentDetail.addEventListener("click", async (event) => {
     if (event.target.closest("[data-close-student]")) { studentDetail.hidden = true; studentBrowse.hidden = false; activeStudentDetails = null; return; }
+    const tab = event.target.closest("[data-student-tab]"); if (tab) { renderStudentPane(tab.dataset.studentTab); return; }
+    const attempt = event.target.closest("[data-open-attempt]"); if (attempt) { await openAttempt(attempt.dataset.openAttempt); return; }
+    if (event.target.closest("[data-back-to-attempts]")) { renderStudentPane("tests"); return; }
     const planButton = event.target.closest("[data-open-study-plan]"); if (planButton) { const student = students.find((item) => item.id === planButton.dataset.openStudyPlan); if (student) openStudyPlan(student); return; }
     const accountButton = event.target.closest("[data-account-action]"); if (accountButton) performAccountAction(accountButton);
   });
+  studentDetail.addEventListener("change", (event) => { if (event.target.matches("[data-attempt-filter]")) renderAttemptList(); });
   settingsList.addEventListener("click", (event) => { const button = event.target.closest("[data-account-action]"); if (button) performAccountAction(button); });
   scheduleList.addEventListener("click", async (event) => {
     const studentButton = event.target.closest("[data-open-schedule-student]");
@@ -577,7 +711,9 @@
   });
 
   document.querySelector("[data-create-student]").addEventListener("click", () => openStudentDialog());
+  document.querySelector("[data-create-material]").addEventListener("click", () => openMaterialDialog());
   document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => studentDialog.close()));
+  document.querySelectorAll("[data-close-material]").forEach((button) => button.addEventListener("click", () => materialDialog.close()));
   document.querySelectorAll("[data-close-link]").forEach((button) => button.addEventListener("click", () => linkDialog.close()));
   document.querySelector("[data-close-study-plan]").addEventListener("click", () => studyPlanDialog.close());
 
@@ -595,6 +731,54 @@
       if (payload.activationUrl) showLink(payload.activationUrl, "Ссылка для активации", payload.expiresAt);
       if (activeStudentDetails?.student.id === id) await openStudent(id);
     } catch (requestError) { error.textContent = requestError.message; }
+    finally { submit.disabled = false; }
+  });
+
+  materialList.addEventListener("click", async (event) => {
+    const row = event.target.closest("[data-material-id]");
+    if (!row) return;
+    const material = materials.find((item) => item.id === row.dataset.materialId);
+    if (!material) return;
+    const edit = event.target.closest("[data-edit-material]");
+    if (edit) { openMaterialDialog(material); return; }
+    const statusButton = event.target.closest("[data-material-status]");
+    if (!statusButton) return;
+    const status = statusButton.dataset.materialStatus;
+    if (status === "archived" && !window.confirm(`Перенести «${material.title}» в архив?`)) return;
+    statusButton.disabled = true;
+    document.querySelector("[data-material-message]").textContent = "";
+    try {
+      const payload = await api(`/materials/${material.id}`, { method: "PATCH", body: JSON.stringify({ ...materialPayload({ elements: {
+        title: { value: material.title }, type: { value: material.type }, sectionId: { value: material.sectionId },
+        topicId: { value: material.topicId || "" }, referenceKey: { value: material.referenceKey || "" },
+        contentVersion: { value: material.contentVersion || "" }, status: { value: status }, sortOrder: { value: material.sortOrder },
+      } }) }) });
+      materials = materials.map((item) => item.id === material.id ? payload.material : item);
+      renderMaterials();
+      document.querySelector("[data-material-message]").textContent = status === "published" ? "Материал опубликован." : status === "hidden" ? "Материал скрыт." : "Материал перенесён в архив.";
+    } catch (error) { document.querySelector("[data-material-message]").textContent = error.message; statusButton.disabled = false; }
+  });
+
+  materialForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const id = materialForm.elements.materialId.value;
+    const file = materialForm.elements.file.files[0];
+    const metadata = materialPayload();
+    const submit = document.querySelector("[data-save-material]");
+    const message = document.querySelector("[data-material-form-message]");
+    if (!id && !file) { message.textContent = "Выберите файл."; return; }
+    submit.disabled = true; message.textContent = "Сохраняем…";
+    try {
+      if (id) {
+        await api(`/materials/${id}`, { method: "PATCH", body: JSON.stringify(metadata) });
+        if (file) await uploadMaterial(`/materials/${id}/file`, file, null, "PUT");
+      } else {
+        await uploadMaterial("/materials/file", file, metadata, "POST");
+      }
+      materials = (await api("/materials")).materials || [];
+      renderMaterials(); materialDialog.close();
+      document.querySelector("[data-material-message]").textContent = id ? "Материал обновлён." : "Материал добавлен.";
+    } catch (error) { message.textContent = error.message; }
     finally { submit.disabled = false; }
   });
 
