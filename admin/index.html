@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261015-materials">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261017-conversations">
 </head>
 <body>
   <header class="admin-header">
@@ -27,8 +27,13 @@
 
     <main class="admin-main">
       <section data-panel="inbox">
-        <div class="section-heading"><div><h1>Входящие</h1><p>Домашние задания и пробники, которые ждут проверки.</p></div></div>
+        <div class="section-heading"><div><h1>Входящие</h1><p>Работы на проверку и новые вопросы учеников.</p></div></div>
         <div class="inbox-summary" data-inbox-summary aria-label="Количество работ по статусам"></div>
+        <section class="conversation-inbox" data-conversation-inbox>
+          <h2>Новые сообщения</h2>
+          <div class="conversation-inbox-list" data-conversation-inbox-list></div>
+          <p class="detail-empty" data-conversation-inbox-empty>Новых сообщений нет.</p>
+        </section>
         <div class="filter-bar">
           <label>Статус<select data-inbox-filter="status"><option value="">Все статусы</option><option value="submitted">Новые</option><option value="in_review">На проверке</option><option value="needs_revision">На доработке</option><option value="accepted">Принятые</option></select></label>
           <label>Ученик<select data-inbox-filter="student"><option value="">Все ученики</option></select></label>
@@ -183,6 +188,20 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261015-materials" defer></script>
+  <dialog class="admin-dialog admin-conversation-dialog" data-conversation-dialog>
+    <div class="dialog-body conversation-dialog-body">
+      <div class="dialog-heading"><div><p class="dialog-kicker">Переписка по работе</p><h2 data-conversation-title>Сообщения</h2></div><button type="button" class="close-button" data-close-conversation aria-label="Закрыть">×</button></div>
+      <div class="conversation-context" data-conversation-context></div>
+      <div class="conversation-history" data-conversation-history aria-live="polite"></div>
+      <form class="conversation-reply-form" data-conversation-form>
+        <label for="admin-conversation-text">Ответ ученику</label>
+        <textarea id="admin-conversation-text" name="body" maxlength="6000" placeholder="Напишите ответ" required></textarea>
+        <p class="form-message" data-conversation-message role="status" aria-live="polite"></p>
+        <div class="dialog-actions"><button class="primary-button" type="submit">Ответить ученику</button></div>
+      </form>
+    </div>
+  </dialog>
+
+  <script src="/admin/admin.js?v=20261017-conversations" defer></script>
 </body>
 </html>

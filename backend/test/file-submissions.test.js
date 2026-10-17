@@ -30,7 +30,8 @@ function config() {
 function poolFixture(users) {
   const state = {
     users, sessions: new Map(), mocks: [], homework: [], progress: new Map(),
-    audits: [], nextMockId: 1, nextHomeworkId: 1,
+    audits: [], conversationThreads: [], conversationMessages: [],
+    nextMockId: 1, nextHomeworkId: 1, nextConversationThreadId: 1, nextConversationMessageId: 1,
   };
 
   async function query(sql, values = []) {
@@ -120,6 +121,32 @@ function poolFixture(users) {
       Object.assign(row, { object_key: values[2], original_filename: values[3], mime_type: values[4], size_bytes: values[5], student_comment: values[6], file_revision: row.file_revision + 1, status: "submitted", teacher_comment: "", reviewed_at: null, reviewed_by: null, submitted_at: new Date(), updated_at: new Date() });
       return { rows: [row] };
     }
+    if (normalized.startsWith("INSERT INTO conversation_threads")) {
+      let row = state.conversationThreads.find((item) => item.subject_type === values[1] && String(item.subject_id) === String(values[2]));
+      if (!row) {
+        row = { id: state.nextConversationThreadId++, student_id: String(values[0]), subject_type: values[1], subject_id: String(values[2]), created_at: new Date(), updated_at: new Date() };
+        state.conversationThreads.push(row);
+      }
+      return { rows: [row] };
+    }
+    if (normalized.startsWith("INSERT INTO conversation_messages")) {
+      const senderRole = normalized.includes("'teacher'") ? "teacher" : "student";
+      const row = { id: state.nextConversationMessageId++, thread_id: values[0], sender_user_id: String(values[1]), sender_role: senderRole, body: values[2], created_at: new Date(), student_read_at: senderRole === "student" ? new Date() : null, teacher_read_at: senderRole === "teacher" ? new Date() : null };
+      state.conversationMessages.push(row);
+      return { rows: [row] };
+    }
+    if (normalized.startsWith("UPDATE conversation_messages") && normalized.includes("SET teacher_read_at = NOW()")) {
+      let rowCount = 0;
+      state.conversationMessages.forEach((message) => {
+        if (String(message.thread_id) === String(values[0]) && message.sender_role === "student" && !message.teacher_read_at) {
+          message.teacher_read_at = new Date();
+          rowCount += 1;
+        }
+      });
+      return { rows: [], rowCount };
+    }
+    if (normalized.startsWith("UPDATE conversation_threads SET updated_at")) return { rows: [], rowCount: 1 };
+    if (normalized.startsWith("SELECT t.subject_type") && normalized.includes("teacher_read_at IS NULL")) return { rows: [] };
     if (normalized.startsWith("SELECT s.id, s.user_id, s.topic_key")) {
       return { rows: state.homework.filter((row) => !values[0] || row.user_id === String(values[0])).map((row) => {
         const user = users.find((item) => String(item.id) === row.user_id);
@@ -131,6 +158,12 @@ function poolFixture(users) {
         const user = users.find((item) => String(item.id) === row.user_id);
         return { ...row, login: user.login, display_name: user.display_name };
       }) };
+    }
+    if (normalized.startsWith("SELECT teacher_comment FROM mock_submissions")) {
+      return { rows: state.mocks.filter((row) => String(row.id) === String(values[0])).map((row) => ({ teacher_comment: row.teacher_comment })) };
+    }
+    if (normalized.startsWith("SELECT teacher_comment FROM homework_submissions")) {
+      return { rows: state.homework.filter((row) => String(row.id) === String(values[0])).map((row) => ({ teacher_comment: row.teacher_comment })) };
     }
     if (normalized.startsWith("UPDATE mock_submissions SET status = $2")) {
       const row = state.mocks.find((item) => String(item.id) === String(values[0]));
@@ -314,6 +347,9 @@ test("secure homework and mock uploads store real files with owner/admin access"
     assert.equal((await homeworkCorrection.json()).submission.fileRevision, 2);
     assert.equal(pool.state.homework[0].status, "submitted");
     assert.equal(pool.state.homework[0].teacher_comment, "");
+    assert.ok(pool.state.conversationMessages.some((message) => message.sender_role === "teacher" && message.body === "Добавьте второй пример"));
+    assert.ok(pool.state.conversationMessages.some((message) => message.sender_role === "student" && message.body === "проверить задание 19"));
+    assert.ok(pool.state.conversationMessages.some((message) => message.sender_role === "student" && message.body === "исправлено"));
 
     const inbox = await fetch(`${server.baseUrl}/api/admin/inbox`, { headers: { cookie: admin } });
     assert.equal(inbox.status, 200);

@@ -287,6 +287,27 @@ Admin endpoints:
 - `GET /api/learning/messages`
 - `POST /api/learning/messages`
 
+Work-specific conversations use immutable message history and are separate
+from the older general teacher-contact form above. Supported subject types are
+`homework`, `mock` and `test_attempt`.
+
+Student endpoints:
+
+- `GET /api/learning/conversations/unread`
+- `GET /api/learning/conversations/:subjectType/:subjectId`
+- `POST /api/learning/conversations/:subjectType/:subjectId/messages`
+- `POST /api/learning/conversations/:subjectType/:subjectId/read`
+
+Admin endpoints:
+
+- `GET /api/admin/conversations/:subjectType/:subjectId`
+- `POST /api/admin/conversations/:subjectType/:subjectId/messages`
+- `POST /api/admin/conversations/:subjectType/:subjectId/read`
+
+The server derives sender identity from the authenticated session. Student
+access is checked against the owner of the referenced submission or exact test
+attempt. `/api/admin/inbox` also returns unread conversation summaries.
+
 Creating a test attempt and marking its topic progress happen in one database
 transaction; the same is true for homework metadata and homework progress.
 Test attempts are append-only, so repeat attempts preserve history. Drafts are

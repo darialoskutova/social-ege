@@ -28,10 +28,13 @@
   const materialState = document.querySelector("[data-material-state]");
   const materialDialog = document.querySelector("[data-material-dialog]");
   const materialForm = document.querySelector("[data-material-form]");
+  const conversationDialog = document.querySelector("[data-conversation-dialog]");
+  const conversationForm = document.querySelector("[data-conversation-form]");
 
   let students = [];
   let submissions = [];
-  let inboxCounts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0 };
+  let inboxConversations = [];
+  let inboxCounts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0, unreadMessages: 0 };
   let scheduleEvents = [];
   let courseTopics = [];
   let activePlanStudent = null;
@@ -42,6 +45,7 @@
   let activeAdminTest = null;
   let materials = [];
   let activeStudentTab = "overview";
+  let activeConversation = null;
 
   const statusNames = {
     pending_activation: "Ожидает активации", active: "Активен",
@@ -122,10 +126,28 @@
     document.querySelector("[data-inbox-summary]").innerHTML = Object.entries(labels).map(([status, label]) => `
       <button class="summary-button ${selected === status ? "is-active" : ""}" type="button" data-quick-status="${status}">
         <span>${label}</span><strong>${Number(inboxCounts[status] || 0)}</strong>
-      </button>`).join("");
+      </button>`).join("") + `<div class="summary-button summary-button-static"><span>Новые сообщения</span><strong>${Number(inboxCounts.unreadMessages || 0)}</strong></div>`;
     const badge = document.querySelector("[data-inbox-count]");
-    badge.textContent = String(inboxCounts.submitted || 0);
-    badge.hidden = !inboxCounts.submitted;
+    const total = Number(inboxCounts.submitted || 0) + Number(inboxCounts.unreadMessages || 0);
+    badge.textContent = String(total);
+    badge.hidden = !total;
+  }
+
+  function conversationKind(type) {
+    if (type === "homework") return "ДЗ второй части";
+    if (type === "mock") return "Тематический пробник";
+    return "Тест";
+  }
+
+  function renderConversationInbox() {
+    const list = document.querySelector("[data-conversation-inbox-list]");
+    const empty = document.querySelector("[data-conversation-inbox-empty]");
+    empty.hidden = inboxConversations.length > 0;
+    list.innerHTML = inboxConversations.map((item) => `<article class="conversation-inbox-card">
+      <div><strong>${escapeHtml(item.studentName)}</strong><span>${escapeHtml(conversationKind(item.subjectType))} · ${dateTime(item.lastMessageAt)}</span></div>
+      <p><span class="conversation-unread">${item.unreadCount === 1 ? "Новое сообщение" : `Новых сообщений: ${item.unreadCount}`}</span>${escapeHtml(item.preview)}</p>
+      <button class="action-button" type="button" data-open-inbox-conversation="${item.subjectType}:${item.subjectId}:${item.studentId}">Открыть</button>
+    </article>`).join("");
   }
 
   function updateFilterOptions() {
@@ -146,6 +168,7 @@
     const filtered = submissions.filter((item) => (!status || item.status === status)
       && (!student || item.studentId === student) && (!type || item.type === type));
     renderInboxSummary();
+    renderConversationInbox();
     inboxState.hidden = Boolean(filtered.length);
     inboxState.textContent = submissions.length ? "По выбранным фильтрам работ нет" : "Работ пока нет";
     inboxList.innerHTML = filtered.map((item) => {
@@ -160,6 +183,7 @@
         <div>
           <div class="submission-file"><div><strong>${escapeHtml(item.fileName)}</strong><span class="secondary-copy">${item.sizeBytes === null ? "Размер не указан" : formatBytes(item.sizeBytes)} · редакция ${item.fileRevision}</span></div>${item.downloadUrl ? `<a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a>` : `<span class="secondary-copy">Файл не загружен</span>`}</div>
           <p class="submission-note"><strong>Комментарий ученика:</strong> ${escapeHtml(item.studentComment || "Без комментария")}</p>
+          <div class="submission-conversation-actions"><button class="action-button" type="button" data-open-work-conversation="${item.type}:${item.id}">Открыть переписку</button></div>
         </div>
         <div class="submission-review">
           <label>Статус<select data-review-status><option value="in_review" ${item.status === "in_review" ? "selected" : ""}>На проверке</option><option value="needs_revision" ${item.status === "needs_revision" ? "selected" : ""}>Нужно исправить</option><option value="accepted" ${item.status === "accepted" ? "selected" : ""}>Принято</option></select></label>
@@ -220,7 +244,7 @@
 
   function detailWorks(works) {
     if (!works.length) return `<p class="detail-empty">Работ пока нет.</p>`;
-    return `<div class="detail-list">${works.map((work) => `<div class="detail-line"><div><strong>${work.type === "mock" ? escapeHtml(work.mock?.title || work.mockId) : escapeHtml(topicName(work.topicId))}</strong><span class="secondary-copy">${dateTime(work.updatedAt)} · редакция ${work.fileRevision}</span></div><span class="status status-${work.status}">${submissionStatusNames[work.status] || escapeHtml(work.status)}</span></div>`).join("")}</div>`;
+    return `<div class="detail-list">${works.map((work) => `<div class="detail-line"><div><strong>${work.type === "mock" ? escapeHtml(work.mock?.title || work.mockId) : escapeHtml(topicName(work.topicId))}</strong><span class="secondary-copy">${dateTime(work.updatedAt)} · редакция ${work.fileRevision}</span></div><span class="status status-${work.status}">${submissionStatusNames[work.status] || escapeHtml(work.status)}</span><button class="action-button" type="button" data-open-work-conversation="${work.type}:${work.id}">Переписка</button></div>`).join("")}</div>`;
   }
 
   function renderStudentDetail(payload) {
@@ -273,13 +297,70 @@
     target.innerHTML = attempts.length ? `<div class="attempt-list">${attempts.map((attempt) => `<article class="attempt-row"><div><strong>${escapeHtml(attempt.title)}</strong><span class="secondary-copy">${escapeHtml(topicName(attempt.topicId))}</span><span class="secondary-copy">${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber}</span></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong><button class="action-button" type="button" data-open-attempt="${attempt.id}">Посмотреть ответы</button></article>`).join("")}</div>` : `<p class="detail-empty">По выбранным фильтрам попыток нет.</p>`;
   }
 
+  function conversationMarkup(conversation) {
+    const messages = conversation?.messages || [];
+    if (!messages.length) return '<p class="detail-empty">Сообщений пока нет.</p>';
+    return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
+      <header><strong>${message.sender === "teacher" ? "Вы" : escapeHtml(message.author || "Ученик")}</strong><time>${dateTime(message.createdAt)}</time></header>
+      <p>${escapeHtml(message.text)}</p>
+    </article>`).join("");
+  }
+
+  function conversationContext(type, id) {
+    const submission = submissions.find((item) => item.type === type && item.id === String(id));
+    if (!submission) return `<strong>${escapeHtml(conversationKind(type))}</strong>`;
+    const title = type === "mock" ? (submission.mock?.title || submission.mockId) : topicName(submission.topicId);
+    return `<strong>${escapeHtml(submission.studentName)} · ${escapeHtml(title)}</strong><br>${escapeHtml(submission.fileName || "Файл не загружен")} · ${submissionStatusNames[submission.status] || escapeHtml(submission.status)}`;
+  }
+
+  async function reloadInbox() {
+    const payload = await api("/inbox");
+    submissions = payload.submissions || [];
+    inboxConversations = payload.conversations || [];
+    inboxCounts = payload.counts || {};
+    renderInbox();
+  }
+
+  async function readConversation(type, id) {
+    await api(`/conversations/${encodeURIComponent(type)}/${encodeURIComponent(id)}/read`, {
+      method: "POST", body: JSON.stringify({}),
+    });
+    await reloadInbox();
+  }
+
+  async function openAdminConversation(type, id, title = null) {
+    activeConversation = { type, id: String(id) };
+    document.querySelector("[data-conversation-title]").textContent = title || conversationKind(type);
+    document.querySelector("[data-conversation-context]").innerHTML = conversationContext(type, id);
+    document.querySelector("[data-conversation-history]").innerHTML = '<p class="detail-empty">Загружаем переписку…</p>';
+    document.querySelector("[data-conversation-message]").textContent = "";
+    conversationForm.reset();
+    if (!conversationDialog.open) conversationDialog.showModal();
+    try {
+      const payload = await api(`/conversations/${encodeURIComponent(type)}/${encodeURIComponent(id)}`);
+      document.querySelector("[data-conversation-history]").innerHTML = conversationMarkup(payload.conversation);
+      document.querySelector("[data-conversation-history]").scrollTop = document.querySelector("[data-conversation-history]").scrollHeight;
+      if (payload.conversation.unreadCount) await readConversation(type, id);
+    } catch (error) {
+      document.querySelector("[data-conversation-history]").innerHTML = `<p class="detail-empty">${escapeHtml(error.message)}</p>`;
+    }
+  }
+
+  function attemptConversationMarkup(conversation, attemptId) {
+    return `<section class="attempt-conversation" data-attempt-conversation="${attemptId}"><h3>Переписка по попытке</h3><div class="conversation-history">${conversationMarkup(conversation)}</div><form class="conversation-reply-form" data-inline-conversation-form="test_attempt:${attemptId}"><label>Ответ ученику<textarea name="body" maxlength="6000" placeholder="Напишите ответ" required></textarea></label><p class="form-message" data-inline-message role="status" aria-live="polite"></p><button class="primary-button" type="submit">Ответить ученику</button></form></section>`;
+  }
+
   async function openAttempt(attemptId) {
     const pane = studentDetail.querySelector("[data-student-pane]");
     pane.innerHTML = `<div class="table-state">Загружаем ответы…</div>`;
     try {
-      const payload = await api(`/students/${activeStudentDetails.student.id}/test-attempts/${attemptId}`);
+      const [payload, conversationPayload] = await Promise.all([
+        api(`/students/${activeStudentDetails.student.id}/test-attempts/${attemptId}`),
+        api(`/conversations/test_attempt/${attemptId}`),
+      ]);
       const attempt = payload.attempt;
-      pane.innerHTML = `<section class="attempt-detail"><button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="attempt-detail-heading"><div><h3>${escapeHtml(attempt.title)}</h3><p>${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber} · версия ${attempt.version || "не сохранена"}</p></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong></div>${attempt.detailsAvailable ? `<div class="attempt-questions">${attempt.questions.map((question) => `<article class="attempt-question ${question.isCorrect === true ? "is-correct" : question.isCorrect === false ? "is-incorrect" : ""}"><header><strong>Задание ${question.number}</strong><span>${question.isCorrect === true ? "Верно" : question.isCorrect === false ? "Неверно" : "Не проверяется автоматически"}</span></header><p>${escapeHtml(question.prompt)}</p>${question.options.length ? `<ul>${question.options.map((option) => `<li>${escapeHtml(option.text)}</li>`).join("")}</ul>` : ""}<dl><div><dt>Ответ ученика</dt><dd>${question.studentAnswers.length ? question.studentAnswers.map(escapeHtml).join(", ") : "Нет ответа"}</dd></div><div><dt>Верный ответ</dt><dd>${question.correctAnswers.length ? question.correctAnswers.map(escapeHtml).join(", ") : "Не задан для автопроверки"}</dd></div></dl>${question.explanation ? `<p class="attempt-explanation">${escapeHtml(question.explanation)}</p>` : ""}</article>`).join("")}</div>` : `<p class="detail-empty attempt-unavailable">${escapeHtml(payload.message || "Подробные ответы недоступны.")}</p>`}</section>`;
+      pane.innerHTML = `<section class="attempt-detail"><button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="attempt-detail-heading"><div><h3>${escapeHtml(attempt.title)}</h3><p>${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber} · версия ${attempt.version || "не сохранена"}</p></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong></div>${attempt.detailsAvailable ? `<div class="attempt-questions">${attempt.questions.map((question) => `<article class="attempt-question ${question.isCorrect === true ? "is-correct" : question.isCorrect === false ? "is-incorrect" : ""}"><header><strong>Задание ${question.number}</strong><span>${question.isCorrect === true ? "Верно" : question.isCorrect === false ? "Неверно" : "Не проверяется автоматически"}</span></header><p>${escapeHtml(question.prompt)}</p>${question.options.length ? `<ul>${question.options.map((option) => `<li>${escapeHtml(option.text)}</li>`).join("")}</ul>` : ""}<dl><div><dt>Ответ ученика</dt><dd>${question.studentAnswers.length ? question.studentAnswers.map(escapeHtml).join(", ") : "Нет ответа"}</dd></div><div><dt>Верный ответ</dt><dd>${question.correctAnswers.length ? question.correctAnswers.map(escapeHtml).join(", ") : "Не задан для автопроверки"}</dd></div></dl>${question.explanation ? `<p class="attempt-explanation">${escapeHtml(question.explanation)}</p>` : ""}</article>`).join("")}</div>` : `<p class="detail-empty attempt-unavailable">${escapeHtml(payload.message || "Подробные ответы недоступны.")}</p>`}${attemptConversationMarkup(conversationPayload.conversation, attemptId)}</section>`;
+      if (conversationPayload.conversation.unreadCount) await readConversation("test_attempt", attemptId);
     } catch (error) {
       pane.innerHTML = `<button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="table-state">${escapeHtml(error.message)}</div>`;
     }
@@ -499,6 +580,7 @@
       ]);
       students = studentPayload.students;
       submissions = inboxPayload.submissions;
+      inboxConversations = inboxPayload.conversations || [];
       inboxCounts = inboxPayload.counts;
       courseTopics = catalogPayload.topics || [];
       scheduleEvents = schedulePayload.events || [];
@@ -670,6 +752,12 @@
     filter.value = filter.value === button.dataset.quickStatus ? "" : button.dataset.quickStatus; renderInbox();
   });
   inboxList.addEventListener("click", async (event) => {
+    const conversationButton = event.target.closest("[data-open-work-conversation]");
+    if (conversationButton) {
+      const [type, id] = conversationButton.dataset.openWorkConversation.split(":");
+      await openAdminConversation(type, id);
+      return;
+    }
     const button = event.target.closest("[data-save-review]"); if (!button) return;
     const row = button.closest("[data-submission]");
     const [type, id] = row.dataset.submission.split(":");
@@ -677,7 +765,7 @@
     try {
       const payload = await api(`/submissions/${type}/${id}/review`, { method: "PATCH", body: JSON.stringify({ status: row.querySelector("[data-review-status]").value, teacherComment: row.querySelector("[data-review-comment]").value }) });
       submissions = submissions.map((item) => item.type === type && item.id === id ? payload.submission : item);
-      inboxCounts = submissions.reduce((counts, item) => ({ ...counts, [item.status]: (counts[item.status] || 0) + 1 }), { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0 });
+      inboxCounts = submissions.reduce((counts, item) => ({ ...counts, [item.status]: (counts[item.status] || 0) + 1 }), { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0, unreadMessages: Number(inboxCounts.unreadMessages || 0) });
       students = (await api("/students")).students;
       renderInbox(); renderStudents(); renderSettings(); updateFilterOptions();
       inboxMessage.textContent = "Проверка сохранена.";
@@ -688,9 +776,32 @@
     if (event.target.closest("[data-close-student]")) { studentDetail.hidden = true; studentBrowse.hidden = false; activeStudentDetails = null; return; }
     const tab = event.target.closest("[data-student-tab]"); if (tab) { renderStudentPane(tab.dataset.studentTab); return; }
     const attempt = event.target.closest("[data-open-attempt]"); if (attempt) { await openAttempt(attempt.dataset.openAttempt); return; }
+    const workConversation = event.target.closest("[data-open-work-conversation]");
+    if (workConversation) {
+      const [type, id] = workConversation.dataset.openWorkConversation.split(":");
+      await openAdminConversation(type, id);
+      return;
+    }
     if (event.target.closest("[data-back-to-attempts]")) { renderStudentPane("tests"); return; }
     const planButton = event.target.closest("[data-open-study-plan]"); if (planButton) { const student = students.find((item) => item.id === planButton.dataset.openStudyPlan); if (student) openStudyPlan(student); return; }
     const accountButton = event.target.closest("[data-account-action]"); if (accountButton) performAccountAction(accountButton);
+  });
+  studentDetail.addEventListener("submit", async (event) => {
+    const form = event.target.closest("[data-inline-conversation-form]");
+    if (!form) return;
+    event.preventDefault();
+    const [type, id] = form.dataset.inlineConversationForm.split(":");
+    const status = form.querySelector("[data-inline-message]");
+    const button = form.querySelector('button[type="submit"]');
+    const body = form.elements.body.value.trim();
+    if (!body) return;
+    button.disabled = true; status.textContent = "Отправляем…";
+    try {
+      await api(`/conversations/${type}/${id}/messages`, { method: "POST", body: JSON.stringify({ body }) });
+      status.textContent = "Ответ отправлен.";
+      await openAttempt(id);
+      await reloadInbox();
+    } catch (error) { status.textContent = error.message; button.disabled = false; }
   });
   studentDetail.addEventListener("change", (event) => { if (event.target.matches("[data-attempt-filter]")) renderAttemptList(); });
   settingsList.addEventListener("click", (event) => { const button = event.target.closest("[data-account-action]"); if (button) performAccountAction(button); });
@@ -716,6 +827,38 @@
   document.querySelectorAll("[data-close-material]").forEach((button) => button.addEventListener("click", () => materialDialog.close()));
   document.querySelectorAll("[data-close-link]").forEach((button) => button.addEventListener("click", () => linkDialog.close()));
   document.querySelector("[data-close-study-plan]").addEventListener("click", () => studyPlanDialog.close());
+  document.querySelectorAll("[data-close-conversation]").forEach((button) => button.addEventListener("click", () => conversationDialog.close()));
+  conversationDialog.addEventListener("close", () => { activeConversation = null; });
+  document.querySelector("[data-conversation-inbox-list]").addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-open-inbox-conversation]");
+    if (!button) return;
+    const [type, id, studentId] = button.dataset.openInboxConversation.split(":");
+    if (type === "test_attempt") {
+      activatePanel("students");
+      await openStudent(studentId);
+      await openAttempt(id);
+      document.querySelector(`[data-attempt-conversation="${id}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+    await openAdminConversation(type, id);
+  });
+  conversationForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!activeConversation) return;
+    const body = conversationForm.elements.body.value.trim();
+    if (!body) return;
+    const status = document.querySelector("[data-conversation-message]");
+    const button = conversationForm.querySelector('button[type="submit"]');
+    button.disabled = true; status.textContent = "Отправляем…";
+    try {
+      await api(`/conversations/${activeConversation.type}/${activeConversation.id}/messages`, { method: "POST", body: JSON.stringify({ body }) });
+      const payload = await api(`/conversations/${activeConversation.type}/${activeConversation.id}`);
+      document.querySelector("[data-conversation-history]").innerHTML = conversationMarkup(payload.conversation);
+      document.querySelector("[data-conversation-history]").scrollTop = document.querySelector("[data-conversation-history]").scrollHeight;
+      conversationForm.reset(); status.textContent = "Ответ отправлен.";
+      await reloadInbox();
+    } catch (error) { status.textContent = error.message; } finally { button.disabled = false; }
+  });
 
   studentForm.addEventListener("submit", async (event) => {
     event.preventDefault();

@@ -31,9 +31,13 @@ function createPool(users) {
     attempts: [],
     homework: [],
     messages: [],
+    conversationThreads: [],
+    conversationMessages: [],
     nextAttemptId: 1,
     nextHomeworkId: 1,
     nextMessageId: 1,
+    nextConversationThreadId: 1,
+    nextConversationMessageId: 1,
   };
 
   async function query(sql, values = []) {
@@ -136,6 +140,21 @@ function createPool(users) {
       state.homework.push(row);
       return { rows: [row] };
     }
+
+    if (normalized.startsWith("INSERT INTO conversation_threads")) {
+      let row = state.conversationThreads.find((item) => item.subject_type === values[1] && String(item.subject_id) === String(values[2]));
+      if (!row) {
+        row = { id: state.nextConversationThreadId++, student_id: String(values[0]), subject_type: values[1], subject_id: String(values[2]), created_at: new Date(), updated_at: new Date() };
+        state.conversationThreads.push(row);
+      }
+      return { rows: [row] };
+    }
+    if (normalized.startsWith("INSERT INTO conversation_messages")) {
+      const row = { id: state.nextConversationMessageId++, thread_id: values[0], sender_user_id: String(values[1]), sender_role: "student", body: values[2], created_at: new Date(), student_read_at: new Date(), teacher_read_at: null };
+      state.conversationMessages.push(row);
+      return { rows: [row] };
+    }
+    if (normalized.startsWith("UPDATE conversation_threads SET updated_at")) return { rows: [], rowCount: 1 };
 
     if (normalized.startsWith("SELECT id") && normalized.includes("FROM teacher_messages") && normalized.includes("legacy_client_id")) {
       return { rows: state.messages.filter((row) => row.student_id === String(values[0]) && row.legacy_client_id === values[1]) };

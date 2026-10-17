@@ -18,6 +18,7 @@ const defaultTestService = require("../tests/service");
 const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
 const { courseTopics } = require("../study-plan/course-catalog");
+const conversationService = require("../conversations/service");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -94,6 +95,11 @@ const materialMetadataSchema = z.object({
   }
 });
 const materialIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
+const conversationSubjectTypeSchema = z.enum(["homework", "mock", "test_attempt"]);
+const conversationSubjectIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
+const conversationMessageSchema = z.object({
+  body: z.string().trim().min(1).max(6000),
+}).strict();
 
 function materialMetadataFromHeader(req) {
   const raw = req.get("x-material-metadata");
@@ -397,12 +403,72 @@ function createAdminRouter(
   router.get(
     "/inbox",
     asyncHandler(async (req, res) => {
-      const submissions = await loadAdminSubmissions(pool);
+      const [submissions, conversations] = await Promise.all([
+        loadAdminSubmissions(pool),
+        conversationService.listAdminUnread(pool),
+      ]);
       const counts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0 };
       submissions.forEach((submission) => {
         if (Object.hasOwn(counts, submission.status)) counts[submission.status] += 1;
       });
-      res.set("Cache-Control", "no-store").json({ submissions, counts });
+      counts.unreadMessages = conversations.reduce((sum, item) => sum + item.unreadCount, 0);
+      res.set("Cache-Control", "no-store").json({ submissions, conversations, counts });
+    }),
+  );
+
+  router.get(
+    "/conversations/:subjectType/:subjectId",
+    asyncHandler(async (req, res) => {
+      const typeResult = conversationSubjectTypeSchema.safeParse(req.params.subjectType);
+      const idResult = conversationSubjectIdSchema.safeParse(req.params.subjectId);
+      if (!typeResult.success || !idResult.success) {
+        throw new HttpError(404, "conversation_not_found", "Переписка не найдена");
+      }
+      const conversation = await conversationService.getConversation(pool, {
+        viewerRole: "teacher",
+        viewerUserId: req.auth.user.id,
+        subjectType: typeResult.data,
+        subjectId: idResult.data,
+      });
+      res.set("Cache-Control", "no-store").json({ conversation });
+    }),
+  );
+
+  router.post(
+    "/conversations/:subjectType/:subjectId/messages",
+    asyncHandler(async (req, res) => {
+      const typeResult = conversationSubjectTypeSchema.safeParse(req.params.subjectType);
+      const idResult = conversationSubjectIdSchema.safeParse(req.params.subjectId);
+      const bodyResult = conversationMessageSchema.safeParse(req.body);
+      if (!typeResult.success || !idResult.success || !bodyResult.success) {
+        throw new HttpError(400, "invalid_message", "Введите сообщение до 6000 символов");
+      }
+      const message = await conversationService.addMessage(pool, {
+        senderRole: "teacher",
+        senderUserId: req.auth.user.id,
+        subjectType: typeResult.data,
+        subjectId: idResult.data,
+        body: bodyResult.data.body,
+      });
+      res.set("Cache-Control", "no-store").status(201).json({ message });
+    }),
+  );
+
+  router.post(
+    "/conversations/:subjectType/:subjectId/read",
+    asyncHandler(async (req, res) => {
+      const typeResult = conversationSubjectTypeSchema.safeParse(req.params.subjectType);
+      const idResult = conversationSubjectIdSchema.safeParse(req.params.subjectId);
+      if (!typeResult.success || !idResult.success) {
+        throw new HttpError(404, "conversation_not_found", "Переписка не найдена");
+      }
+      const result = await conversationService.markRead(pool, {
+        viewerRole: "teacher",
+        viewerUserId: req.auth.user.id,
+        subjectType: typeResult.data,
+        subjectId: idResult.data,
+      });
+      res.set("Cache-Control", "no-store").json(result);
     }),
   );
 
@@ -427,16 +493,33 @@ function createAdminRouter(
       const type = typeResult.data;
       const table = type === "mock" ? "mock_submissions" : "homework_submissions";
       const submission = await withTransaction(pool, async (client) => {
+        const previous = await client.query(
+          `SELECT teacher_comment FROM ${table} WHERE id = $1 FOR UPDATE`,
+          [id],
+        );
+        if (!previous.rows[0]) {
+          throw new HttpError(404, "submission_not_found", "Работа не найдена");
+        }
         const updated = await client.query(
           `UPDATE ${table}
               SET status = $2, teacher_comment = $3, reviewed_at = NOW(),
                   reviewed_by = $4, updated_at = NOW()
             WHERE id = $1
-            RETURNING user_id`,
+            RETURNING user_id, file_revision`,
           [id, parsed.data.status, parsed.data.teacherComment, req.auth.user.id],
         );
         if (!updated.rows[0]) {
           throw new HttpError(404, "submission_not_found", "Работа не найдена");
+        }
+        if (parsed.data.teacherComment && parsed.data.teacherComment !== previous.rows[0].teacher_comment) {
+          await conversationService.appendKnownTeacherMessage(
+            client,
+            req.auth.user.id,
+            updated.rows[0].user_id,
+            type,
+            id,
+            parsed.data.teacherComment,
+          );
         }
         await auditTarget(client, req.auth.user.id, "submission.reviewed", `${type}_submission`, id, {
           status: parsed.data.status,

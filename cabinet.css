@@ -1267,6 +1267,84 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-seal {
     }
 }
 
+.conversation-nav-count {
+    display: inline-grid;
+    min-width: 22px;
+    height: 22px;
+    place-items: center;
+    margin-left: 5px;
+    padding-inline: 6px;
+    border-radius: 50%;
+    background: var(--burgundy);
+    color: #fff;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.test-conversation-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+}
+
+.test-conversation-prompt[hidden] { display: none; }
+.test-conversation-prompt > div { display: grid; gap: 4px; min-width: 0; }
+.test-conversation-prompt span { color: var(--muted); font-size: 14px; }
+
+.conversation-dialog {
+    width: 680px;
+    max-width: calc(100vw - 28px);
+    max-height: min(760px, calc(100vh - 28px));
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 24px 70px rgba(10, 26, 52, .28);
+}
+
+.conversation-dialog::backdrop { background: rgba(9, 21, 40, .58); }
+.conversation-dialog-body { display: grid; grid-template-rows: auto minmax(120px, 1fr) auto; max-height: min(760px, calc(100vh - 28px)); }
+.conversation-dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 18px; border-bottom: 1px solid var(--line); }
+.conversation-dialog-heading > div { min-width: 0; }
+.conversation-dialog-heading span { color: var(--burgundy); font-size: 13px; font-weight: 800; }
+.conversation-dialog-heading h2 { margin: 3px 0 0; overflow-wrap: anywhere; font-size: clamp(23px, 4vw, 30px); }
+.conversation-close { width: 42px; height: 42px; flex: 0 0 auto; padding: 0; border: 0; background: transparent; color: var(--muted); font-size: 30px; cursor: pointer; }
+.conversation-history { display: grid; align-content: start; gap: 16px; min-width: 0; padding: 22px 26px; overflow-y: auto; }
+.conversation-empty { margin: 0; color: var(--muted); line-height: 1.55; }
+.conversation-message { display: grid; gap: 6px; min-width: 0; padding-left: 14px; border-left: 3px solid var(--blue); }
+.conversation-message.is-teacher { border-left-color: var(--burgundy); }
+.conversation-message header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; }
+.conversation-message time { color: var(--muted); font-size: 13px; }
+.conversation-message p { margin: 0; overflow-wrap: anywhere; line-height: 1.55; white-space: pre-wrap; }
+.conversation-form { display: grid; gap: 10px; padding: 18px 26px 24px; border-top: 1px solid var(--line); }
+.conversation-form label { font-weight: 750; }
+.conversation-form textarea { width: 100%; min-height: 96px; max-height: 220px; padding: 12px 14px; resize: vertical; border: 1px solid #93a2b8; border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.conversation-form > div { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 14px; }
+.conversation-form [role="status"] { color: var(--muted); font-size: 13px; }
+.conversation-trigger { margin-top: 14px; }
+.conversation-trigger.has-unread::after { content: attr(data-unread-label); margin-left: 7px; color: var(--burgundy); font-weight: 850; }
+#mockSubmissionStatus { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+html[data-theme="dark"] .conversation-dialog,
+html[data-theme="dark"] .conversation-form textarea { background: #111f35; color: var(--ink); }
+html[data-theme="dark"] .conversation-dialog-heading,
+html[data-theme="dark"] .conversation-form { border-color: #344b6b; }
+
+@media (max-width: 560px) {
+    .test-conversation-prompt { align-items: stretch; flex-direction: column; }
+    .test-conversation-prompt .button { width: 100%; }
+    .conversation-dialog-heading { padding: 20px 18px 16px; }
+    .conversation-history { padding: 18px; }
+    .conversation-form { padding: 16px 18px 20px; }
+    .conversation-form > div { align-items: stretch; flex-direction: column; }
+    .conversation-form .button { width: 100%; }
+}
+
 /* Focused visual edit: fewer template-like containers, same structure and character. */
 #appView .dashboard-intro,
 #appView .dashboard-progress-overview,

@@ -10723,7 +10723,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20261014-test-editor">
+    <link rel="stylesheet" href="cabinet.css?v=20261017-conversations">
 </head>
 <body>
 
@@ -11497,7 +11497,7 @@
                 <nav class="nav" aria-label="Основная навигация">
                     <button class="nav-button is-active" type="button" data-page="dashboard"><span class="nav-number">01</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5 12 4l8 6.5V20h-5v-6H9v6H4z"/></svg></span><span class="nav-label">Главная</span></button>
                     <button class="nav-button" type="button" data-page="subjects"><span class="nav-number">02</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5c1.2 0 1.5.6 1.5 1.5v13c0-1.2-.7-2-2-2H4zM20 5.5h-6.5c-1.2 0-1.5.6-1.5 1.5v13c0-1.2.7-2 2-2h6z"/></svg></span><span class="nav-label">Все темы</span></button>
-                    <button class="nav-button" type="button" data-page="works"><span class="nav-number">03</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h6"/></svg></span><span class="nav-label">Мои работы</span></button>
+                    <button class="nav-button" type="button" data-page="works"><span class="nav-number">03</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l3 3V21H6zM15 3.5v4h4M9 12h6M9 16h6"/></svg></span><span class="nav-label">Мои работы <span class="conversation-nav-count" data-conversation-unread-count hidden>0</span></span></button>
                     <button class="nav-button" type="button" data-page="practice"><span class="nav-number">04</span><span class="nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.3 4.7 5.2.8-3.8 3.7.9 5.3-4.6-2.5L7.4 17l.9-5.3-3.8-3.7 5.2-.8z"/></svg></span><span class="nav-label">Доп. практика</span></button>
                 </nav>
 
@@ -11731,6 +11731,10 @@
                                     <div class="test-correction-list" id="testCorrectionList"></div>
                                     <label class="field test-correction-comment"><span>Комментарий</span><textarea id="testCorrectionComment" placeholder="Напиши, что было непонятно или какое правило нужно повторить"></textarea></label>
                                     <div class="test-correction-actions"><button class="button button--small" id="checkCorrectionsButton" type="button">Проверить исправления</button><span id="testCorrectionStatus" aria-live="polite"></span></div>
+                                </section>
+                                <section class="test-conversation-prompt" id="testConversationPrompt" hidden>
+                                    <div><strong>Есть вопрос по результату?</strong><span>Можно обсудить с преподавателем именно эту попытку.</span></div>
+                                    <button class="button button--small button--light" id="testConversationButton" type="button">Написать преподавателю</button>
                                 </section>
                             </form>
                         </section>
@@ -11976,7 +11980,7 @@
                                         <textarea id="mockStudentComment" maxlength="4000" placeholder="Что важно учесть при проверке"></textarea>
                                         <div class="thematic-mock-submit-row">
                                             <button class="button" type="submit">Отправить</button>
-                                            <p id="mockSubmissionStatus" role="status" aria-live="polite"></p>
+                                            <div id="mockSubmissionStatus" role="status" aria-live="polite"></div>
                                         </div>
                                     </form>
                                 </section>
@@ -12052,6 +12056,21 @@
             </div>
         </div>
     </section>
+
+    <dialog class="conversation-dialog" id="conversationDialog" aria-labelledby="conversationTitle">
+        <div class="conversation-dialog-body">
+            <header class="conversation-dialog-heading">
+                <div><span>Вопросы по работе</span><h2 id="conversationTitle">Переписка</h2></div>
+                <button class="conversation-close" type="button" data-close-conversation aria-label="Закрыть">×</button>
+            </header>
+            <div class="conversation-history" id="conversationHistory" aria-live="polite"></div>
+            <form class="conversation-form" id="conversationForm">
+                <label for="conversationText">Сообщение преподавателю</label>
+                <textarea id="conversationText" maxlength="6000" placeholder="Напишите комментарий или вопрос" required></textarea>
+                <div><span id="conversationStatus" role="status" aria-live="polite"></span><button class="button button--small" type="submit">Отправить</button></div>
+            </form>
+        </div>
+    </dialog>
 
     <section class="cookie-banner" id="cookieBanner" role="dialog" aria-modal="false" aria-labelledby="cookieBannerTitle" hidden>
         <div class="cookie-banner-copy">
@@ -12456,6 +12475,7 @@
         let authenticatedUser = null;
         let sessionRequest = null;
         let currentThematicMock = null;
+        let activeConversation = null;
         let learningState = createEmptyLearningState();
 
         function createEmptyLearningState() {
@@ -12466,6 +12486,7 @@
                 works: [],
                 mockSubmissions: [],
                 messages: [],
+                unreadConversations: [],
                 materials: [],
                 materialsLoaded: false,
                 studyPlan: { plan: null, events: [], nextLesson: null, nextDeadline: null }
@@ -12668,9 +12689,15 @@
         function renderMockSubmissionStatus() {
             const status = document.getElementById("mockSubmissionStatus");
             const submission = currentThematicMock ? mockSubmissionFor(currentThematicMock) : null;
-            status.textContent = submission
-                ? `${submission.status}. Файл: ${submission.fileName}`
-                : "Работа ещё не отправлена.";
+            if (!submission) {
+                status.textContent = "Работа ещё не отправлена.";
+                return;
+            }
+            const unread = conversationUnread("mock", submission.id);
+            status.innerHTML = `<span>${escapeHtml(submission.status)}. Файл: ${escapeHtml(submission.fileName)}</span>
+                <button class="button button--small button--light conversation-trigger ${unread ? "has-unread" : ""}" type="button"
+                    data-open-conversation="mock:${submission.id}" data-conversation-title="${escapeHtml(currentThematicMock.title)}"
+                    data-unread-label="${unread ? `Новый ответ · ${unread}` : ""}">Переписка</button>`;
         }
 
         function openThematicMock(mockId) {
@@ -13213,6 +13240,21 @@
             document.getElementById("testCorrectionComment").value = "";
             document.getElementById("testCorrectionStatus").textContent = "";
             document.getElementById("testResultCard").hidden = true;
+            document.getElementById("testConversationPrompt").hidden = true;
+        }
+
+        function showTestConversationPrompt(attempt) {
+            const prompt = document.getElementById("testConversationPrompt");
+            const button = document.getElementById("testConversationButton");
+            if (!attempt?.id) {
+                prompt.hidden = true;
+                return;
+            }
+            const unread = conversationUnread("test_attempt", attempt.id);
+            button.dataset.openConversation = `test_attempt:${attempt.id}`;
+            button.dataset.conversationTitle = currentTest?.title || "Результат теста";
+            button.textContent = unread ? `Открыть ответ преподавателя · ${unread}` : "Написать преподавателю";
+            prompt.hidden = false;
         }
 
         function renderTestReview(result) {
@@ -13469,6 +13511,7 @@
                 form.dataset.reviewed = "true";
             }
             form.querySelector('button[type="submit"]').textContent = "Пройти ещё раз";
+            showTestConversationPrompt(attempt);
         }
 
         function clearCurrentTestDraft(test = currentTest) {
@@ -13781,6 +13824,7 @@
             renderDashboardProgress();
             renderStudentWorks();
             renderStudentMessages();
+            renderConversationUnreadBadge();
         }
 
         function setLoginError(message = "") {
@@ -13828,7 +13872,7 @@
         }
 
         function applyLearningPayloads(payloads) {
-            const [testsPayload, progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload, materialsPayload] = payloads;
+            const [testsPayload, progressPayload, attemptsPayload, draftsPayload, homeworkPayload, mockPayload, messagesPayload, studyPlanPayload, materialsPayload, unreadPayload] = payloads;
             testsByLesson.clear();
             (testsPayload.tests || []).forEach((test) => testsByLesson.set(Number(test.lesson), test));
             learningState = {
@@ -13841,11 +13885,13 @@
                 })),
                 mockSubmissions: mockPayload.submissions || [],
                 messages: messagesPayload.messages || [],
+                unreadConversations: unreadPayload.conversations || [],
                 materials: Array.isArray(materialsPayload.materials) ? materialsPayload.materials : [],
                 materialsLoaded: Array.isArray(materialsPayload.materials),
                 studyPlan: studyPlanPayload
             };
             applyMaterialCatalog();
+            renderConversationUnreadBadge();
         }
 
         function applyMaterialCatalog() {
@@ -13876,7 +13922,8 @@
                 learningRequest("/mock-submissions"),
                 learningRequest("/messages"),
                 learningRequest("/study-plan"),
-                learningRequest("/materials").catch(() => ({ materials: null }))
+                learningRequest("/materials").catch(() => ({ materials: null })),
+                learningRequest("/conversations/unread").catch(() => ({ conversations: [], unreadCount: 0 }))
             ]);
             applyLearningPayloads(payloads);
         }
@@ -14051,6 +14098,58 @@
             }).format(new Date(value));
         }
 
+        function conversationUnread(subjectType, subjectId) {
+            const item = learningState.unreadConversations.find((entry) => (
+                entry.subjectType === subjectType && String(entry.subjectId) === String(subjectId)
+            ));
+            return Number(item?.unreadCount || 0);
+        }
+
+        function renderConversationUnreadBadge() {
+            const count = learningState.unreadConversations.reduce((sum, item) => sum + Number(item.unreadCount || 0), 0);
+            document.querySelectorAll("[data-conversation-unread-count]").forEach((badge) => {
+                badge.textContent = String(count);
+                badge.hidden = count === 0;
+            });
+        }
+
+        function conversationMessagesMarkup(messages) {
+            if (!messages.length) return '<p class="conversation-empty">Сообщений пока нет. Здесь можно задать вопрос по этой работе.</p>';
+            return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
+                <header><strong>${message.sender === "student" ? "Вы" : "Дарья Сергеевна"}</strong><time>${formatDate(message.createdAt)}</time></header>
+                <p>${escapeHtml(message.text)}</p>
+            </article>`).join("");
+        }
+
+        async function openConversation(subjectType, subjectId, title) {
+            const dialog = document.getElementById("conversationDialog");
+            const history = document.getElementById("conversationHistory");
+            activeConversation = { subjectType, subjectId: String(subjectId), title };
+            document.getElementById("conversationTitle").textContent = title || "Переписка по работе";
+            document.getElementById("conversationStatus").textContent = "";
+            document.getElementById("conversationText").value = "";
+            history.innerHTML = '<p class="conversation-empty">Загружаем переписку…</p>';
+            if (!dialog.open) dialog.showModal();
+            try {
+                const route = `/conversations/${encodeURIComponent(subjectType)}/${encodeURIComponent(subjectId)}`;
+                const payload = await learningRequest(route);
+                history.innerHTML = conversationMessagesMarkup(payload.conversation.messages || []);
+                history.scrollTop = history.scrollHeight;
+                if (payload.conversation.unreadCount) {
+                    await learningRequest(`${route}/read`, { method: "POST", body: {} });
+                    learningState.unreadConversations = learningState.unreadConversations.filter((item) => !(
+                        item.subjectType === subjectType && String(item.subjectId) === String(subjectId)
+                    ));
+                    renderConversationUnreadBadge();
+                    renderStudentWorks();
+                    renderMockSubmissionStatus();
+                    if (subjectType === "test_attempt") showTestConversationPrompt({ id: subjectId });
+                }
+            } catch {
+                history.innerHTML = '<p class="conversation-empty">Не удалось загрузить переписку. Попробуйте закрыть окно и открыть его снова.</p>';
+            }
+        }
+
         function renderStudentWorks() {
             const works = getWorks().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const container = document.getElementById("studentWorkList");
@@ -14079,6 +14178,9 @@
                     </div>
                     <span class="status ${work.status === "Проверено" ? "status--checked" : ""}">${escapeHtml(work.status)}</span>
                     ${work.teacherComment ? `<div class="teacher-comment"><strong>Комментарий Дарьи:</strong><br>${escapeHtml(work.teacherComment)}</div>` : ""}
+                    <button class="button button--small button--light conversation-trigger ${conversationUnread("homework", work.id) ? "has-unread" : ""}" type="button"
+                        data-open-conversation="homework:${work.id}" data-conversation-title="${escapeHtml(work.topicTitle)}"
+                        data-unread-label="${conversationUnread("homework", work.id) ? `Новый ответ · ${conversationUnread("homework", work.id)}` : ""}">Переписка</button>
                 </article>
             `).join("");
         }
@@ -14168,6 +14270,15 @@
             const mockButton = event.target.closest("[data-open-mock]");
             if (mockButton) {
                 openThematicMock(mockButton.dataset.openMock);
+                return;
+            }
+
+            const conversationButton = event.target.closest("[data-open-conversation]");
+            if (conversationButton) {
+                const separator = conversationButton.dataset.openConversation.indexOf(":");
+                const subjectType = conversationButton.dataset.openConversation.slice(0, separator);
+                const subjectId = conversationButton.dataset.openConversation.slice(separator + 1);
+                void openConversation(subjectType, subjectId, conversationButton.dataset.conversationTitle || "Переписка по работе");
                 return;
             }
 
@@ -14338,6 +14449,42 @@
             const saveMessageReplyButton = event.target.closest("[data-save-message-reply]");
             if (saveMessageReplyButton) {
                 showToast("Ответы будут сохраняться после подключения панели преподавателя.");
+            }
+        });
+
+        document.querySelectorAll("[data-close-conversation]").forEach((button) => {
+            button.addEventListener("click", () => {
+                document.getElementById("conversationDialog").close();
+                activeConversation = null;
+            });
+        });
+
+        document.getElementById("conversationDialog").addEventListener("close", () => {
+            activeConversation = null;
+        });
+
+        document.getElementById("conversationForm").addEventListener("submit", async (event) => {
+            event.preventDefault();
+            if (!activeConversation) return;
+            const textarea = document.getElementById("conversationText");
+            const status = document.getElementById("conversationStatus");
+            const button = event.currentTarget.querySelector('button[type="submit"]');
+            const body = textarea.value.trim();
+            if (!body) return;
+            button.disabled = true;
+            status.textContent = "Отправляем…";
+            try {
+                const route = `/conversations/${encodeURIComponent(activeConversation.subjectType)}/${encodeURIComponent(activeConversation.subjectId)}`;
+                await learningRequest(`${route}/messages`, { method: "POST", body: { body } });
+                const payload = await learningRequest(route);
+                document.getElementById("conversationHistory").innerHTML = conversationMessagesMarkup(payload.conversation.messages || []);
+                document.getElementById("conversationHistory").scrollTop = document.getElementById("conversationHistory").scrollHeight;
+                textarea.value = "";
+                status.textContent = "Сообщение отправлено.";
+            } catch {
+                status.textContent = "Не удалось отправить сообщение. Попробуйте ещё раз.";
+            } finally {
+                button.disabled = false;
             }
         });
 
@@ -14592,6 +14739,7 @@
                 learningState.testAttempts.unshift(payload.attempt);
                 learningState.progress[currentTopic.id] = payload.progress;
                 clearCurrentTestDraft(currentTest);
+                showTestConversationPrompt(payload.attempt);
             } catch {
                 submitButton.disabled = false;
                 submitButton.textContent = "Отправить тест";

@@ -4,6 +4,8 @@ const { createPool } = require("./database");
 
 const expectedTables = [
   "audit_log",
+  "conversation_messages",
+  "conversation_threads",
   "auth_sessions",
   "editable_test_versions",
   "editable_tests",

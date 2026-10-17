@@ -22,6 +22,7 @@ const defaultTestService = require("../tests/service");
 const { findTopic } = require("../study-plan/course-catalog");
 const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
+const conversationService = require("../conversations/service");
 
 const stableKey = z.string().trim().min(1).max(120).regex(/^[a-z0-9_-]+$/);
 const topicKey = stableKey.max(100);
@@ -80,6 +81,11 @@ const messageSchema = z.object({
 
 const uploadComment = z.string().trim().max(4000);
 const mockVersion = z.string().trim().min(1).max(80).regex(/^[a-z0-9._-]+$/);
+const conversationSubjectType = z.enum(["homework", "mock", "test_attempt"]);
+const conversationSubjectId = z.string().regex(/^[1-9]\d{0,18}$/);
+const conversationMessageSchema = z.object({
+  body: z.string().trim().min(1).max(6000),
+}).strict();
 
 function parse(schema, value) {
   const result = schema.safeParse(value);
@@ -541,6 +547,9 @@ function createLearningRouter(
           );
           row = inserted.rows[0];
         }
+        await conversationService.appendKnownStudentMessage(
+          client, req.auth.user.id, "homework", row.id, studentComment,
+        );
         const progress = await markProgress(client, req.auth.user.id, topic, { homeworkSubmitted: true });
         return { submission: serializeHomework(row, req.auth.user), progress };
       });
@@ -598,6 +607,11 @@ function createLearningRouter(
         row = existing.rows[0];
       }
       if (!row) throw new HttpError(409, "homework_conflict", "Работа уже сохранена");
+      if (inserted.rows[0]) {
+        await conversationService.appendKnownStudentMessage(
+          client, req.auth.user.id, "homework", row.id, data.studentComment,
+        );
+      }
       const progress = await markProgress(client, req.auth.user.id, data.topicId, { homeworkSubmitted: true });
       return { submission: serializeHomework(row, req.auth.user), progress };
     });
@@ -673,6 +687,9 @@ function createLearningRouter(
           );
           row = inserted.rows[0];
         }
+        await conversationService.appendKnownStudentMessage(
+          client, req.auth.user.id, "mock", row.id, studentComment,
+        );
         return serializeMockSubmission(row, req.auth.user);
       });
     } catch (error) {
@@ -693,6 +710,49 @@ function createLearningRouter(
     );
     if (!rows[0]) throw new HttpError(404, "submission_not_found", "Работа не найдена");
     await sendStoredFile(res, suppliedUploadConfig, rows[0]);
+  }));
+
+  router.get("/conversations/unread", asyncHandler(async (req, res) => {
+    const conversations = await conversationService.listStudentUnread(pool, req.auth.user.id);
+    res.set("Cache-Control", "no-store").json({ conversations, unreadCount: conversations.reduce((sum, item) => sum + item.unreadCount, 0) });
+  }));
+
+  router.get("/conversations/:subjectType/:subjectId", asyncHandler(async (req, res) => {
+    const subjectType = parse(conversationSubjectType, req.params.subjectType);
+    const subjectId = parse(conversationSubjectId, req.params.subjectId);
+    const conversation = await conversationService.getConversation(pool, {
+      viewerRole: "student",
+      viewerUserId: req.auth.user.id,
+      subjectType,
+      subjectId,
+    });
+    res.set("Cache-Control", "no-store").json({ conversation });
+  }));
+
+  router.post("/conversations/:subjectType/:subjectId/messages", asyncHandler(async (req, res) => {
+    const subjectType = parse(conversationSubjectType, req.params.subjectType);
+    const subjectId = parse(conversationSubjectId, req.params.subjectId);
+    const data = parse(conversationMessageSchema, req.body);
+    const message = await conversationService.addMessage(pool, {
+      senderRole: "student",
+      senderUserId: req.auth.user.id,
+      subjectType,
+      subjectId,
+      body: data.body,
+    });
+    res.set("Cache-Control", "no-store").status(201).json({ message });
+  }));
+
+  router.post("/conversations/:subjectType/:subjectId/read", asyncHandler(async (req, res) => {
+    const subjectType = parse(conversationSubjectType, req.params.subjectType);
+    const subjectId = parse(conversationSubjectId, req.params.subjectId);
+    const result = await conversationService.markRead(pool, {
+      viewerRole: "student",
+      viewerUserId: req.auth.user.id,
+      subjectType,
+      subjectId,
+    });
+    res.set("Cache-Control", "no-store").json(result);
   }));
 
   router.get("/messages", asyncHandler(async (req, res) => {
