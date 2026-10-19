@@ -304,6 +304,47 @@ Admin endpoints:
 - `POST /api/admin/conversations/:subjectType/:subjectId/messages`
 - `POST /api/admin/conversations/:subjectType/:subjectId/read`
 
+## Conversation attachments
+
+Migration `010_conversation_attachments.sql` adds immutable attachment metadata
+without changing existing conversation messages. A message may contain text,
+one attachment, or both. The same storage and validation path is used for
+homework, thematic mock and exact test-attempt threads.
+
+Files are sent as the raw request body. `X-File-Name` contains the URL-encoded
+original filename. When text accompanies a file, the frontend encodes its
+UTF-8 bytes as canonical Base64 split across `X-Message-Text-1` through
+`X-Message-Text-4`; `X-Message-Text-Parts` contains the part count. Standalone
+text messages continue using the JSON endpoint from Stage 10.
+
+Supported formats are PDF, DOCX, JPEG and PNG. Validation checks filename,
+extension, MIME, signature and size; DOCX also uses the shared Word-container
+check. The default and maximum configured attachment size is 10 MiB, below the
+existing Nginx `client_max_body_size 15m` boundary.
+
+Runtime settings:
+
+- `CONVERSATION_ATTACHMENT_STORAGE_DIR` (production-safe default
+  `/opt/social-ege/var/conversation-attachments` when the backend is installed
+  in `/opt/social-ege/backend`);
+- `CONVERSATION_ATTACHMENT_MAX_BYTES` (default and maximum 10 MiB).
+
+Student endpoints:
+
+- `POST /api/learning/conversations/:subjectType/:subjectId/messages/file`;
+- `GET /api/learning/conversations/attachments/:attachmentId/file`.
+
+Admin endpoints:
+
+- `POST /api/admin/conversations/:subjectType/:subjectId/messages/file`;
+- `GET /api/admin/conversations/attachments/:attachmentId/file`.
+
+Downloads are session- and ownership-protected and use `private, no-store`.
+The API returns only attachment id, original filename, MIME type, size and a
+role-specific protected download URL; generated object keys and storage paths
+are never serialized. Upload and database insert are coordinated so a failed
+transaction removes the newly stored object.
+
 The server derives sender identity from the authenticated session. Student
 access is checked against the owner of the referenced submission or exact test
 attempt. `/api/admin/inbox` also returns unread conversation summaries.

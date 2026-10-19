@@ -13,6 +13,7 @@ const { createLearningRouter } = require("./learning/router");
 const { readUploadConfig } = require("./learning/file-storage");
 const { HttpError } = require("./lib/http-error");
 const { readMaterialConfig } = require("./materials/service");
+const { readConversationAttachmentConfig } = require("./conversations/attachments");
 
 require("dotenv").config({
   path: path.resolve(__dirname, ".env"),
@@ -26,6 +27,7 @@ const databaseSsl = process.env.DATABASE_SSL === "true";
 const authConfig = readAuthConfig();
 const uploadConfig = readUploadConfig();
 const materialConfig = readMaterialConfig();
+const conversationAttachmentConfig = readConversationAttachmentConfig();
 
 function firstConfigured(...names) {
   for (const name of names) {
@@ -101,8 +103,14 @@ app.get("/health", async (req, res) => {
 
 app.use("/api/auth", createAuthRouter(pool, authConfig));
 app.use("/api/account", createAccountRouter(pool, authConfig));
-app.use("/api/admin", createAdminRouter(pool, authConfig, uploadConfig, undefined, undefined, undefined, materialConfig));
-app.use("/api/learning", createLearningRouter(pool, authConfig, uploadConfig, undefined, undefined, undefined, materialConfig));
+app.use("/api/admin", createAdminRouter(
+  pool, authConfig, uploadConfig, undefined, undefined, undefined,
+  materialConfig, conversationAttachmentConfig,
+));
+app.use("/api/learning", createLearningRouter(
+  pool, authConfig, uploadConfig, undefined, undefined, undefined,
+  materialConfig, conversationAttachmentConfig,
+));
 
 app.use((req, res) => {
   res.status(404).json({ error: { code: "not_found", message: "Ресурс не найден" } });

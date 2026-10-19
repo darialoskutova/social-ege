@@ -17,8 +17,8 @@ URLs, SSH keys or other secrets.
 - `scripts/apply-stage-3-auth-foundation.sh` tests and installs authentication
   primitives while explicitly keeping production login disabled until HTTPS.
 - `systemd/social-ege-uploads.conf` grants the hardened service write access
-  only to `/opt/social-ege/var/uploads` and `/opt/social-ege/var/materials` for
-  submitted work and teacher-managed materials.
+  only to the three private directories for submitted work, teacher-managed
+  materials and conversation attachments.
 - `STAGE-5-MOCK-UPLOADS.md` records the guarded migration and release steps for
   versioned thematic mocks and private file uploads.
 - `STAGE-6-PERSONAL-STUDY-PLANS.md` records the guarded release of per-student
@@ -27,6 +27,9 @@ URLs, SSH keys or other secrets.
   release, submission review flow and revision checks; it adds no migration.
 - `STAGE-8-STUDY-PLAN-AND-TEST-EDITOR.md` records the additive test-editor
   migration, private answer-key rollout and allowlisted frontend update.
+- `STAGE-10-CONVERSATIONS.md` records the immutable work-conversation release.
+- `STAGE-11-CONVERSATION-ATTACHMENTS.md` records migration 010, its private
+  storage directory, systemd boundary, deployment and rollback checks.
 - `STAGE-1-RUNBOOK.md` records the exact staged checks and stop conditions.
 
 Before installing either template on a server:

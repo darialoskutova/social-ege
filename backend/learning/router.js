@@ -23,6 +23,10 @@ const { findTopic } = require("../study-plan/course-catalog");
 const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
 const conversationService = require("../conversations/service");
+const {
+  optionalMessageText,
+  readConversationAttachmentConfig,
+} = require("../conversations/attachments");
 
 const stableKey = z.string().trim().min(1).max(120).regex(/^[a-z0-9_-]+$/);
 const topicKey = stableKey.max(100);
@@ -285,6 +289,7 @@ function createLearningRouter(
   testService = defaultTestService,
   materialService = defaultMaterialService,
   materialConfig = readMaterialConfig(),
+  conversationAttachmentConfig = readConversationAttachmentConfig(),
 ) {
   const router = express.Router();
   router.use(requireSecureTransport(config));
@@ -717,6 +722,16 @@ function createLearningRouter(
     res.set("Cache-Control", "no-store").json({ conversations, unreadCount: conversations.reduce((sum, item) => sum + item.unreadCount, 0) });
   }));
 
+  router.get("/conversations/attachments/:attachmentId/file", asyncHandler(async (req, res) => {
+    const attachmentId = parse(conversationSubjectId, req.params.attachmentId);
+    const attachment = await conversationService.findAttachment(pool, {
+      viewerRole: "student",
+      viewerUserId: req.auth.user.id,
+      attachmentId,
+    });
+    await sendStoredFile(res, conversationAttachmentConfig, attachment);
+  }));
+
   router.get("/conversations/:subjectType/:subjectId", asyncHandler(async (req, res) => {
     const subjectType = parse(conversationSubjectType, req.params.subjectType);
     const subjectId = parse(conversationSubjectId, req.params.subjectId);
@@ -741,6 +756,33 @@ function createLearningRouter(
       body: data.body,
     });
     res.set("Cache-Control", "no-store").status(201).json({ message });
+  }));
+
+  router.post("/conversations/:subjectType/:subjectId/messages/file", asyncHandler(async (req, res) => {
+    const subjectType = parse(conversationSubjectType, req.params.subjectType);
+    const subjectId = parse(conversationSubjectId, req.params.subjectId);
+    const body = optionalMessageText(req);
+    await conversationService.authorizeConversation(pool, {
+      viewerRole: "student",
+      viewerUserId: req.auth.user.id,
+      subjectType,
+      subjectId,
+    });
+    const uploaded = await receiveUpload(req, conversationAttachmentConfig);
+    try {
+      const message = await conversationService.addMessage(pool, {
+        senderRole: "student",
+        senderUserId: req.auth.user.id,
+        subjectType,
+        subjectId,
+        body,
+        attachment: uploaded,
+      });
+      res.set("Cache-Control", "no-store").status(201).json({ message });
+    } catch (error) {
+      await removeStoredFile(conversationAttachmentConfig, uploaded.objectKey);
+      throw error;
+    }
   }));
 
   router.post("/conversations/:subjectType/:subjectId/read", asyncHandler(async (req, res) => {

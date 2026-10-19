@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261017-conversations">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261019-attachments">
 </head>
 <body>
   <header class="admin-header">
@@ -195,13 +195,17 @@
       <div class="conversation-history" data-conversation-history aria-live="polite"></div>
       <form class="conversation-reply-form" data-conversation-form>
         <label for="admin-conversation-text">Ответ ученику</label>
-        <textarea id="admin-conversation-text" name="body" maxlength="6000" placeholder="Напишите ответ" required></textarea>
+        <textarea id="admin-conversation-text" name="body" maxlength="6000" placeholder="Напишите ответ"></textarea>
+        <div class="conversation-attachment-control">
+          <label class="conversation-file-button" for="admin-conversation-file">Прикрепить файл<input id="admin-conversation-file" name="attachment" type="file" accept=".pdf,.docx,.jpg,.jpeg,.png"></label>
+          <div class="conversation-selected-file" data-conversation-selected-file hidden><span><strong data-conversation-file-name></strong><small data-conversation-file-size></small></span><button type="button" data-remove-conversation-file>Убрать</button></div>
+        </div>
         <p class="form-message" data-conversation-message role="status" aria-live="polite"></p>
         <div class="dialog-actions"><button class="primary-button" type="submit">Ответить ученику</button></div>
       </form>
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261017-conversations" defer></script>
+  <script src="/admin/admin.js?v=20261019-attachments" defer></script>
 </body>
 </html>

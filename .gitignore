@@ -13,6 +13,7 @@ backend/coverage/
 backend/uploads/
 var/uploads/
 var/materials/
+var/conversation-attachments/
 tools/mock-bank/.private/
 backend/*.log
 *.pem

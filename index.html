@@ -10723,7 +10723,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20261017-conversations">
+    <link rel="stylesheet" href="cabinet.css?v=20261019-attachments">
 </head>
 <body>
 
@@ -12066,7 +12066,16 @@
             <div class="conversation-history" id="conversationHistory" aria-live="polite"></div>
             <form class="conversation-form" id="conversationForm">
                 <label for="conversationText">Сообщение преподавателю</label>
-                <textarea id="conversationText" maxlength="6000" placeholder="Напишите комментарий или вопрос" required></textarea>
+                <textarea id="conversationText" maxlength="6000" placeholder="Напишите комментарий или вопрос"></textarea>
+                <div class="conversation-attachment-control">
+                    <label class="conversation-file-button" for="conversationFile">Прикрепить файл
+                        <input id="conversationFile" type="file" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                    </label>
+                    <div class="conversation-selected-file" id="conversationSelectedFile" hidden>
+                        <span><strong id="conversationSelectedFileName"></strong><small id="conversationSelectedFileSize"></small></span>
+                        <button type="button" id="conversationRemoveFile">Убрать</button>
+                    </div>
+                </div>
                 <div><span id="conversationStatus" role="status" aria-live="polite"></span><button class="button button--small" type="submit">Отправить</button></div>
             </form>
         </div>
@@ -14098,6 +14107,72 @@
             }).format(new Date(value));
         }
 
+        function formatConversationFileSize(value) {
+            const bytes = Number(value || 0);
+            if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} КБ`;
+            return `${(bytes / (1024 * 1024)).toFixed(1).replace(".", ",")} МБ`;
+        }
+
+        function conversationAttachmentMarkup(attachment) {
+            return `<div class="conversation-attachment">
+                <span><strong>${escapeHtml(attachment.originalFilename)}</strong><small>${formatConversationFileSize(attachment.sizeBytes)}</small></span>
+                <a href="${escapeHtml(attachment.downloadUrl)}">Скачать</a>
+            </div>`;
+        }
+
+        function conversationTextHeaders(text) {
+            if (!text) return {};
+            const bytes = new TextEncoder().encode(text);
+            let binary = "";
+            for (const byte of bytes) binary += String.fromCharCode(byte);
+            const encoded = btoa(binary);
+            const parts = encoded.match(/.{1,7000}/g) || [];
+            if (parts.length > 4) throw new Error("conversation_text_too_large");
+            return Object.fromEntries([
+                ["x-message-text-parts", String(parts.length)],
+                ...parts.map((part, index) => [`x-message-text-${index + 1}`, part])
+            ]);
+        }
+
+        function conversationFileMime(file) {
+            const extension = file.name.split(".").pop()?.toLowerCase();
+            const types = {
+                pdf: "application/pdf",
+                docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                png: "image/png"
+            };
+            return types[extension] || file.type || "application/octet-stream";
+        }
+
+        function resetStudentConversationFile() {
+            const input = document.getElementById("conversationFile");
+            input.value = "";
+            document.getElementById("conversationSelectedFile").hidden = true;
+            document.getElementById("conversationSelectedFileName").textContent = "";
+            document.getElementById("conversationSelectedFileSize").textContent = "";
+        }
+
+        async function sendStudentConversationMessage(route, body, file) {
+            if (!file) return learningRequest(`${route}/messages`, { method: "POST", body: { body } });
+            const response = await fetch(`/api/learning${route}/messages/file`, {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    accept: "application/json",
+                    "content-type": conversationFileMime(file),
+                    "x-file-name": encodeURIComponent(file.name),
+                    ...conversationTextHeaders(body)
+                },
+                body: file
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (response.status === 401 || response.status === 403) throw new Error("learning_session_required");
+            if (!response.ok) throw new Error(payload.error?.message || "Не удалось прикрепить файл");
+            return payload;
+        }
+
         function conversationUnread(subjectType, subjectId) {
             const item = learningState.unreadConversations.find((entry) => (
                 entry.subjectType === subjectType && String(entry.subjectId) === String(subjectId)
@@ -14117,7 +14192,8 @@
             if (!messages.length) return '<p class="conversation-empty">Сообщений пока нет. Здесь можно задать вопрос по этой работе.</p>';
             return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
                 <header><strong>${message.sender === "student" ? "Вы" : "Дарья Сергеевна"}</strong><time>${formatDate(message.createdAt)}</time></header>
-                <p>${escapeHtml(message.text)}</p>
+                ${message.text ? `<p>${escapeHtml(message.text)}</p>` : ""}
+                ${(message.attachments || []).map(conversationAttachmentMarkup).join("")}
             </article>`).join("");
         }
 
@@ -14128,6 +14204,7 @@
             document.getElementById("conversationTitle").textContent = title || "Переписка по работе";
             document.getElementById("conversationStatus").textContent = "";
             document.getElementById("conversationText").value = "";
+            resetStudentConversationFile();
             history.innerHTML = '<p class="conversation-empty">Загружаем переписку…</p>';
             if (!dialog.open) dialog.showModal();
             try {
@@ -14461,7 +14538,27 @@
 
         document.getElementById("conversationDialog").addEventListener("close", () => {
             activeConversation = null;
+            resetStudentConversationFile();
         });
+
+        document.getElementById("conversationFile").addEventListener("change", (event) => {
+            const file = event.currentTarget.files[0];
+            const selected = document.getElementById("conversationSelectedFile");
+            if (!file) {
+                resetStudentConversationFile();
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                document.getElementById("conversationStatus").textContent = "Файл должен быть не больше 10 МБ.";
+                resetStudentConversationFile();
+                return;
+            }
+            document.getElementById("conversationSelectedFileName").textContent = file.name;
+            document.getElementById("conversationSelectedFileSize").textContent = formatConversationFileSize(file.size);
+            selected.hidden = false;
+        });
+
+        document.getElementById("conversationRemoveFile").addEventListener("click", resetStudentConversationFile);
 
         document.getElementById("conversationForm").addEventListener("submit", async (event) => {
             event.preventDefault();
@@ -14470,19 +14567,28 @@
             const status = document.getElementById("conversationStatus");
             const button = event.currentTarget.querySelector('button[type="submit"]');
             const body = textarea.value.trim();
-            if (!body) return;
+            const file = document.getElementById("conversationFile").files[0] || null;
+            if (!body && !file) {
+                status.textContent = "Добавьте текст или файл.";
+                return;
+            }
             button.disabled = true;
             status.textContent = "Отправляем…";
             try {
                 const route = `/conversations/${encodeURIComponent(activeConversation.subjectType)}/${encodeURIComponent(activeConversation.subjectId)}`;
-                await learningRequest(`${route}/messages`, { method: "POST", body: { body } });
+                await sendStudentConversationMessage(route, body, file);
                 const payload = await learningRequest(route);
                 document.getElementById("conversationHistory").innerHTML = conversationMessagesMarkup(payload.conversation.messages || []);
                 document.getElementById("conversationHistory").scrollTop = document.getElementById("conversationHistory").scrollHeight;
                 textarea.value = "";
+                resetStudentConversationFile();
                 status.textContent = "Сообщение отправлено.";
-            } catch {
-                status.textContent = "Не удалось отправить сообщение. Попробуйте ещё раз.";
+            } catch (error) {
+                status.textContent = error.message === "conversation_text_too_large"
+                    ? "Для сообщения с файлом сократите текст."
+                    : error.message === "learning_session_required"
+                        ? "Сессия завершена. Войдите снова."
+                        : error.message || "Не удалось отправить сообщение. Попробуйте ещё раз.";
             } finally {
                 button.disabled = false;
             }

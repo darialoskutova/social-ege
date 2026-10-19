@@ -59,16 +59,28 @@ function serializeSubject(subjectType, row) {
   return { ...common, topicId: row.topic_key, testId: row.test_key };
 }
 
-function serializeMessage(row, viewerRole) {
+function serializeAttachment(row, viewerRole) {
+  return {
+    id: String(row.id),
+    originalFilename: row.original_filename,
+    mimeType: row.mime_type,
+    sizeBytes: Number(row.size_bytes),
+    downloadUrl: `/api/${viewerRole === "student" ? "learning" : "admin"}/conversations/attachments/${row.id}/file`,
+  };
+}
+
+function serializeMessage(row, viewerRole, attachments = []) {
+  const hasMessageText = !attachments.length || attachments.every((item) => item.has_message_text !== false);
   return {
     id: String(row.id),
     sender: row.sender_role,
     author: row.sender_role === "teacher" ? "Дарья Сергеевна" : row.display_name,
-    text: row.body,
+    text: hasMessageText ? row.body : "",
     createdAt: row.created_at,
     unread: viewerRole === "student"
       ? row.sender_role === "teacher" && !row.student_read_at
       : row.sender_role === "student" && !row.teacher_read_at,
+    attachments: attachments.map((attachment) => serializeAttachment(attachment, viewerRole)),
   };
 }
 
@@ -108,7 +120,26 @@ async function messagesForThread(client, threadId, viewerRole) {
       ORDER BY m.created_at, m.id`,
     [threadId],
   );
-  return rows.map((row) => serializeMessage(row, viewerRole));
+  if (!rows.length) return [];
+  const attachments = await client.query(
+    `SELECT id, message_id, original_filename, mime_type, size_bytes,
+            has_message_text, created_at
+       FROM conversation_attachments
+      WHERE message_id = ANY($1::BIGINT[])
+      ORDER BY id`,
+    [rows.map((row) => row.id)],
+  );
+  const byMessage = new Map();
+  for (const attachment of attachments.rows) {
+    const key = String(attachment.message_id);
+    if (!byMessage.has(key)) byMessage.set(key, []);
+    byMessage.get(key).push(attachment);
+  }
+  return rows.map((row) => serializeMessage(
+    row,
+    viewerRole,
+    byMessage.get(String(row.id)) || [],
+  ));
 }
 
 async function getConversation(pool, { viewerRole, viewerUserId, subjectType, subjectId }) {
@@ -128,6 +159,25 @@ async function getConversation(pool, { viewerRole, viewerUserId, subjectType, su
     messages,
     unreadCount: messages.filter((message) => message.unread).length,
   };
+}
+
+async function authorizeConversation(pool, {
+  viewerRole,
+  viewerUserId,
+  subjectType,
+  subjectId,
+}) {
+  const subject = await findSubject(
+    pool,
+    subjectType,
+    subjectId,
+    viewerRole === "student" ? viewerUserId : null,
+  );
+  const thread = await findThread(pool, subjectType, subjectId);
+  if (thread && String(thread.student_id) !== String(subject.user_id)) {
+    throw new HttpError(409, "conversation_owner_mismatch", "Переписка временно недоступна");
+  }
+  return subject;
 }
 
 async function appendKnownStudentMessage(client, studentId, subjectType, subjectId, body) {
@@ -166,7 +216,18 @@ async function appendKnownTeacherMessage(client, teacherId, studentId, subjectTy
   return rows[0];
 }
 
-async function addMessage(pool, { senderRole, senderUserId, subjectType, subjectId, body }) {
+async function addMessage(pool, {
+  senderRole,
+  senderUserId,
+  subjectType,
+  subjectId,
+  body,
+  attachment = null,
+}) {
+  const text = String(body || "").trim();
+  if (!text && !attachment) {
+    throw new HttpError(400, "invalid_message", "Добавьте текст или файл");
+  }
   return withTransaction(pool, async (client) => {
     const subject = await findSubject(
       client,
@@ -191,19 +252,62 @@ async function addMessage(pool, { senderRole, senderUserId, subjectType, subject
       );
     }
     const readColumn = senderRole === "student" ? "student_read_at" : "teacher_read_at";
+    const storedBody = text || "Прикреплён файл";
     const { rows } = await client.query(
       `INSERT INTO conversation_messages (
-         thread_id, sender_user_id, sender_role, body, ${readColumn}
+       thread_id, sender_user_id, sender_role, body, ${readColumn}
        ) VALUES ($1, $2, $3, $4, NOW())
        RETURNING id, sender_role, body, created_at, student_read_at, teacher_read_at`,
-      [thread.id, senderUserId, senderRole, body],
+      [thread.id, senderUserId, senderRole, storedBody],
     );
+    let attachmentRow = null;
+    if (attachment) {
+      const inserted = await client.query(
+        `INSERT INTO conversation_attachments (
+           message_id, object_key, original_filename, mime_type, size_bytes,
+           has_message_text
+         ) VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING id, message_id, original_filename, mime_type, size_bytes,
+                   has_message_text, created_at`,
+        [rows[0].id, attachment.objectKey, attachment.originalFilename,
+          attachment.mimeType, attachment.sizeBytes, Boolean(text)],
+      );
+      attachmentRow = inserted.rows[0];
+    }
     await client.query("UPDATE conversation_threads SET updated_at = NOW() WHERE id = $1", [thread.id]);
     return serializeMessage({
       ...rows[0],
       display_name: senderRole === "teacher" ? "Дарья Сергеевна" : null,
-    }, senderRole);
+    }, senderRole, attachmentRow ? [attachmentRow] : []);
   });
+}
+
+async function findAttachment(pool, {
+  viewerRole,
+  viewerUserId,
+  attachmentId,
+}) {
+  const { rows } = await pool.query(
+    `SELECT a.id, a.object_key, a.original_filename, a.mime_type, a.size_bytes,
+            t.student_id, t.subject_type, t.subject_id
+       FROM conversation_attachments AS a
+       JOIN conversation_messages AS m ON m.id = a.message_id
+       JOIN conversation_threads AS t ON t.id = m.thread_id
+      WHERE a.id = $1`,
+    [attachmentId],
+  );
+  const attachment = rows[0];
+  if (!attachment) throw new HttpError(404, "attachment_not_found", "Файл не найден");
+  const subject = await findSubject(
+    pool,
+    attachment.subject_type,
+    attachment.subject_id,
+    viewerRole === "student" ? viewerUserId : null,
+  );
+  if (String(subject.user_id) !== String(attachment.student_id)) {
+    throw new HttpError(404, "attachment_not_found", "Файл не найден");
+  }
+  return attachment;
 }
 
 async function markRead(pool, { viewerRole, viewerUserId, subjectType, subjectId }) {
@@ -253,7 +357,8 @@ async function listAdminUnread(pool) {
     `SELECT t.subject_type, t.subject_id, t.student_id,
             u.login, u.display_name,
             COUNT(unread.id)::INTEGER AS unread_count,
-            last_message.body, last_message.created_at
+            last_message.body, last_message.created_at,
+            last_message.attachment_filename, last_message.has_message_text
        FROM conversation_threads AS t
        JOIN users AS u ON u.id = t.student_id
        JOIN conversation_messages AS unread
@@ -261,14 +366,18 @@ async function listAdminUnread(pool) {
         AND unread.sender_role = 'student'
         AND unread.teacher_read_at IS NULL
        JOIN LATERAL (
-         SELECT body, created_at
-           FROM conversation_messages
-          WHERE thread_id = t.id
-          ORDER BY created_at DESC, id DESC
+         SELECT m.body, m.created_at,
+                a.original_filename AS attachment_filename,
+                a.has_message_text
+           FROM conversation_messages AS m
+           LEFT JOIN conversation_attachments AS a ON a.message_id = m.id
+          WHERE m.thread_id = t.id
+          ORDER BY m.created_at DESC, m.id DESC
           LIMIT 1
        ) AS last_message ON TRUE
       GROUP BY t.id, t.subject_type, t.subject_id, t.student_id,
-               u.login, u.display_name, last_message.body, last_message.created_at
+               u.login, u.display_name, last_message.body, last_message.created_at,
+               last_message.attachment_filename, last_message.has_message_text
       ORDER BY last_message.created_at DESC, t.id DESC`,
   );
   return rows.map((row) => ({
@@ -278,7 +387,12 @@ async function listAdminUnread(pool) {
     studentName: row.display_name,
     studentLogin: row.login,
     unreadCount: Number(row.unread_count),
-    preview: row.body,
+    preview: row.attachment_filename && row.has_message_text === false
+      ? `Прикреплён файл: ${row.attachment_filename}`
+      : row.body,
+    attachmentFilename: row.attachment_filename && row.has_message_text !== false
+      ? row.attachment_filename
+      : null,
     lastMessageAt: row.created_at,
   }));
 }
@@ -287,6 +401,8 @@ module.exports = {
   addMessage,
   appendKnownStudentMessage,
   appendKnownTeacherMessage,
+  authorizeConversation,
+  findAttachment,
   getConversation,
   listAdminUnread,
   listStudentUnread,

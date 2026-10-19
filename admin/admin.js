@@ -99,6 +99,80 @@
     return `${(bytes / (1024 * 1024)).toFixed(1).replace(".", ",")} МБ`;
   }
 
+  function conversationFileMime(file) {
+    const extension = file.name.split(".").pop()?.toLowerCase();
+    return ({
+      pdf: "application/pdf",
+      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      png: "image/png",
+    })[extension] || file.type || "application/octet-stream";
+  }
+
+  function conversationTextHeaders(text) {
+    if (!text) return {};
+    const bytes = new TextEncoder().encode(text);
+    let binary = "";
+    for (const byte of bytes) binary += String.fromCharCode(byte);
+    const encoded = btoa(binary);
+    const parts = encoded.match(/.{1,7000}/g) || [];
+    if (parts.length > 4) throw new Error("Для сообщения с файлом сократите текст.");
+    return Object.fromEntries([
+      ["x-message-text-parts", String(parts.length)],
+      ...parts.map((part, index) => [`x-message-text-${index + 1}`, part]),
+    ]);
+  }
+
+  function conversationAttachmentMarkup(attachment) {
+    return `<div class="conversation-attachment"><span><strong>${escapeHtml(attachment.originalFilename)}</strong><small>${formatBytes(attachment.sizeBytes)}</small></span><a class="action-button" href="${escapeHtml(attachment.downloadUrl)}">Скачать</a></div>`;
+  }
+
+  function conversationAttachmentPickerMarkup(id) {
+    return `<div class="conversation-attachment-control"><label class="conversation-file-button" for="${id}">Прикрепить файл<input id="${id}" name="attachment" type="file" accept=".pdf,.docx,.jpg,.jpeg,.png"></label><div class="conversation-selected-file" data-conversation-selected-file hidden><span><strong data-conversation-file-name></strong><small data-conversation-file-size></small></span><button type="button" data-remove-conversation-file>Убрать</button></div></div>`;
+  }
+
+  function resetConversationAttachment(form) {
+    const input = form.elements.attachment;
+    if (input) input.value = "";
+    const selected = form.querySelector("[data-conversation-selected-file]");
+    if (selected) selected.hidden = true;
+    const name = form.querySelector("[data-conversation-file-name]");
+    const size = form.querySelector("[data-conversation-file-size]");
+    if (name) name.textContent = "";
+    if (size) size.textContent = "";
+  }
+
+  function showConversationAttachment(form, status) {
+    const file = form.elements.attachment?.files[0];
+    if (!file) {
+      resetConversationAttachment(form);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      status.textContent = "Файл должен быть не больше 10 МБ.";
+      resetConversationAttachment(form);
+      return;
+    }
+    form.querySelector("[data-conversation-file-name]").textContent = file.name;
+    form.querySelector("[data-conversation-file-size]").textContent = formatBytes(file.size);
+    form.querySelector("[data-conversation-selected-file]").hidden = false;
+  }
+
+  async function sendConversationMessage(type, id, body, file) {
+    const route = `/conversations/${encodeURIComponent(type)}/${encodeURIComponent(id)}/messages`;
+    if (!file) return api(route, { method: "POST", body: JSON.stringify({ body }) });
+    return api(`${route}/file`, {
+      method: "POST",
+      headers: {
+        "content-type": conversationFileMime(file),
+        "x-file-name": encodeURIComponent(file.name),
+        ...conversationTextHeaders(body),
+      },
+      body: file,
+    });
+  }
+
   function topicName(id) {
     if (!id) return "—";
     const topic = courseTopics.find((item) => item.id === id);
@@ -145,7 +219,7 @@
     empty.hidden = inboxConversations.length > 0;
     list.innerHTML = inboxConversations.map((item) => `<article class="conversation-inbox-card">
       <div><strong>${escapeHtml(item.studentName)}</strong><span>${escapeHtml(conversationKind(item.subjectType))} · ${dateTime(item.lastMessageAt)}</span></div>
-      <p><span class="conversation-unread">${item.unreadCount === 1 ? "Новое сообщение" : `Новых сообщений: ${item.unreadCount}`}</span>${escapeHtml(item.preview)}</p>
+      <p><span class="conversation-unread">${item.unreadCount === 1 ? "Новое сообщение" : `Новых сообщений: ${item.unreadCount}`}</span>${escapeHtml(item.preview)}${item.attachmentFilename ? `<span class="conversation-inbox-file">Файл: ${escapeHtml(item.attachmentFilename)}</span>` : ""}</p>
       <button class="action-button" type="button" data-open-inbox-conversation="${item.subjectType}:${item.subjectId}:${item.studentId}">Открыть</button>
     </article>`).join("");
   }
@@ -302,7 +376,8 @@
     if (!messages.length) return '<p class="detail-empty">Сообщений пока нет.</p>';
     return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
       <header><strong>${message.sender === "teacher" ? "Вы" : escapeHtml(message.author || "Ученик")}</strong><time>${dateTime(message.createdAt)}</time></header>
-      <p>${escapeHtml(message.text)}</p>
+      ${message.text ? `<p>${escapeHtml(message.text)}</p>` : ""}
+      ${(message.attachments || []).map(conversationAttachmentMarkup).join("")}
     </article>`).join("");
   }
 
@@ -335,6 +410,7 @@
     document.querySelector("[data-conversation-history]").innerHTML = '<p class="detail-empty">Загружаем переписку…</p>';
     document.querySelector("[data-conversation-message]").textContent = "";
     conversationForm.reset();
+    resetConversationAttachment(conversationForm);
     if (!conversationDialog.open) conversationDialog.showModal();
     try {
       const payload = await api(`/conversations/${encodeURIComponent(type)}/${encodeURIComponent(id)}`);
@@ -347,7 +423,7 @@
   }
 
   function attemptConversationMarkup(conversation, attemptId) {
-    return `<section class="attempt-conversation" data-attempt-conversation="${attemptId}"><h3>Переписка по попытке</h3><div class="conversation-history">${conversationMarkup(conversation)}</div><form class="conversation-reply-form" data-inline-conversation-form="test_attempt:${attemptId}"><label>Ответ ученику<textarea name="body" maxlength="6000" placeholder="Напишите ответ" required></textarea></label><p class="form-message" data-inline-message role="status" aria-live="polite"></p><button class="primary-button" type="submit">Ответить ученику</button></form></section>`;
+    return `<section class="attempt-conversation" data-attempt-conversation="${attemptId}"><h3>Переписка по попытке</h3><div class="conversation-history">${conversationMarkup(conversation)}</div><form class="conversation-reply-form" data-inline-conversation-form="test_attempt:${attemptId}"><label>Ответ ученику<textarea name="body" maxlength="6000" placeholder="Напишите ответ"></textarea></label>${conversationAttachmentPickerMarkup(`attempt-conversation-file-${attemptId}`)}<p class="form-message" data-inline-message role="status" aria-live="polite"></p><button class="primary-button" type="submit">Ответить ученику</button></form></section>`;
   }
 
   async function openAttempt(attemptId) {
@@ -773,6 +849,11 @@
   });
   studentList.addEventListener("click", (event) => { const button = event.target.closest("[data-open-student]"); if (button) openStudent(button.dataset.openStudent); });
   studentDetail.addEventListener("click", async (event) => {
+    const removeAttachment = event.target.closest("[data-remove-conversation-file]");
+    if (removeAttachment) {
+      resetConversationAttachment(removeAttachment.closest("form"));
+      return;
+    }
     if (event.target.closest("[data-close-student]")) { studentDetail.hidden = true; studentBrowse.hidden = false; activeStudentDetails = null; return; }
     const tab = event.target.closest("[data-student-tab]"); if (tab) { renderStudentPane(tab.dataset.studentTab); return; }
     const attempt = event.target.closest("[data-open-attempt]"); if (attempt) { await openAttempt(attempt.dataset.openAttempt); return; }
@@ -794,16 +875,23 @@
     const status = form.querySelector("[data-inline-message]");
     const button = form.querySelector('button[type="submit"]');
     const body = form.elements.body.value.trim();
-    if (!body) return;
+    const file = form.elements.attachment?.files[0] || null;
+    if (!body && !file) { status.textContent = "Добавьте текст или файл."; return; }
     button.disabled = true; status.textContent = "Отправляем…";
     try {
-      await api(`/conversations/${type}/${id}/messages`, { method: "POST", body: JSON.stringify({ body }) });
+      await sendConversationMessage(type, id, body, file);
       status.textContent = "Ответ отправлен.";
       await openAttempt(id);
       await reloadInbox();
     } catch (error) { status.textContent = error.message; button.disabled = false; }
   });
-  studentDetail.addEventListener("change", (event) => { if (event.target.matches("[data-attempt-filter]")) renderAttemptList(); });
+  studentDetail.addEventListener("change", (event) => {
+    if (event.target.matches("[data-attempt-filter]")) renderAttemptList();
+    if (event.target.matches('input[name="attachment"]')) {
+      const form = event.target.closest("form");
+      showConversationAttachment(form, form.querySelector("[data-inline-message]"));
+    }
+  });
   settingsList.addEventListener("click", (event) => { const button = event.target.closest("[data-account-action]"); if (button) performAccountAction(button); });
   scheduleList.addEventListener("click", async (event) => {
     const studentButton = event.target.closest("[data-open-schedule-student]");
@@ -828,7 +916,11 @@
   document.querySelectorAll("[data-close-link]").forEach((button) => button.addEventListener("click", () => linkDialog.close()));
   document.querySelector("[data-close-study-plan]").addEventListener("click", () => studyPlanDialog.close());
   document.querySelectorAll("[data-close-conversation]").forEach((button) => button.addEventListener("click", () => conversationDialog.close()));
-  conversationDialog.addEventListener("close", () => { activeConversation = null; });
+  conversationDialog.addEventListener("close", () => { activeConversation = null; resetConversationAttachment(conversationForm); });
+  conversationForm.elements.attachment.addEventListener("change", () => {
+    showConversationAttachment(conversationForm, document.querySelector("[data-conversation-message]"));
+  });
+  conversationForm.querySelector("[data-remove-conversation-file]").addEventListener("click", () => resetConversationAttachment(conversationForm));
   document.querySelector("[data-conversation-inbox-list]").addEventListener("click", async (event) => {
     const button = event.target.closest("[data-open-inbox-conversation]");
     if (!button) return;
@@ -846,16 +938,17 @@
     event.preventDefault();
     if (!activeConversation) return;
     const body = conversationForm.elements.body.value.trim();
-    if (!body) return;
+    const file = conversationForm.elements.attachment.files[0] || null;
     const status = document.querySelector("[data-conversation-message]");
+    if (!body && !file) { status.textContent = "Добавьте текст или файл."; return; }
     const button = conversationForm.querySelector('button[type="submit"]');
     button.disabled = true; status.textContent = "Отправляем…";
     try {
-      await api(`/conversations/${activeConversation.type}/${activeConversation.id}/messages`, { method: "POST", body: JSON.stringify({ body }) });
+      await sendConversationMessage(activeConversation.type, activeConversation.id, body, file);
       const payload = await api(`/conversations/${activeConversation.type}/${activeConversation.id}`);
       document.querySelector("[data-conversation-history]").innerHTML = conversationMarkup(payload.conversation);
       document.querySelector("[data-conversation-history]").scrollTop = document.querySelector("[data-conversation-history]").scrollHeight;
-      conversationForm.reset(); status.textContent = "Ответ отправлен.";
+      conversationForm.reset(); resetConversationAttachment(conversationForm); status.textContent = "Ответ отправлен.";
       await reloadInbox();
     } catch (error) { status.textContent = error.message; } finally { button.disabled = false; }
   });

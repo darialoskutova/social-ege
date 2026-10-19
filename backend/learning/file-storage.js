@@ -53,7 +53,7 @@ function decodeHeader(req, name, maximum) {
 
 function originalFilename(req) {
   const value = decodeHeader(req, "x-file-name", 255);
-  if (path.basename(value) !== value || /[\\/]/.test(value)) {
+  if (path.basename(value) !== value || /[\\/\u0000-\u001f\u007f]/u.test(value)) {
     throw new HttpError(400, "invalid_filename", "Некорректное имя файла");
   }
   return value;
@@ -150,7 +150,10 @@ async function removeStoredFile(config, objectKey) {
 
 function downloadNameHeader(filename) {
   const fallback = filename.replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 120) || "work";
-  return `attachment; filename="${fallback}"; filename*=UTF-8''${encodeURIComponent(filename)}`;
+  const encoded = encodeURIComponent(filename).replace(/[!'()*]/g, (character) => (
+    `%${character.charCodeAt(0).toString(16).toUpperCase()}`
+  ));
+  return `attachment; filename="${fallback}"; filename*=UTF-8''${encoded}`;
 }
 
 async function sendStoredFile(res, config, row) {

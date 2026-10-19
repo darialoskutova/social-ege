@@ -12,13 +12,22 @@ const {
 const { asyncHandler } = require("../lib/async-handler");
 const { HttpError } = require("../lib/http-error");
 const { withTransaction } = require("../lib/transaction");
-const { readUploadConfig, sendStoredFile } = require("../learning/file-storage");
+const {
+  readUploadConfig,
+  receiveUpload,
+  removeStoredFile,
+  sendStoredFile,
+} = require("../learning/file-storage");
 const defaultStudyPlanService = require("../study-plan/service");
 const defaultTestService = require("../tests/service");
 const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
 const { courseTopics } = require("../study-plan/course-catalog");
 const conversationService = require("../conversations/service");
+const {
+  optionalMessageText,
+  readConversationAttachmentConfig,
+} = require("../conversations/attachments");
 
 const loginSchema = z.string().trim().min(3).max(64).regex(/^[a-zA-Z0-9._-]+$/)
   .transform((value) => value.normalize("NFKC").toLowerCase());
@@ -285,6 +294,7 @@ function createAdminRouter(
   testService = defaultTestService,
   materialService = defaultMaterialService,
   materialConfig = readMaterialConfig(),
+  conversationAttachmentConfig = readConversationAttachmentConfig(),
 ) {
   const router = express.Router();
 
@@ -417,6 +427,20 @@ function createAdminRouter(
   );
 
   router.get(
+    "/conversations/attachments/:attachmentId/file",
+    asyncHandler(async (req, res) => {
+      const idResult = conversationSubjectIdSchema.safeParse(req.params.attachmentId);
+      if (!idResult.success) throw new HttpError(404, "attachment_not_found", "Файл не найден");
+      const attachment = await conversationService.findAttachment(pool, {
+        viewerRole: "teacher",
+        viewerUserId: req.auth.user.id,
+        attachmentId: idResult.data,
+      });
+      await sendStoredFile(res, conversationAttachmentConfig, attachment);
+    }),
+  );
+
+  router.get(
     "/conversations/:subjectType/:subjectId",
     asyncHandler(async (req, res) => {
       const typeResult = conversationSubjectTypeSchema.safeParse(req.params.subjectType);
@@ -451,6 +475,39 @@ function createAdminRouter(
         body: bodyResult.data.body,
       });
       res.set("Cache-Control", "no-store").status(201).json({ message });
+    }),
+  );
+
+  router.post(
+    "/conversations/:subjectType/:subjectId/messages/file",
+    asyncHandler(async (req, res) => {
+      const typeResult = conversationSubjectTypeSchema.safeParse(req.params.subjectType);
+      const idResult = conversationSubjectIdSchema.safeParse(req.params.subjectId);
+      if (!typeResult.success || !idResult.success) {
+        throw new HttpError(400, "invalid_message", "Проверьте переписку");
+      }
+      const body = optionalMessageText(req);
+      await conversationService.authorizeConversation(pool, {
+        viewerRole: "teacher",
+        viewerUserId: req.auth.user.id,
+        subjectType: typeResult.data,
+        subjectId: idResult.data,
+      });
+      const uploaded = await receiveUpload(req, conversationAttachmentConfig);
+      try {
+        const message = await conversationService.addMessage(pool, {
+          senderRole: "teacher",
+          senderUserId: req.auth.user.id,
+          subjectType: typeResult.data,
+          subjectId: idResult.data,
+          body,
+          attachment: uploaded,
+        });
+        res.set("Cache-Control", "no-store").status(201).json({ message });
+      } catch (error) {
+        await removeStoredFile(conversationAttachmentConfig, uploaded.objectKey);
+        throw error;
+      }
     }),
   );
 

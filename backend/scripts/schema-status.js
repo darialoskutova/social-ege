@@ -6,6 +6,7 @@ const expectedTables = [
   "audit_log",
   "conversation_messages",
   "conversation_threads",
+  "conversation_attachments",
   "auth_sessions",
   "editable_test_versions",
   "editable_tests",

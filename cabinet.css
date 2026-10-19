@@ -1321,11 +1321,26 @@ html[data-theme="dark"] #appView #constitutionHub .constitution-seal {
 .conversation-message header { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; }
 .conversation-message time { color: var(--muted); font-size: 13px; }
 .conversation-message p { margin: 0; overflow-wrap: anywhere; line-height: 1.55; white-space: pre-wrap; }
+.conversation-attachment { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; max-width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; }
+.conversation-attachment span { display: grid; min-width: 0; gap: 2px; }
+.conversation-attachment strong { min-width: 0; overflow-wrap: anywhere; font-size: 14px; }
+.conversation-attachment small { color: var(--muted); font-size: 12px; }
+.conversation-attachment a { min-width: 44px; color: var(--blue); font-weight: 800; text-decoration: none; }
 .conversation-form { display: grid; gap: 10px; padding: 18px 26px 24px; border-top: 1px solid var(--line); }
 .conversation-form label { font-weight: 750; }
 .conversation-form textarea { width: 100%; min-height: 96px; max-height: 220px; padding: 12px 14px; resize: vertical; border: 1px solid #93a2b8; border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
 .conversation-form > div { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 14px; }
 .conversation-form [role="status"] { color: var(--muted); font-size: 13px; }
+.conversation-attachment-control { display: grid !important; min-height: 0 !important; gap: 9px !important; align-items: start !important; justify-items: start; }
+.conversation-file-button { position: relative; display: inline-flex; min-height: 42px; align-items: center; padding: 9px 13px; overflow: hidden; color: var(--blue); border: 1px solid var(--blue); border-radius: 8px; font-size: 14px; font-weight: 800; cursor: pointer; }
+.conversation-file-button:focus-within { outline: 3px solid color-mix(in srgb, var(--blue) 34%, transparent); outline-offset: 2px; }
+.conversation-file-button input { position: absolute; width: 1px; height: 1px; margin: -1px; opacity: 0; }
+.conversation-selected-file { display: grid; width: min(100%, 470px); grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border-left: 3px solid var(--burgundy); background: color-mix(in srgb, var(--burgundy) 7%, transparent); }
+.conversation-selected-file[hidden] { display: none; }
+.conversation-selected-file span { display: grid; min-width: 0; gap: 2px; }
+.conversation-selected-file strong { overflow-wrap: anywhere; font-size: 14px; }
+.conversation-selected-file small { color: var(--muted); font-size: 12px; }
+.conversation-selected-file button { min-width: 44px; min-height: 40px; padding: 6px 9px; color: var(--burgundy); border: 0; background: transparent; font: inherit; font-weight: 800; cursor: pointer; }
 .conversation-trigger { margin-top: 14px; }
 .conversation-trigger.has-unread::after { content: attr(data-unread-label); margin-left: 7px; color: var(--burgundy); font-weight: 850; }
 #mockSubmissionStatus { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -1334,6 +1349,7 @@ html[data-theme="dark"] .conversation-dialog,
 html[data-theme="dark"] .conversation-form textarea { background: #111f35; color: var(--ink); }
 html[data-theme="dark"] .conversation-dialog-heading,
 html[data-theme="dark"] .conversation-form { border-color: #344b6b; }
+html[data-theme="dark"] .conversation-attachment { border-color: #344b6b; }
 
 @media (max-width: 560px) {
     .test-conversation-prompt { align-items: stretch; flex-direction: column; }
@@ -1343,6 +1359,9 @@ html[data-theme="dark"] .conversation-form { border-color: #344b6b; }
     .conversation-form { padding: 16px 18px 20px; }
     .conversation-form > div { align-items: stretch; flex-direction: column; }
     .conversation-form .button { width: 100%; }
+    .conversation-attachment { grid-template-columns: minmax(0, 1fr); }
+    .conversation-attachment a { justify-self: start; min-height: 40px; display: inline-flex; align-items: center; }
+    .conversation-selected-file { width: 100%; }
 }
 
 /* Focused visual edit: fewer template-like containers, same structure and character. */
