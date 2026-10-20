@@ -73,6 +73,7 @@ function poolFixture(users) {
         id: state.nextMockId++, user_id: String(values[0]), mock_id: values[1], mock_version: values[2],
         mock_snapshot: JSON.parse(values[3]), object_key: values[4], original_filename: values[5],
         mime_type: values[6], size_bytes: values[7], file_revision: 1, student_comment: values[8],
+        teacher_seen_revision: 0,
         status: "submitted", teacher_comment: "", submitted_at: new Date(), updated_at: new Date(),
       };
       state.mocks.push(row);
@@ -110,7 +111,7 @@ function poolFixture(users) {
       const row = {
         id: state.nextHomeworkId++, user_id: String(values[0]), topic_key: values[1], object_key: values[2],
         original_filename: values[3], mime_type: values[4], size_bytes: values[5], student_comment: values[6],
-        file_revision: 1, status: "submitted", teacher_comment: "", reviewed_at: null,
+        file_revision: 1, teacher_seen_revision: 0, status: "submitted", teacher_comment: "", reviewed_at: null,
         reviewed_by: null, submitted_at: new Date(), updated_at: new Date(),
       };
       state.homework.push(row);
@@ -147,6 +148,9 @@ function poolFixture(users) {
     }
     if (normalized.startsWith("UPDATE conversation_threads SET updated_at")) return { rows: [], rowCount: 1 };
     if (normalized.startsWith("SELECT t.subject_type") && normalized.includes("teacher_read_at IS NULL")) return { rows: [] };
+    if (normalized.startsWith("SELECT a.id, a.user_id, a.topic_key") && normalized.includes("a.teacher_seen_at IS NULL")) {
+      return { rows: [] };
+    }
     if (normalized.startsWith("SELECT s.id, s.user_id, s.topic_key")) {
       return { rows: state.homework.filter((row) => !values[0] || row.user_id === String(values[0])).map((row) => {
         const user = users.find((item) => String(item.id) === row.user_id);
@@ -168,14 +172,14 @@ function poolFixture(users) {
     if (normalized.startsWith("UPDATE mock_submissions SET status = $2")) {
       const row = state.mocks.find((item) => String(item.id) === String(values[0]));
       if (!row) return { rows: [] };
-      Object.assign(row, { status: values[1], teacher_comment: values[2], reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
-      return { rows: [{ user_id: row.user_id }] };
+      Object.assign(row, { status: values[1], teacher_comment: values[2], teacher_seen_revision: row.file_revision, reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
+      return { rows: [{ user_id: row.user_id, file_revision: row.file_revision }] };
     }
     if (normalized.startsWith("UPDATE homework_submissions SET status = $2")) {
       const row = state.homework.find((item) => String(item.id) === String(values[0]));
       if (!row) return { rows: [] };
-      Object.assign(row, { status: values[1], teacher_comment: values[2], reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
-      return { rows: [{ user_id: row.user_id }] };
+      Object.assign(row, { status: values[1], teacher_comment: values[2], teacher_seen_revision: row.file_revision, reviewed_by: String(values[3]), reviewed_at: new Date(), updated_at: new Date() });
+      return { rows: [{ user_id: row.user_id, file_revision: row.file_revision }] };
     }
     if (normalized.startsWith("INSERT INTO audit_log")) {
       state.audits.push({ sql: normalized, values });

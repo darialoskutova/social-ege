@@ -7,7 +7,7 @@
   <meta name="referrer" content="same-origin">
   <title>Панель преподавателя</title>
   <link rel="stylesheet" href="/account-pages.css">
-  <link rel="stylesheet" href="/admin/admin.css?v=20261019-attachments">
+  <link rel="stylesheet" href="/admin/admin.css?v=20261020-unified-inbox">
 </head>
 <body>
   <header class="admin-header">
@@ -27,21 +27,16 @@
 
     <main class="admin-main">
       <section data-panel="inbox">
-        <div class="section-heading"><div><h1>Входящие</h1><p>Работы на проверку и новые вопросы учеников.</p></div></div>
-        <div class="inbox-summary" data-inbox-summary aria-label="Количество работ по статусам"></div>
-        <section class="conversation-inbox" data-conversation-inbox>
-          <h2>Новые сообщения</h2>
-          <div class="conversation-inbox-list" data-conversation-inbox-list></div>
-          <p class="detail-empty" data-conversation-inbox-empty>Новых сообщений нет.</p>
-        </section>
-        <div class="filter-bar">
-          <label>Статус<select data-inbox-filter="status"><option value="">Все статусы</option><option value="submitted">Новые</option><option value="in_review">На проверке</option><option value="needs_revision">На доработке</option><option value="accepted">Принятые</option></select></label>
-          <label>Ученик<select data-inbox-filter="student"><option value="">Все ученики</option></select></label>
-          <label>Тип<select data-inbox-filter="type"><option value="">Все работы</option><option value="homework">Вторая часть</option><option value="mock">Пробники</option></select></label>
+        <div class="section-heading"><div><h1>Входящие</h1><p>Новые результаты, работы и сообщения учеников.</p></div></div>
+        <div class="inbox-type-filters" data-inbox-filters role="group" aria-label="Фильтр входящих">
+          <button class="is-active" type="button" data-inbox-kind="all" aria-pressed="true">Все <span data-inbox-filter-count="all">0</span></button>
+          <button type="button" data-inbox-kind="test" aria-pressed="false">Тесты <span data-inbox-filter-count="test">0</span></button>
+          <button type="button" data-inbox-kind="work" aria-pressed="false">Работы <span data-inbox-filter-count="work">0</span></button>
+          <button type="button" data-inbox-kind="message" aria-pressed="false">Сообщения <span data-inbox-filter-count="message">0</span></button>
         </div>
         <p class="admin-message" data-inbox-message role="status" aria-live="polite"></p>
         <div class="inbox-list" data-inbox-list></div>
-        <div class="table-state" data-inbox-state>Загружаем работы…</div>
+        <div class="table-state" data-inbox-state>Загружаем входящие…</div>
       </section>
 
       <section class="is-hidden" data-panel="students">
@@ -206,6 +201,6 @@
     </div>
   </dialog>
 
-  <script src="/admin/admin.js?v=20261019-attachments" defer></script>
+  <script src="/admin/admin.js?v=20261020-unified-inbox" defer></script>
 </body>
 </html>

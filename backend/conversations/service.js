@@ -358,9 +358,21 @@ async function listAdminUnread(pool) {
             u.login, u.display_name,
             COUNT(unread.id)::INTEGER AS unread_count,
             last_message.body, last_message.created_at,
-            last_message.attachment_filename, last_message.has_message_text
+            last_message.attachment_filename, last_message.has_message_text,
+            COALESCE(h.topic_key, a.topic_key) AS topic_key,
+            a.test_key, ms.mock_id,
+            CASE WHEN t.subject_type = 'mock'
+                 THEN ms.mock_snapshot ->> 'title'
+                 ELSE NULL
+            END AS subject_title
        FROM conversation_threads AS t
        JOIN users AS u ON u.id = t.student_id
+       LEFT JOIN homework_submissions AS h
+         ON t.subject_type = 'homework' AND h.id = t.subject_id
+       LEFT JOIN mock_submissions AS ms
+         ON t.subject_type = 'mock' AND ms.id = t.subject_id
+       LEFT JOIN test_attempts AS a
+         ON t.subject_type = 'test_attempt' AND a.id = t.subject_id
        JOIN conversation_messages AS unread
          ON unread.thread_id = t.id
         AND unread.sender_role = 'student'
@@ -372,12 +384,15 @@ async function listAdminUnread(pool) {
            FROM conversation_messages AS m
            LEFT JOIN conversation_attachments AS a ON a.message_id = m.id
           WHERE m.thread_id = t.id
+            AND m.sender_role = 'student'
+            AND m.teacher_read_at IS NULL
           ORDER BY m.created_at DESC, m.id DESC
           LIMIT 1
        ) AS last_message ON TRUE
       GROUP BY t.id, t.subject_type, t.subject_id, t.student_id,
                u.login, u.display_name, last_message.body, last_message.created_at,
-               last_message.attachment_filename, last_message.has_message_text
+               last_message.attachment_filename, last_message.has_message_text,
+               h.topic_key, a.topic_key, a.test_key, ms.mock_id, ms.mock_snapshot
       ORDER BY last_message.created_at DESC, t.id DESC`,
   );
   return rows.map((row) => ({
@@ -393,6 +408,10 @@ async function listAdminUnread(pool) {
     attachmentFilename: row.attachment_filename && row.has_message_text !== false
       ? row.attachment_filename
       : null,
+    topicId: row.topic_key || null,
+    testId: row.test_key || null,
+    mockId: row.mock_id || null,
+    subjectTitle: row.subject_title || null,
     lastMessageAt: row.created_at,
   }));
 }

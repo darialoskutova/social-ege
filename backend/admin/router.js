@@ -24,6 +24,7 @@ const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
 const { courseTopics } = require("../study-plan/course-catalog");
 const conversationService = require("../conversations/service");
+const inboxService = require("../inbox/service");
 const {
   optionalMessageText,
   readConversationAttachmentConfig,
@@ -231,6 +232,7 @@ function serializeAdminSubmission(row, type) {
     mimeType: row.mime_type,
     sizeBytes: row.size_bytes === null ? null : Number(row.size_bytes),
     fileRevision: Number(row.file_revision || 1),
+    teacherSeenRevision: Number(row.teacher_seen_revision || 0),
     hasFile: Boolean(row.object_key),
     studentComment: row.student_comment || "",
     teacherComment: row.teacher_comment || "",
@@ -250,7 +252,8 @@ async function loadAdminSubmissions(pool, { userId = null } = {}) {
   const values = userId ? [userId] : [];
   const homework = await pool.query(
       `SELECT s.id, s.user_id, s.topic_key, s.object_key, s.original_filename, s.mime_type,
-              s.size_bytes, s.file_revision, s.student_comment, s.status,
+              s.size_bytes, s.file_revision, s.teacher_seen_revision,
+              s.student_comment, s.status,
               s.teacher_comment, s.submitted_at, s.updated_at, s.reviewed_at,
               s.reviewed_by, u.login, u.display_name
          FROM homework_submissions AS s
@@ -262,7 +265,8 @@ async function loadAdminSubmissions(pool, { userId = null } = {}) {
   const mocks = await pool.query(
       `SELECT s.id, s.user_id, s.mock_id, s.mock_version, s.mock_snapshot, s.object_key,
               s.original_filename, s.mime_type, s.size_bytes, s.file_revision,
-              s.student_comment, s.status, s.teacher_comment, s.submitted_at,
+              s.teacher_seen_revision, s.student_comment, s.status,
+              s.teacher_comment, s.submitted_at,
               s.updated_at, s.reviewed_at, s.reviewed_by, u.login, u.display_name
          FROM mock_submissions AS s
          JOIN users AS u ON u.id = s.user_id
@@ -413,16 +417,37 @@ function createAdminRouter(
   router.get(
     "/inbox",
     asyncHandler(async (req, res) => {
-      const [submissions, conversations] = await Promise.all([
+      const [allSubmissions, attempts, conversations] = await Promise.all([
         loadAdminSubmissions(pool),
+        inboxService.listUnseenTestAttempts(pool),
         conversationService.listAdminUnread(pool),
       ]);
+      const unified = inboxService.buildUnifiedInbox({
+        submissions: allSubmissions,
+        attempts,
+        conversations,
+      });
       const counts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0 };
-      submissions.forEach((submission) => {
+      unified.unseenSubmissions.forEach((submission) => {
         if (Object.hasOwn(counts, submission.status)) counts[submission.status] += 1;
       });
-      counts.unreadMessages = conversations.reduce((sum, item) => sum + item.unreadCount, 0);
-      res.set("Cache-Control", "no-store").json({ submissions, conversations, counts });
+      Object.assign(counts, unified.counts);
+      res.set("Cache-Control", "no-store").json({
+        items: unified.items,
+        submissions: unified.unseenSubmissions,
+        attempts,
+        conversations,
+        counts,
+      });
+    }),
+  );
+
+  router.post(
+    "/inbox/test-attempts/:attemptId/seen",
+    asyncHandler(async (req, res) => {
+      const attemptId = studentId(req.params.attemptId);
+      const seen = await inboxService.markTestAttemptSeen(pool, attemptId);
+      res.set("Cache-Control", "no-store").json({ seen });
     }),
   );
 
@@ -560,7 +585,8 @@ function createAdminRouter(
         const updated = await client.query(
           `UPDATE ${table}
               SET status = $2, teacher_comment = $3, reviewed_at = NOW(),
-                  reviewed_by = $4, updated_at = NOW()
+                  reviewed_by = $4, updated_at = NOW(),
+                  teacher_seen_revision = file_revision
             WHERE id = $1
             RETURNING user_id, file_revision`,
           [id, parsed.data.status, parsed.data.teacherComment, req.auth.user.id],

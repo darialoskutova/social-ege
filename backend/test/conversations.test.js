@@ -52,12 +52,12 @@ function poolFixture() {
       [tokenHash(TOKENS.studentA), 1], [tokenHash(TOKENS.studentB), 2], [tokenHash(TOKENS.admin), 9],
     ]),
     homework: [
-      { id: 101, user_id: 1, topic_key: "law44", object_key: "a.pdf", original_filename: "дз.pdf", mime_type: "application/pdf", size_bytes: 100, file_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
-      { id: 102, user_id: 2, topic_key: "law45", object_key: "b.pdf", original_filename: "чужое.pdf", mime_type: "application/pdf", size_bytes: 120, file_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
+      { id: 101, user_id: 1, topic_key: "law44", object_key: "a.pdf", original_filename: "дз.pdf", mime_type: "application/pdf", size_bytes: 100, file_revision: 1, teacher_seen_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
+      { id: 102, user_id: 2, topic_key: "law45", object_key: "b.pdf", original_filename: "чужое.pdf", mime_type: "application/pdf", size_bytes: 120, file_revision: 1, teacher_seen_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
     ],
     mocks: [
-      { id: 201, user_id: 1, mock_id: "law-1", mock_version: "2027-draft-v1", mock_snapshot: { title: "Пробник по праву" }, object_key: "m1.pdf", original_filename: "пробник.pdf", mime_type: "application/pdf", size_bytes: 130, file_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
-      { id: 202, user_id: 2, mock_id: "law-2", mock_version: "2027-draft-v1", mock_snapshot: { title: "Чужой пробник" }, object_key: "m2.pdf", original_filename: "чужой-пробник.pdf", mime_type: "application/pdf", size_bytes: 140, file_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
+      { id: 201, user_id: 1, mock_id: "law-1", mock_version: "2027-draft-v1", mock_snapshot: { title: "Пробник по праву" }, object_key: "m1.pdf", original_filename: "пробник.pdf", mime_type: "application/pdf", size_bytes: 130, file_revision: 1, teacher_seen_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
+      { id: 202, user_id: 2, mock_id: "law-2", mock_version: "2027-draft-v1", mock_snapshot: { title: "Чужой пробник" }, object_key: "m2.pdf", original_filename: "чужой-пробник.pdf", mime_type: "application/pdf", size_bytes: 140, file_revision: 1, teacher_seen_revision: 1, student_comment: "", teacher_comment: "", status: "submitted", submitted_at: now, updated_at: now, reviewed_at: null, reviewed_by: null },
     ],
     attempts: [
       { id: 301, user_id: 1, topic_key: "law44", test_key: "test-44", submitted_at: now },
@@ -84,6 +84,9 @@ function poolFixture() {
     if (normalized.startsWith("SELECT id, user_id, topic_key, status") && normalized.includes("FROM homework_submissions")) return { rows: subjectRows("homework", values) };
     if (normalized.startsWith("SELECT id, user_id, mock_id") && normalized.includes("FROM mock_submissions")) return { rows: subjectRows("mocks", values) };
     if (normalized.startsWith("SELECT id, user_id, topic_key, test_key") && normalized.includes("FROM test_attempts")) return { rows: subjectRows("attempts", values) };
+    if (normalized.startsWith("SELECT a.id, a.user_id, a.topic_key") && normalized.includes("a.teacher_seen_at IS NULL")) {
+      return { rows: [] };
+    }
     if (normalized.startsWith("SELECT id, student_id, subject_type") && normalized.includes("FROM conversation_threads")) {
       return { rows: state.threads.filter((row) => row.subject_type === values[0] && String(row.subject_id) === String(values[1])) };
     }

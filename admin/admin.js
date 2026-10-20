@@ -33,8 +33,9 @@
 
   let students = [];
   let submissions = [];
-  let inboxConversations = [];
-  let inboxCounts = { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0, unreadMessages: 0 };
+  let inboxItems = [];
+  let inboxCounts = { unseenTests: 0, unseenWorks: 0, unreadMessages: 0, total: 0 };
+  let activeInboxKind = "all";
   let scheduleEvents = [];
   let courseTopics = [];
   let activePlanStudent = null;
@@ -195,14 +196,20 @@
   }
 
   function renderInboxSummary() {
-    const labels = { submitted: "Новые", in_review: "На проверке", needs_revision: "На доработке", accepted: "Принятые" };
-    const selected = document.querySelector("[data-inbox-filter='status']").value;
-    document.querySelector("[data-inbox-summary]").innerHTML = Object.entries(labels).map(([status, label]) => `
-      <button class="summary-button ${selected === status ? "is-active" : ""}" type="button" data-quick-status="${status}">
-        <span>${label}</span><strong>${Number(inboxCounts[status] || 0)}</strong>
-      </button>`).join("") + `<div class="summary-button summary-button-static"><span>Новые сообщения</span><strong>${Number(inboxCounts.unreadMessages || 0)}</strong></div>`;
+    const counts = {
+      all: Number(inboxCounts.total || 0),
+      test: Number(inboxCounts.unseenTests || 0),
+      work: Number(inboxCounts.unseenWorks || 0),
+      message: Number(inboxCounts.unreadMessages || 0),
+    };
+    document.querySelectorAll("[data-inbox-kind]").forEach((button) => {
+      const selected = button.dataset.inboxKind === activeInboxKind;
+      button.classList.toggle("is-active", selected);
+      button.setAttribute("aria-pressed", String(selected));
+      button.querySelector("[data-inbox-filter-count]").textContent = String(counts[button.dataset.inboxKind] || 0);
+    });
     const badge = document.querySelector("[data-inbox-count]");
-    const total = Number(inboxCounts.submitted || 0) + Number(inboxCounts.unreadMessages || 0);
+    const total = counts.all;
     badge.textContent = String(total);
     badge.hidden = !total;
   }
@@ -213,46 +220,24 @@
     return "Тест";
   }
 
-  function renderConversationInbox() {
-    const list = document.querySelector("[data-conversation-inbox-list]");
-    const empty = document.querySelector("[data-conversation-inbox-empty]");
-    empty.hidden = inboxConversations.length > 0;
-    list.innerHTML = inboxConversations.map((item) => `<article class="conversation-inbox-card">
-      <div><strong>${escapeHtml(item.studentName)}</strong><span>${escapeHtml(conversationKind(item.subjectType))} · ${dateTime(item.lastMessageAt)}</span></div>
-      <p><span class="conversation-unread">${item.unreadCount === 1 ? "Новое сообщение" : `Новых сообщений: ${item.unreadCount}`}</span>${escapeHtml(item.preview)}${item.attachmentFilename ? `<span class="conversation-inbox-file">Файл: ${escapeHtml(item.attachmentFilename)}</span>` : ""}</p>
-      <button class="action-button" type="button" data-open-inbox-conversation="${item.subjectType}:${item.subjectId}:${item.studentId}">Открыть</button>
-    </article>`).join("");
-  }
-
   function updateFilterOptions() {
     const choices = students.filter((student) => student.status !== "archived")
       .map((student) => `<option value="${student.id}">${escapeHtml(student.name)}</option>`).join("");
-    [document.querySelector("[data-inbox-filter='student']"), document.querySelector("[data-schedule-filter='student']")]
-      .forEach((select) => {
-        const current = select.value;
-        select.innerHTML = `<option value="">Все ученики</option>${choices}`;
-        select.value = current;
-      });
+    const select = document.querySelector("[data-schedule-filter='student']");
+    const current = select.value;
+    select.innerHTML = `<option value="">Все ученики</option>${choices}`;
+    select.value = current;
   }
 
-  function renderInbox() {
-    const status = document.querySelector("[data-inbox-filter='status']").value;
-    const student = document.querySelector("[data-inbox-filter='student']").value;
-    const type = document.querySelector("[data-inbox-filter='type']").value;
-    const filtered = submissions.filter((item) => (!status || item.status === status)
-      && (!student || item.studentId === student) && (!type || item.type === type));
-    renderInboxSummary();
-    renderConversationInbox();
-    inboxState.hidden = Boolean(filtered.length);
-    inboxState.textContent = submissions.length ? "По выбранным фильтрам работ нет" : "Работ пока нет";
-    inboxList.innerHTML = filtered.map((item) => {
-      const title = item.type === "mock" ? (item.mock?.title || item.mockId) : topicName(item.topicId);
-      const kind = item.type === "mock" ? "Пробник" : "Домашнее задание · вторая часть";
-      return `<article class="submission-row" data-submission="${item.type}:${item.id}">
+  function renderWorkInboxItem(activity) {
+    const item = activity.submission;
+    const title = item.type === "mock" ? (item.mock?.title || item.mockId) : topicName(item.topicId);
+    const kind = item.type === "mock" ? "Тематический пробник" : "ДЗ второй части";
+    return `<article class="submission-row unified-inbox-card unified-inbox-work" data-submission="${item.type}:${item.id}">
         <div>
-          <p class="submission-kind">${kind}</p>
+          <p class="submission-kind">${escapeHtml(activity.label)}</p>
           <div class="submission-heading"><h2>${escapeHtml(item.studentName)}</h2><span class="status status-${item.status}">${submissionStatusNames[item.status] || escapeHtml(item.status)}</span></div>
-          <p class="submission-meta">${escapeHtml(item.studentLogin)}<br>${escapeHtml(title)}<br>Отправлено: ${dateTime(item.updatedAt)}</p>
+          <p class="submission-meta">${escapeHtml(kind)} · ${escapeHtml(title)}<br>${dateTime(activity.occurredAt)} · версия ${item.fileRevision}</p>
         </div>
         <div>
           <div class="submission-file"><div><strong>${escapeHtml(item.fileName)}</strong><span class="secondary-copy">${item.sizeBytes === null ? "Размер не указан" : formatBytes(item.sizeBytes)} · редакция ${item.fileRevision}</span></div>${item.downloadUrl ? `<a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a>` : `<span class="secondary-copy">Файл не загружен</span>`}</div>
@@ -265,6 +250,35 @@
           <div class="submission-review-actions"><button class="primary-button" type="button" data-save-review>Сохранить проверку</button></div>
         </div>
       </article>`;
+  }
+
+  function renderTestInboxItem(item) {
+    const score = item.score === null
+      ? "Без автоматического балла"
+      : `${item.score} / ${item.maxScore} · ${Math.round(item.percentage)}%`;
+    return `<article class="unified-inbox-card unified-inbox-compact" data-inbox-item="${escapeHtml(item.id)}">
+      <div class="unified-inbox-copy"><p class="submission-kind">${escapeHtml(item.label)}</p><h2>${escapeHtml(item.studentName)}</h2><p>${escapeHtml(item.sectionTitle || "Тест")} · ${escapeHtml(item.title)}</p><strong class="inbox-score">${escapeHtml(score)}</strong><span>${dateTime(item.occurredAt)} · попытка №${item.attemptNumber}</span>${item.unreadMessageCount ? `<span class="conversation-unread">Непрочитанных сообщений: ${item.unreadMessageCount}</span>` : ""}</div>
+      <button class="action-button" type="button" data-open-inbox-attempt="${item.studentId}:${item.attemptId}">Посмотреть ответы</button>
+    </article>`;
+  }
+
+  function renderMessageInboxItem(item) {
+    const subject = item.title ? `${conversationKind(item.subjectType)} · ${item.title}` : conversationKind(item.subjectType);
+    return `<article class="unified-inbox-card unified-inbox-compact" data-inbox-item="${escapeHtml(item.id)}">
+      <div class="unified-inbox-copy"><p class="submission-kind">${escapeHtml(item.label)}</p><h2>${escapeHtml(item.studentName)}</h2><p>${escapeHtml(subject)}</p><span>${dateTime(item.occurredAt)}${item.unreadCount > 1 ? ` · сообщений: ${item.unreadCount}` : ""}</span><blockquote>${escapeHtml(item.preview)}</blockquote>${item.attachmentFilename ? `<span class="conversation-inbox-file">Файл: ${escapeHtml(item.attachmentFilename)}</span>` : ""}</div>
+      <button class="action-button" type="button" data-open-inbox-conversation="${item.subjectType}:${item.subjectId}:${item.studentId}">Открыть</button>
+    </article>`;
+  }
+
+  function renderInbox() {
+    const filtered = inboxItems.filter((item) => activeInboxKind === "all" || item.kind === activeInboxKind);
+    renderInboxSummary();
+    inboxState.hidden = Boolean(filtered.length);
+    inboxState.textContent = inboxItems.length ? "В этой категории новых действий нет." : "Новых действий пока нет.";
+    inboxList.innerHTML = filtered.map((item) => {
+      if (item.kind === "test") return renderTestInboxItem(item);
+      if (item.kind === "work") return renderWorkInboxItem(item);
+      return renderMessageInboxItem(item);
     }).join("");
   }
 
@@ -390,8 +404,8 @@
 
   async function reloadInbox() {
     const payload = await api("/inbox");
+    inboxItems = payload.items || [];
     submissions = payload.submissions || [];
-    inboxConversations = payload.conversations || [];
     inboxCounts = payload.counts || {};
     renderInbox();
   }
@@ -437,6 +451,14 @@
       const attempt = payload.attempt;
       pane.innerHTML = `<section class="attempt-detail"><button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="attempt-detail-heading"><div><h3>${escapeHtml(attempt.title)}</h3><p>${dateTime(attempt.submittedAt)} · попытка №${attempt.attemptNumber} · версия ${attempt.version || "не сохранена"}</p></div><strong>${attempt.score === null ? "Без автоматического балла" : `${attempt.score} / ${attempt.maxScore} · ${Math.round(attempt.percentage)}%`}</strong></div>${attempt.detailsAvailable ? `<div class="attempt-questions">${attempt.questions.map((question) => `<article class="attempt-question ${question.isCorrect === true ? "is-correct" : question.isCorrect === false ? "is-incorrect" : ""}"><header><strong>Задание ${question.number}</strong><span>${question.isCorrect === true ? "Верно" : question.isCorrect === false ? "Неверно" : "Не проверяется автоматически"}</span></header><p>${escapeHtml(question.prompt)}</p>${question.options.length ? `<ul>${question.options.map((option) => `<li>${escapeHtml(option.text)}</li>`).join("")}</ul>` : ""}<dl><div><dt>Ответ ученика</dt><dd>${question.studentAnswers.length ? question.studentAnswers.map(escapeHtml).join(", ") : "Нет ответа"}</dd></div><div><dt>Верный ответ</dt><dd>${question.correctAnswers.length ? question.correctAnswers.map(escapeHtml).join(", ") : "Не задан для автопроверки"}</dd></div></dl>${question.explanation ? `<p class="attempt-explanation">${escapeHtml(question.explanation)}</p>` : ""}</article>`).join("")}</div>` : `<p class="detail-empty attempt-unavailable">${escapeHtml(payload.message || "Подробные ответы недоступны.")}</p>`}${attemptConversationMarkup(conversationPayload.conversation, attemptId)}</section>`;
       if (conversationPayload.conversation.unreadCount) await readConversation("test_attempt", attemptId);
+      try {
+        await api(`/inbox/test-attempts/${encodeURIComponent(attemptId)}/seen`, {
+          method: "POST", body: JSON.stringify({}),
+        });
+        await reloadInbox();
+      } catch {
+        // The detailed attempt is still useful if acknowledging the queue item fails.
+      }
     } catch (error) {
       pane.innerHTML = `<button class="action-button" type="button" data-back-to-attempts>← Ко всем попыткам</button><div class="table-state">${escapeHtml(error.message)}</div>`;
     }
@@ -655,8 +677,8 @@
         api("/students"), api("/inbox"), api("/course-catalog"), api("/schedule"), api("/tests"), api("/materials"),
       ]);
       students = studentPayload.students;
+      inboxItems = inboxPayload.items || [];
       submissions = inboxPayload.submissions;
-      inboxConversations = inboxPayload.conversations || [];
       inboxCounts = inboxPayload.counts;
       courseTopics = catalogPayload.topics || [];
       scheduleEvents = schedulePayload.events || [];
@@ -780,7 +802,12 @@
     document.querySelectorAll("[data-panel]").forEach((panel) => panel.classList.toggle("is-hidden", panel.dataset.panel !== name));
   }
   document.querySelectorAll("[data-tab]").forEach((tab) => tab.addEventListener("click", () => activatePanel(tab.dataset.tab)));
-  document.querySelectorAll("[data-inbox-filter]").forEach((filter) => filter.addEventListener("change", renderInbox));
+  document.querySelector("[data-inbox-filters]").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-inbox-kind]");
+    if (!button) return;
+    activeInboxKind = button.dataset.inboxKind;
+    renderInbox();
+  });
   document.querySelectorAll("[data-schedule-filter]").forEach((filter) => filter.addEventListener("change", renderSchedule));
   document.querySelectorAll("[data-material-filter]").forEach((filter) => filter.addEventListener(filter.type === "search" ? "input" : "change", renderMaterials));
   materialForm.elements.sectionId.addEventListener("change", filterMaterialTopicOptions);
@@ -822,12 +849,30 @@
       button.textContent = "Сохранить тест";
     }
   });
-  document.querySelector("[data-inbox-summary]").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-quick-status]"); if (!button) return;
-    const filter = document.querySelector("[data-inbox-filter='status']");
-    filter.value = filter.value === button.dataset.quickStatus ? "" : button.dataset.quickStatus; renderInbox();
-  });
   inboxList.addEventListener("click", async (event) => {
+    const attemptButton = event.target.closest("[data-open-inbox-attempt]");
+    if (attemptButton) {
+      const [studentId, attemptId] = attemptButton.dataset.openInboxAttempt.split(":");
+      activatePanel("students");
+      activeStudentTab = "tests";
+      await openStudent(studentId);
+      await openAttempt(attemptId);
+      return;
+    }
+    const messageButton = event.target.closest("[data-open-inbox-conversation]");
+    if (messageButton) {
+      const [type, id, studentId] = messageButton.dataset.openInboxConversation.split(":");
+      if (type === "test_attempt") {
+        activatePanel("students");
+        activeStudentTab = "tests";
+        await openStudent(studentId);
+        await openAttempt(id);
+        document.querySelector(`[data-attempt-conversation="${id}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        await openAdminConversation(type, id);
+      }
+      return;
+    }
     const conversationButton = event.target.closest("[data-open-work-conversation]");
     if (conversationButton) {
       const [type, id] = conversationButton.dataset.openWorkConversation.split(":");
@@ -839,11 +884,10 @@
     const [type, id] = row.dataset.submission.split(":");
     button.disabled = true; inboxMessage.textContent = "";
     try {
-      const payload = await api(`/submissions/${type}/${id}/review`, { method: "PATCH", body: JSON.stringify({ status: row.querySelector("[data-review-status]").value, teacherComment: row.querySelector("[data-review-comment]").value }) });
-      submissions = submissions.map((item) => item.type === type && item.id === id ? payload.submission : item);
-      inboxCounts = submissions.reduce((counts, item) => ({ ...counts, [item.status]: (counts[item.status] || 0) + 1 }), { submitted: 0, in_review: 0, needs_revision: 0, accepted: 0, unreadMessages: Number(inboxCounts.unreadMessages || 0) });
+      await api(`/submissions/${type}/${id}/review`, { method: "PATCH", body: JSON.stringify({ status: row.querySelector("[data-review-status]").value, teacherComment: row.querySelector("[data-review-comment]").value }) });
       students = (await api("/students")).students;
-      renderInbox(); renderStudents(); renderSettings(); updateFilterOptions();
+      await reloadInbox();
+      renderStudents(); renderSettings(); updateFilterOptions();
       inboxMessage.textContent = "Проверка сохранена.";
     } catch (error) { inboxMessage.textContent = error.message; button.disabled = false; }
   });
@@ -921,19 +965,6 @@
     showConversationAttachment(conversationForm, document.querySelector("[data-conversation-message]"));
   });
   conversationForm.querySelector("[data-remove-conversation-file]").addEventListener("click", () => resetConversationAttachment(conversationForm));
-  document.querySelector("[data-conversation-inbox-list]").addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-open-inbox-conversation]");
-    if (!button) return;
-    const [type, id, studentId] = button.dataset.openInboxConversation.split(":");
-    if (type === "test_attempt") {
-      activatePanel("students");
-      await openStudent(studentId);
-      await openAttempt(id);
-      document.querySelector(`[data-attempt-conversation="${id}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    await openAdminConversation(type, id);
-  });
   conversationForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!activeConversation) return;
