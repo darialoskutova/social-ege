@@ -300,12 +300,13 @@ test("secure homework and mock uploads store real files with owner/admin access"
     assert.equal((await upload(server, "/api/learning/mock-submissions/file", studentA, PDF, headers)).status, 409);
     assert.equal(fs.readdirSync(directory).length, 1);
 
+    const formattedTeacherComment = "# Что исправить\n\n**Добавьте аргумент** и проверьте вывод.\n\n| Критерий | Статус |\n| --- | --- |\n| Аргумент | Доработать |";
     const needsRevision = await fetch(`${server.baseUrl}/api/admin/submissions/mock/${createdPayload.submission.id}/review`, {
       method: "PATCH", headers: { origin: ORIGIN, cookie: admin, "content-type": "application/json" },
-      body: JSON.stringify({ status: "needs_revision", teacherComment: "Исправьте аргумент" }),
+      body: JSON.stringify({ status: "needs_revision", teacherComment: formattedTeacherComment }),
     });
     assert.equal(needsRevision.status, 200);
-    assert.equal(pool.state.mocks[0].teacher_comment, "Исправьте аргумент");
+    assert.equal(pool.state.mocks[0].teacher_comment, formattedTeacherComment);
     assert.ok(pool.state.mocks[0].reviewed_at);
     assert.equal(pool.state.mocks[0].reviewed_by, "3");
 

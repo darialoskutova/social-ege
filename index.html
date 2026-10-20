@@ -10723,7 +10723,7 @@
         }
     </style>
     <link rel="stylesheet" href="landing.css?v=20260925-full-header">
-    <link rel="stylesheet" href="cabinet.css?v=20261019-attachments">
+    <link rel="stylesheet" href="cabinet.css?v=20261020-feedback-ui">
 </head>
 <body>
 
@@ -12102,6 +12102,7 @@
     <script src="data/practice-games.js?v=20260904-2"></script>
     <script src="data/thematic-mocks.js?v=20271009-1"></script>
     <script src="frontend-state.js?v=20261014-test-editor"></script>
+    <script src="feedback-renderer.js?v=20261020-feedback-ui"></script>
     <script>
         const topics = window.EGE_COURSE_TOPICS || [];
 
@@ -12111,6 +12112,7 @@
         const toast = document.getElementById("toast");
         const testImageTranscriptions = window.EGE_TEST_IMAGE_TRANSCRIPTIONS?.questions || {};
         const frontendState = window.EGE_FRONTEND_STATE;
+        const feedbackRenderer = window.EGE_FEEDBACK_RENDERER;
         const testsByLesson = new Map();
         const topicSubjectLabels = {
             soc: "Социология",
@@ -12703,7 +12705,7 @@
                 return;
             }
             const unread = conversationUnread("mock", submission.id);
-            status.innerHTML = `<span>${escapeHtml(submission.status)}. Файл: ${escapeHtml(submission.fileName)}</span>
+            status.innerHTML = `<span>${escapeHtml(submission.status)}. Файл: ${escapeHtml(feedbackRenderer.displayFilename(submission.fileName))}</span>
                 <button class="button button--small button--light conversation-trigger ${unread ? "has-unread" : ""}" type="button"
                     data-open-conversation="mock:${submission.id}" data-conversation-title="${escapeHtml(currentThematicMock.title)}"
                     data-unread-label="${unread ? `Новый ответ · ${unread}` : ""}">Переписка</button>`;
@@ -14115,7 +14117,7 @@
 
         function conversationAttachmentMarkup(attachment) {
             return `<div class="conversation-attachment">
-                <span><strong>${escapeHtml(attachment.originalFilename)}</strong><small>${formatConversationFileSize(attachment.sizeBytes)}</small></span>
+                <span><strong>${escapeHtml(feedbackRenderer.displayFilename(attachment.originalFilename))}</strong><small>${formatConversationFileSize(attachment.sizeBytes)}</small></span>
                 <a href="${escapeHtml(attachment.downloadUrl)}">Скачать</a>
             </div>`;
         }
@@ -14192,7 +14194,7 @@
             if (!messages.length) return '<p class="conversation-empty">Сообщений пока нет. Здесь можно задать вопрос по этой работе.</p>';
             return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
                 <header><strong>${message.sender === "student" ? "Вы" : "Дарья Сергеевна"}</strong><time>${formatDate(message.createdAt)}</time></header>
-                ${message.text ? `<p>${escapeHtml(message.text)}</p>` : ""}
+                ${message.text ? (message.sender === "teacher" ? `<div class="feedback-markdown">${feedbackRenderer.formatFeedbackMarkdown(message.text)}</div>` : `<p>${escapeHtml(message.text)}</p>`) : ""}
                 ${(message.attachments || []).map(conversationAttachmentMarkup).join("")}
             </article>`).join("");
         }
@@ -14251,10 +14253,10 @@
                 <article class="work-card">
                     <div>
                         <h3>${escapeHtml(work.topicTitle)}</h3>
-                        <div class="work-meta">${escapeHtml(work.fileName)} · ${formatDate(work.createdAt)}</div>
+                        <div class="work-meta">${escapeHtml(feedbackRenderer.displayFilename(work.fileName))} · ${formatDate(work.createdAt)}</div>
                     </div>
                     <span class="status ${work.status === "Проверено" ? "status--checked" : ""}">${escapeHtml(work.status)}</span>
-                    ${work.teacherComment ? `<div class="teacher-comment"><strong>Комментарий Дарьи:</strong><br>${escapeHtml(work.teacherComment)}</div>` : ""}
+                    ${work.teacherComment ? `<div class="teacher-comment"><strong class="feedback-heading">Комментарий Дарьи:</strong><div class="feedback-markdown">${feedbackRenderer.formatFeedbackMarkdown(work.teacherComment)}</div></div>` : ""}
                     <button class="button button--small button--light conversation-trigger ${conversationUnread("homework", work.id) ? "has-unread" : ""}" type="button"
                         data-open-conversation="homework:${work.id}" data-conversation-title="${escapeHtml(work.topicTitle)}"
                         data-unread-label="${conversationUnread("homework", work.id) ? `Новый ответ · ${conversationUnread("homework", work.id)}` : ""}">Переписка</button>
@@ -14272,7 +14274,7 @@
                 <article class="student-message-card">
                     <header><span>${escapeHtml(message.category)}</span><time>${formatDate(message.createdAt)}</time></header>
                     <p>${escapeHtml(message.text)}</p>
-                    ${message.reply ? `<div class="message-reply"><strong>Ответ преподавателя:</strong><br>${escapeHtml(message.reply)}</div>` : ""}
+                    ${message.reply ? `<div class="message-reply"><strong class="feedback-heading">Ответ преподавателя:</strong><div class="feedback-markdown">${feedbackRenderer.formatFeedbackMarkdown(message.reply)}</div></div>` : ""}
                 </article>
             `).join("") : "";
         }
@@ -14304,7 +14306,7 @@
                     <div>
                         <p class="eyebrow">${escapeHtml(work.studentName)}</p>
                         <h3>${escapeHtml(work.topicTitle)}</h3>
-                        <div class="work-meta">Файл: ${escapeHtml(work.fileName)}<br>Отправлено: ${formatDate(work.createdAt)}</div>
+                        <div class="work-meta">Файл: ${escapeHtml(feedbackRenderer.displayFilename(work.fileName))}<br>Отправлено: ${formatDate(work.createdAt)}</div>
                         ${work.studentComment ? `<p><strong>Сообщение ученика:</strong> ${escapeHtml(work.studentComment)}</p>` : ""}
                     </div>
                     <div class="admin-controls">

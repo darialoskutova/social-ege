@@ -30,6 +30,7 @@
   const materialForm = document.querySelector("[data-material-form]");
   const conversationDialog = document.querySelector("[data-conversation-dialog]");
   const conversationForm = document.querySelector("[data-conversation-form]");
+  const feedbackRenderer = window.EGE_FEEDBACK_RENDERER;
 
   let students = [];
   let submissions = [];
@@ -126,7 +127,7 @@
   }
 
   function conversationAttachmentMarkup(attachment) {
-    return `<div class="conversation-attachment"><span><strong>${escapeHtml(attachment.originalFilename)}</strong><small>${formatBytes(attachment.sizeBytes)}</small></span><a class="action-button" href="${escapeHtml(attachment.downloadUrl)}">Скачать</a></div>`;
+    return `<div class="conversation-attachment"><span><strong>${escapeHtml(feedbackRenderer.displayFilename(attachment.originalFilename))}</strong><small>${formatBytes(attachment.sizeBytes)}</small></span><a class="action-button" href="${escapeHtml(attachment.downloadUrl)}">Скачать</a></div>`;
   }
 
   function conversationAttachmentPickerMarkup(id) {
@@ -240,7 +241,7 @@
           <p class="submission-meta">${escapeHtml(kind)} · ${escapeHtml(title)}<br>${dateTime(activity.occurredAt)} · версия ${item.fileRevision}</p>
         </div>
         <div>
-          <div class="submission-file"><div><strong>${escapeHtml(item.fileName)}</strong><span class="secondary-copy">${item.sizeBytes === null ? "Размер не указан" : formatBytes(item.sizeBytes)} · редакция ${item.fileRevision}</span></div>${item.downloadUrl ? `<a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a>` : `<span class="secondary-copy">Файл не загружен</span>`}</div>
+          <div class="submission-file"><div><strong>${escapeHtml(feedbackRenderer.displayFilename(item.fileName))}</strong><span class="secondary-copy">${item.sizeBytes === null ? "Размер не указан" : formatBytes(item.sizeBytes)} · редакция ${item.fileRevision}</span></div>${item.downloadUrl ? `<a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a>` : `<span class="secondary-copy">Файл не загружен</span>`}</div>
           <p class="submission-note"><strong>Комментарий ученика:</strong> ${escapeHtml(item.studentComment || "Без комментария")}</p>
           <div class="submission-conversation-actions"><button class="action-button" type="button" data-open-work-conversation="${item.type}:${item.id}">Открыть переписку</button></div>
         </div>
@@ -265,7 +266,7 @@
   function renderMessageInboxItem(item) {
     const subject = item.title ? `${conversationKind(item.subjectType)} · ${item.title}` : conversationKind(item.subjectType);
     return `<article class="unified-inbox-card unified-inbox-compact" data-inbox-item="${escapeHtml(item.id)}">
-      <div class="unified-inbox-copy"><p class="submission-kind">${escapeHtml(item.label)}</p><h2>${escapeHtml(item.studentName)}</h2><p>${escapeHtml(subject)}</p><span>${dateTime(item.occurredAt)}${item.unreadCount > 1 ? ` · сообщений: ${item.unreadCount}` : ""}</span><blockquote>${escapeHtml(item.preview)}</blockquote>${item.attachmentFilename ? `<span class="conversation-inbox-file">Файл: ${escapeHtml(item.attachmentFilename)}</span>` : ""}</div>
+      <div class="unified-inbox-copy"><p class="submission-kind">${escapeHtml(item.label)}</p><h2>${escapeHtml(item.studentName)}</h2><p>${escapeHtml(subject)}</p><span>${dateTime(item.occurredAt)}${item.unreadCount > 1 ? ` · сообщений: ${item.unreadCount}` : ""}</span><blockquote>${escapeHtml(item.preview)}</blockquote>${item.attachmentFilename ? `<span class="conversation-inbox-file">Файл: ${escapeHtml(feedbackRenderer.displayFilename(item.attachmentFilename))}</span>` : ""}</div>
       <button class="action-button" type="button" data-open-inbox-conversation="${item.subjectType}:${item.subjectId}:${item.studentId}">Открыть</button>
     </article>`;
   }
@@ -390,7 +391,7 @@
     if (!messages.length) return '<p class="detail-empty">Сообщений пока нет.</p>';
     return messages.map((message) => `<article class="conversation-message ${message.sender === "teacher" ? "is-teacher" : "is-student"}">
       <header><strong>${message.sender === "teacher" ? "Вы" : escapeHtml(message.author || "Ученик")}</strong><time>${dateTime(message.createdAt)}</time></header>
-      ${message.text ? `<p>${escapeHtml(message.text)}</p>` : ""}
+      ${message.text ? (message.sender === "teacher" ? `<div class="feedback-markdown">${feedbackRenderer.formatFeedbackMarkdown(message.text)}</div>` : `<p>${escapeHtml(message.text)}</p>`) : ""}
       ${(message.attachments || []).map(conversationAttachmentMarkup).join("")}
     </article>`).join("");
   }
@@ -399,7 +400,7 @@
     const submission = submissions.find((item) => item.type === type && item.id === String(id));
     if (!submission) return `<strong>${escapeHtml(conversationKind(type))}</strong>`;
     const title = type === "mock" ? (submission.mock?.title || submission.mockId) : topicName(submission.topicId);
-    return `<strong>${escapeHtml(submission.studentName)} · ${escapeHtml(title)}</strong><br>${escapeHtml(submission.fileName || "Файл не загружен")} · ${submissionStatusNames[submission.status] || escapeHtml(submission.status)}`;
+    return `<strong>${escapeHtml(submission.studentName)} · ${escapeHtml(title)}</strong><br>${escapeHtml(feedbackRenderer.displayFilename(submission.fileName || "Файл не загружен"))} · ${submissionStatusNames[submission.status] || escapeHtml(submission.status)}`;
   }
 
   async function reloadInbox() {
@@ -622,7 +623,7 @@
       && (!query || item.title.toLocaleLowerCase("ru").includes(query) || item.fileName.toLocaleLowerCase("ru").includes(query)));
     materialState.hidden = Boolean(filtered.length);
     materialState.textContent = materials.length ? "По выбранным фильтрам материалов нет" : "Материалы пока не добавлены";
-    materialList.innerHTML = filtered.map((item) => `<article class="material-row" data-material-id="${item.id}"><div><strong>${escapeHtml(item.title)}</strong><span class="secondary-copy">${escapeHtml(item.typeLabel)} · ${escapeHtml(item.sectionLabel)}${item.topicId ? ` · ${escapeHtml(topicName(item.topicId))}` : ""}</span><span class="secondary-copy">${escapeHtml(item.fileName)}${item.sizeBytes ? ` · ${formatBytes(item.sizeBytes)}` : ""} · ${dateTime(item.updatedAt || item.createdAt)}</span></div><span class="status status-${item.status}">${materialStatusNames[item.status]}</span><div class="material-actions"><a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a><button class="action-button" type="button" data-edit-material="${item.id}">Редактировать</button>${item.status !== "published" ? `<button class="action-button" type="button" data-material-status="published">Опубликовать</button>` : `<button class="action-button" type="button" data-material-status="hidden">Скрыть</button>`}${item.status !== "archived" ? `<button class="action-button danger" type="button" data-material-status="archived">В архив</button>` : ""}</div></article>`).join("");
+    materialList.innerHTML = filtered.map((item) => `<article class="material-row" data-material-id="${item.id}"><div><strong>${escapeHtml(item.title)}</strong><span class="secondary-copy">${escapeHtml(item.typeLabel)} · ${escapeHtml(item.sectionLabel)}${item.topicId ? ` · ${escapeHtml(topicName(item.topicId))}` : ""}</span><span class="secondary-copy">${escapeHtml(feedbackRenderer.displayFilename(item.fileName))}${item.sizeBytes ? ` · ${formatBytes(item.sizeBytes)}` : ""} · ${dateTime(item.updatedAt || item.createdAt)}</span></div><span class="status status-${item.status}">${materialStatusNames[item.status]}</span><div class="material-actions"><a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a><button class="action-button" type="button" data-edit-material="${item.id}">Редактировать</button>${item.status !== "published" ? `<button class="action-button" type="button" data-material-status="published">Опубликовать</button>` : `<button class="action-button" type="button" data-material-status="hidden">Скрыть</button>`}${item.status !== "archived" ? `<button class="action-button danger" type="button" data-material-status="archived">В архив</button>` : ""}</div></article>`).join("");
   }
 
   function materialPayload(form = materialForm) {
@@ -663,7 +664,7 @@
     filterMaterialTopicOptions();
     materialForm.elements.file.required = !material;
     document.querySelector("[data-material-dialog-title]").textContent = material ? "Изменить материал" : "Новый материал";
-    document.querySelector("[data-material-file-help]").textContent = material ? `— оставить пустым или заменить файл «${material.fileName}»` : "— PDF, DOCX, JPG или PNG; до 25 МБ";
+    document.querySelector("[data-material-file-help]").textContent = material ? `— оставить пустым или заменить файл «${feedbackRenderer.displayFilename(material.fileName)}»` : "— PDF, DOCX, JPG или PNG; до 25 МБ";
     document.querySelector("[data-material-form-message]").textContent = "";
     materialDialog.showModal();
     materialForm.elements.title.focus();

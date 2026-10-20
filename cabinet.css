@@ -2477,6 +2477,109 @@ html {
     font-size: 14px;
 }
 
+/* Teacher feedback: readable in both themes, with local overflow for wide tables. */
+#appView .teacher-comment,
+#appView .message-reply {
+    min-width: 0;
+    max-width: 100%;
+    color: var(--ink);
+}
+
+#appView .teacher-comment {
+    border-left-color: var(--blue);
+    background: color-mix(in srgb, var(--blue-soft) 72%, var(--paper-light));
+}
+
+#appView .feedback-heading {
+    display: block;
+    margin-bottom: 9px;
+    color: inherit;
+    font-size: 14px;
+}
+
+.feedback-markdown {
+    min-width: 0;
+    max-width: 100%;
+    color: inherit;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+    word-break: normal;
+}
+
+.feedback-markdown > :first-child { margin-top: 0; }
+.feedback-markdown > :last-child { margin-bottom: 0; }
+.feedback-markdown p { margin: 0 0 10px; white-space: normal; }
+.feedback-markdown h3,
+.feedback-markdown h4,
+.feedback-markdown h5,
+.feedback-markdown h6 {
+    margin: 14px 0 8px;
+    color: inherit;
+    font-size: 1.05em;
+    line-height: 1.35;
+}
+.feedback-markdown ul,
+.feedback-markdown ol { margin: 8px 0 11px; padding-left: 24px; }
+.feedback-markdown li + li { margin-top: 4px; }
+.feedback-markdown a {
+    color: var(--blue-dark);
+    font-weight: 750;
+    text-underline-offset: 3px;
+}
+.feedback-table-scroll {
+    max-width: 100%;
+    margin: 12px 0;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+.feedback-markdown table {
+    width: 100%;
+    min-width: 420px;
+    border-collapse: collapse;
+    background: var(--paper-light);
+}
+.feedback-markdown th,
+.feedback-markdown td {
+    min-width: 120px;
+    padding: 9px 11px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+.feedback-markdown th:last-child,
+.feedback-markdown td:last-child { border-right: 0; }
+.feedback-markdown tbody tr:last-child td { border-bottom: 0; }
+.feedback-markdown th { background: var(--blue-soft); font-weight: 800; }
+
+html[data-theme="dark"] #appView .teacher-comment {
+    border-left-color: #7da4eb;
+    background: #172a47;
+    color: #f5f7fc;
+}
+
+html[data-theme="dark"] #appView .message-reply {
+    border-left-color: #7da4eb;
+    background: #172a47;
+    color: #f5f7fc;
+}
+
+html[data-theme="dark"] .feedback-markdown a { color: #a9c6ff; }
+html[data-theme="dark"] .feedback-table-scroll { border-color: #496180; }
+html[data-theme="dark"] .feedback-markdown table { background: #111f35; }
+html[data-theme="dark"] .feedback-markdown th,
+html[data-theme="dark"] .feedback-markdown td { border-color: #496180; }
+html[data-theme="dark"] .feedback-markdown th { background: #20395e; }
+
+.conversation-message .feedback-markdown p {
+    margin: 0 0 10px;
+    white-space: normal;
+}
+
 #appView .button,
 #appView :where(input:not([type="radio"]):not([type="checkbox"]), select, textarea) {
     min-height: 48px;
