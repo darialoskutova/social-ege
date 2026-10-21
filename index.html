@@ -8803,6 +8803,45 @@
             transition: 160ms ease;
         }
 
+        .library-file--managed {
+            grid-template-columns: minmax(0, 1fr) 18px;
+            min-width: 0;
+        }
+
+        .library-file--managed > span {
+            min-width: 0;
+        }
+
+        .library-file--managed strong,
+        .library-file--managed small {
+            overflow-wrap: anywhere;
+        }
+
+        .library-file--managed:focus-visible {
+            outline: 3px solid color-mix(in srgb, var(--blue) 42%, transparent);
+            outline-offset: 3px;
+        }
+
+        .context-materials {
+            margin: 22px 0 28px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(17, 47, 108, 0.18);
+        }
+
+        .context-materials h2 {
+            margin: 0 0 12px;
+            color: var(--blue-dark);
+            font-size: 20px;
+        }
+
+        .context-materials .library-file-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .context-materials--topic {
+            margin-bottom: 0;
+        }
+
         .library-file:hover {
             border-color: var(--blue);
             box-shadow: 0 9px 18px rgba(17, 47, 108, 0.1);
@@ -9217,6 +9256,10 @@
             .library-file-grid--wide,
             .library-shelf-grid,
             .practice-variants-groups {
+                grid-template-columns: 1fr;
+            }
+
+            .context-materials .library-file-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -11634,6 +11677,10 @@
                             </button>
                         </div>
                         <div class="selected-subject-heading" id="selectedSubjectHeading" tabindex="-1"><h2 id="selectedSubjectTitle">Социология</h2><span id="selectedSubjectCount">14 тем</span></div>
+                        <section class="context-materials" id="sectionManagedMaterials" aria-labelledby="sectionManagedMaterialsTitle" hidden>
+                            <h2 id="sectionManagedMaterialsTitle">Материалы раздела</h2>
+                            <div class="library-file-grid" data-section-materials></div>
+                        </section>
                         <div class="topic-list" id="topicList"></div>
                     </section>
 
@@ -11698,6 +11745,10 @@
                                     <span class="material-link">Открыть материалы <span>↗</span></span>
                                 </a>
                             </div>
+                            <section class="context-materials context-materials--topic" id="topicManagedMaterials" aria-labelledby="topicManagedMaterialsTitle" hidden>
+                                <h2 id="topicManagedMaterialsTitle">Дополнительные файлы</h2>
+                                <div class="library-file-grid" data-topic-materials></div>
+                            </section>
                         </div>
 
                         <section class="topic-test-section lesson-panel" id="topicTestSection" data-lesson-panel="test" hidden>
@@ -11917,17 +11968,11 @@
                                         </div>
                                     </section>
 
-                                    <section class="library-shelf library-shelf--extras">
+                                    <section class="library-shelf library-shelf--extras" hidden>
                                         <header class="library-shelf-heading">
                                             <span class="library-shelf-icon"><svg viewBox="0 0 52 52" aria-hidden="true"><path d="M8 10h30v33H8zM14 17h18M14 24h18M14 31h12M38 20h7v27H15v-4"/></svg></span>
                                             <div><h2>Дополнительные файлы</h2></div>
                                         </header>
-                                        <div class="library-file-grid">
-                                            <a class="library-file" data-section-plan="social-relations" href="доп материалы/Планы по социологии из ЕГЭ.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по социологии</strong><small>Задание № 24</small></span><b>↗</b></a>
-                                            <a class="library-file" data-section-plan="economics" href="доп материалы/Планы по экономике.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по экономике</strong><small>Задание № 24</small></span><b>↗</b></a>
-                                            <a class="library-file" data-section-plan="politics" href="доп материалы/Планы по политике.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по политике</strong><small>Задание № 24</small></span><b>↗</b></a>
-                                            <a class="library-file" data-section-plan="law" href="доп материалы/Планы по праву ЕГЭ.pdf" target="_blank" rel="noopener noreferrer"><span><strong>Планы по праву</strong><small>Задание № 24</small></span><b>↗</b></a>
-                                        </div>
                                         <div class="library-file-grid" data-managed-library></div>
                                     </section>
                                 </div>
@@ -12672,6 +12717,54 @@
             ))[0] || null;
         }
 
+        function compareManagedMaterials(left, right) {
+            return Number(left.sortOrder || 0) - Number(right.sortOrder || 0)
+                || String(left.id).localeCompare(String(right.id), "ru", { numeric: true });
+        }
+
+        function managedMaterialCard(material) {
+            const subtitle = material.subtitle
+                ? `<small>${escapeHtml(material.subtitle)}</small>`
+                : "";
+            return `<a class="library-file library-file--managed" href="${escapeHtml(material.downloadUrl)}" target="_blank" rel="noopener noreferrer">
+                <span><strong>${escapeHtml(material.title)}</strong>${subtitle}</span><b aria-hidden="true">↗</b>
+            </a>`;
+        }
+
+        function renderManagedMaterialList(container, items) {
+            const ordered = [...items].sort(compareManagedMaterials);
+            container.innerHTML = ordered.map(managedMaterialCard).join("");
+            return ordered.length;
+        }
+
+        function renderSectionMaterials(subject) {
+            const panel = document.getElementById("sectionManagedMaterials");
+            const container = panel.querySelector("[data-section-materials]");
+            const sectionIds = {
+                soc: ["human_society", "social_relations"],
+                eco: ["economics"],
+                pol: ["politics"],
+                law: ["law"]
+            }[subject] || [];
+            const items = learningState.materialsLoaded ? learningState.materials.filter((material) => (
+                material.scope === "section"
+                && sectionIds.includes(material.sectionId)
+                && !["section_plan", "thematic_mock"].includes(material.type)
+            )) : [];
+            panel.hidden = renderManagedMaterialList(container, items) === 0;
+        }
+
+        function renderTopicMaterials(topicId) {
+            const panel = document.getElementById("topicManagedMaterials");
+            const container = panel.querySelector("[data-topic-materials]");
+            const items = learningState.materialsLoaded ? learningState.materials.filter((material) => (
+                material.scope === "topic"
+                && material.topicId === topicId
+                && !["notes", "homework"].includes(material.type)
+            )) : [];
+            panel.hidden = renderManagedMaterialList(container, items) === 0;
+        }
+
         function renderThematicMocks() {
             const mocks = window.THEMATIC_MOCKS || [];
             const groups = new Map();
@@ -13098,6 +13191,7 @@
                 tab.classList.toggle("is-active", isActive);
                 tab.setAttribute("aria-selected", String(isActive));
             });
+            renderSectionMaterials(subject);
         }
 
         function openSubject(subject) {
@@ -13120,10 +13214,14 @@
             document.getElementById("lessonTitle").textContent = topic.title;
             const managedForTopic = (type) => latestPublishedMaterial((item) => item.topicId === topic.id && item.type === type)?.downloadUrl || null;
             const notesResource = learningState.materialsLoaded ? managedForTopic("notes") : topic.notes;
-            const extraResource = learningState.materialsLoaded ? managedForTopic("additional") : topic.extra;
             const homeworkResource = learningState.materialsLoaded ? managedForTopic("homework") : topic.homework;
             setMaterialLink("notesLink", notesResource, "", "Конспект по этой теме пока не добавлен.", "notesCardDescription");
-            setMaterialLink("extraLink", extraResource, "Подборка для углубления и повторения темы.", "Дополнительные материалы появятся позже.", "extraCardDescription");
+            const extraLink = document.getElementById("extraLink");
+            extraLink.hidden = learningState.materialsLoaded;
+            if (!learningState.materialsLoaded) {
+                setMaterialLink("extraLink", topic.extra, "Подборка для углубления и повторения темы.", "Дополнительные материалы появятся позже.", "extraCardDescription");
+            }
+            renderTopicMaterials(topic.id);
             const homeworkPanelDownload = document.getElementById("homeworkPanelDownload");
             homeworkPanelDownload.hidden = !homeworkResource;
             if (homeworkResource) {
@@ -13907,20 +14005,19 @@
 
         function applyMaterialCatalog() {
             if (!learningState.materialsLoaded) return;
-            document.querySelectorAll("[data-section-plan]").forEach((link) => {
-                const sectionMap = { "social-relations": "social_relations", economics: "economics", politics: "politics", law: "law" };
-                const material = latestPublishedMaterial((item) => item.type === "section_plan" && item.sectionId === sectionMap[link.dataset.sectionPlan]);
-                link.classList.toggle("is-unavailable", !material);
-                link.setAttribute("aria-disabled", material ? "false" : "true");
-                if (material) link.href = material.downloadUrl;
-                else link.removeAttribute("href");
-            });
             const managedLibrary = document.querySelector("[data-managed-library]");
             if (managedLibrary) {
-                const items = learningState.materials.filter((item) => item.type === "additional" && !item.topicId);
-                managedLibrary.innerHTML = items.map((item) => `<a class="library-file" href="${escapeHtml(item.downloadUrl)}" target="_blank" rel="noopener noreferrer"><span><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.sectionLabel)}</small></span><b>↗</b></a>`).join("");
-                managedLibrary.hidden = items.length === 0;
+                const items = learningState.materials.filter((material) => (
+                    material.scope === "course"
+                    || (material.scope === "section" && material.type === "section_plan")
+                ) && material.type !== "thematic_mock");
+                const shelf = managedLibrary.closest(".library-shelf--extras");
+                const count = renderManagedMaterialList(managedLibrary, items);
+                managedLibrary.hidden = count === 0;
+                if (shelf) shelf.hidden = count === 0;
             }
+            if (currentSubject) renderSectionMaterials(currentSubject);
+            if (currentTopic) renderTopicMaterials(currentTopic.id);
         }
 
         async function fetchLearningData() {

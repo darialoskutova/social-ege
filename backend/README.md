@@ -231,6 +231,21 @@ stable `legacy_key` values; subsequent metadata and publication changes are
 stored in PostgreSQL. New files are kept in private storage and downloaded only
 through authenticated role-aware endpoints.
 
+Migration `012_material_scopes.sql` adds an explicit display scope and optional
+card subtitle without replacing any material row or file identity. Supported
+scopes are `course` (no section or topic), `section` (canonical section only)
+and `topic` (canonical section plus a topic that belongs to it). Existing topic
+materials are backfilled as `topic`; section plans and thematic mocks as
+`section`; older non-topic additional materials remain in the common course
+block. The four seeded section plans retain their stable `legacy_key` and gain
+the card subtitle `Задание № 24`.
+
+The admin create/edit form controls scope, subtitle and deterministic
+`sort_order`. Student cards are rendered from the protected catalog response,
+so title, subtitle, order and publication status take effect without an HTML
+change or deployment. Hidden and archived rows remain unavailable through the
+student file endpoint.
+
 Runtime settings:
 
 - `MATERIAL_STORAGE_DIR` (production default `/opt/social-ege/var/materials`)

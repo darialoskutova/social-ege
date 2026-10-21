@@ -8,17 +8,14 @@ const path = require("node:path");
 const root = path.resolve(__dirname, "../..");
 const indexText = fs.readFileSync(path.join(root, "index.html"), "utf8");
 
-test("every published section plan exists as a readable PDF", () => {
-  const links = [...indexText.matchAll(/data-section-plan="([^"]+)" href="([^"]+)"/g)]
-    .map((match) => ({ section: match[1], href: match[2] }));
-  assert.deepEqual(links, [
-    { section: "social-relations", href: "доп материалы/Планы по социологии из ЕГЭ.pdf" },
-    { section: "economics", href: "доп материалы/Планы по экономике.pdf" },
-    { section: "politics", href: "доп материалы/Планы по политике.pdf" },
-    { section: "law", href: "доп материалы/Планы по праву ЕГЭ.pdf" },
-  ]);
+test("every CMS-seeded section plan exists as a readable PDF", () => {
+  const service = require("../materials/service");
+  const plans = service.legacySeeds().filter((item) => item.type === "section_plan");
+  assert.equal(plans.length, 4);
+  assert.equal(indexText.includes("data-section-plan="), false);
+  assert.match(indexText, /data-managed-library/);
 
-  for (const { section, href } of links) {
+  for (const { sectionId: section, legacyPath: href } of plans) {
     assert.equal(href, href.normalize("NFC"), `${section} path must use NFC`);
     assert.equal(path.isAbsolute(href), false);
     assert.equal(href.split("/").includes(".."), false);

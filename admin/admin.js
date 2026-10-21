@@ -39,6 +39,7 @@
   let activeInboxKind = "all";
   let scheduleEvents = [];
   let courseTopics = [];
+  let courseSections = [];
   let activePlanStudent = null;
   let activeStudyPlan = null;
   let activeStudentDetails = null;
@@ -62,7 +63,8 @@
     homework_deadline: "Вторая часть", thematic_mock: "Пробник",
   };
   const materialStatusNames = { published: "Опубликован", hidden: "Скрыт", archived: "В архиве" };
-  const sectionNames = {
+  const materialScopeNames = { course: "Весь курс", section: "Раздел", topic: "Тема" };
+  let sectionNames = {
     human_society: "Человек и общество / духовная культура",
     social_relations: "Социальные отношения", economics: "Экономика", politics: "Политика", law: "Право",
   };
@@ -596,42 +598,67 @@
   }
 
   function fillMaterialOptions() {
+    if (courseSections.length) {
+      sectionNames = Object.fromEntries(courseSections.map((section) => [section.id, section.label]));
+    }
     const sections = Object.entries(sectionNames).map(([id, label]) => `<option value="${id}">${escapeHtml(label)}</option>`).join("");
     document.querySelector("[data-material-filter='section']").innerHTML = `<option value="">Все разделы</option>${sections}`;
-    materialForm.elements.sectionId.innerHTML = sections;
+    materialForm.elements.sectionId.innerHTML = `<option value="">Выберите раздел</option>${sections}`;
     const topics = courseTopics.map((topic) => `<option value="${escapeHtml(topic.id)}" data-section="${escapeHtml(topic.sectionId)}">Тема №${String(topic.lesson).padStart(2, "0")} — ${escapeHtml(topic.title)}</option>`).join("");
     document.querySelector("[data-material-filter='topic']").innerHTML = `<option value="">Все темы</option>${topics}`;
-    materialForm.elements.topicId.innerHTML = `<option value="">Без привязки к теме</option>${topics}`;
+    materialForm.elements.topicId.innerHTML = `<option value="">Выберите тему</option>${topics}`;
   }
 
-  function filterMaterialTopicOptions() {
+  function syncMaterialScopeFields(clearHiddenValues = false) {
+    const scope = materialForm.elements.scope.value;
     const section = materialForm.elements.sectionId.value;
+    const sectionField = document.querySelector("[data-material-section-field]");
+    const topicField = document.querySelector("[data-material-topic-field]");
+    const needsSection = scope === "section" || scope === "topic";
+    const needsTopic = scope === "topic";
+    sectionField.hidden = !needsSection;
+    topicField.hidden = !needsTopic;
+    materialForm.elements.sectionId.disabled = !needsSection;
+    materialForm.elements.sectionId.required = needsSection;
+    materialForm.elements.topicId.disabled = !needsTopic;
+    materialForm.elements.topicId.required = needsTopic;
+    if (clearHiddenValues && !needsSection) materialForm.elements.sectionId.value = "";
+    if (clearHiddenValues && !needsTopic) materialForm.elements.topicId.value = "";
     [...materialForm.elements.topicId.options].forEach((option) => {
       option.hidden = Boolean(option.value && option.dataset.section !== section);
     });
     const selected = materialForm.elements.topicId.selectedOptions[0];
     if (selected?.hidden) materialForm.elements.topicId.value = "";
-    materialForm.elements.topicId.required = ["notes", "homework"].includes(materialForm.elements.type.value);
   }
 
   function renderMaterials() {
     const filters = Object.fromEntries([...document.querySelectorAll("[data-material-filter]")].map((element) => [element.dataset.materialFilter, element.value.trim()]));
     const query = filters.search.toLocaleLowerCase("ru");
-    const filtered = materials.filter((item) => (!filters.section || item.sectionId === filters.section)
+    const filtered = materials.filter((item) => (!filters.scope || item.scope === filters.scope)
+      && (!filters.section || item.sectionId === filters.section)
       && (!filters.topic || item.topicId === filters.topic) && (!filters.type || item.type === filters.type)
       && (!filters.status || item.status === filters.status)
-      && (!query || item.title.toLocaleLowerCase("ru").includes(query) || item.fileName.toLocaleLowerCase("ru").includes(query)));
+      && (!query || item.title.toLocaleLowerCase("ru").includes(query)
+        || item.subtitle?.toLocaleLowerCase("ru").includes(query)
+        || item.fileName.toLocaleLowerCase("ru").includes(query)));
     materialState.hidden = Boolean(filtered.length);
     materialState.textContent = materials.length ? "По выбранным фильтрам материалов нет" : "Материалы пока не добавлены";
-    materialList.innerHTML = filtered.map((item) => `<article class="material-row" data-material-id="${item.id}"><div><strong>${escapeHtml(item.title)}</strong><span class="secondary-copy">${escapeHtml(item.typeLabel)} · ${escapeHtml(item.sectionLabel)}${item.topicId ? ` · ${escapeHtml(topicName(item.topicId))}` : ""}</span><span class="secondary-copy">${escapeHtml(feedbackRenderer.displayFilename(item.fileName))}${item.sizeBytes ? ` · ${formatBytes(item.sizeBytes)}` : ""} · ${dateTime(item.updatedAt || item.createdAt)}</span></div><span class="status status-${item.status}">${materialStatusNames[item.status]}</span><div class="material-actions"><a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a><button class="action-button" type="button" data-edit-material="${item.id}">Редактировать</button>${item.status !== "published" ? `<button class="action-button" type="button" data-material-status="published">Опубликовать</button>` : `<button class="action-button" type="button" data-material-status="hidden">Скрыть</button>`}${item.status !== "archived" ? `<button class="action-button danger" type="button" data-material-status="archived">В архив</button>` : ""}</div></article>`).join("");
+    materialList.innerHTML = filtered.map((item) => {
+      const location = item.scope === "course" ? materialScopeNames.course
+        : item.scope === "section" ? `${materialScopeNames.section} · ${item.sectionLabel}`
+          : `${materialScopeNames.topic} · ${topicName(item.topicId)}`;
+      return `<article class="material-row" data-material-id="${item.id}"><div><strong>${escapeHtml(item.title)}</strong>${item.subtitle ? `<span class="secondary-copy">${escapeHtml(item.subtitle)}</span>` : ""}<span class="secondary-copy">${escapeHtml(item.typeLabel)} · ${escapeHtml(location)}</span><span class="secondary-copy">${escapeHtml(feedbackRenderer.displayFilename(item.fileName))}${item.sizeBytes ? ` · ${formatBytes(item.sizeBytes)}` : ""} · ${dateTime(item.updatedAt || item.createdAt)}</span></div><span class="status status-${item.status}">${materialStatusNames[item.status]}</span><div class="material-actions"><a class="action-button" href="${escapeHtml(item.downloadUrl)}">Скачать</a><button class="action-button" type="button" data-edit-material="${item.id}">Редактировать</button>${item.status !== "published" ? `<button class="action-button" type="button" data-material-status="published">Опубликовать</button>` : `<button class="action-button" type="button" data-material-status="hidden">Скрыть</button>`}${item.status !== "archived" ? `<button class="action-button danger" type="button" data-material-status="archived">В архив</button>` : ""}</div></article>`;
+    }).join("");
   }
 
   function materialPayload(form = materialForm) {
     return {
       title: form.elements.title.value.trim(),
       type: form.elements.type.value,
-      sectionId: form.elements.sectionId.value,
-      topicId: form.elements.topicId.value || null,
+      scope: form.elements.scope.value,
+      sectionId: form.elements.scope.value === "course" ? null : form.elements.sectionId.value || null,
+      topicId: form.elements.scope.value === "topic" ? form.elements.topicId.value || null : null,
+      subtitle: form.elements.subtitle.value.trim() || null,
       referenceKey: form.elements.referenceKey.value.trim() || null,
       contentVersion: form.elements.contentVersion.value.trim() || null,
       status: form.elements.status.value,
@@ -654,14 +681,16 @@
     materialForm.reset();
     materialForm.elements.materialId.value = material?.id || "";
     materialForm.elements.title.value = material?.title || "";
-    materialForm.elements.type.value = material?.type || "notes";
-    materialForm.elements.sectionId.value = material?.sectionId || "human_society";
+    materialForm.elements.type.value = material?.type || "additional";
+    materialForm.elements.scope.value = material?.scope || "course";
+    materialForm.elements.sectionId.value = material?.sectionId || "";
     materialForm.elements.topicId.value = material?.topicId || "";
+    materialForm.elements.subtitle.value = material?.subtitle || "";
     materialForm.elements.status.value = material?.status || "published";
     materialForm.elements.sortOrder.value = material?.sortOrder || 0;
     materialForm.elements.referenceKey.value = material?.referenceKey || "";
     materialForm.elements.contentVersion.value = material?.contentVersion || "";
-    filterMaterialTopicOptions();
+    syncMaterialScopeFields();
     materialForm.elements.file.required = !material;
     document.querySelector("[data-material-dialog-title]").textContent = material ? "Изменить материал" : "Новый материал";
     document.querySelector("[data-material-file-help]").textContent = material ? `— оставить пустым или заменить файл «${feedbackRenderer.displayFilename(material.fileName)}»` : "— PDF, DOCX, JPG или PNG; до 25 МБ";
@@ -682,6 +711,7 @@
       submissions = inboxPayload.submissions;
       inboxCounts = inboxPayload.counts;
       courseTopics = catalogPayload.topics || [];
+      courseSections = catalogPayload.sections || [];
       scheduleEvents = schedulePayload.events || [];
       adminTests = testsPayload.tests || [];
       materials = materialsPayload.materials || [];
@@ -811,8 +841,8 @@
   });
   document.querySelectorAll("[data-schedule-filter]").forEach((filter) => filter.addEventListener("change", renderSchedule));
   document.querySelectorAll("[data-material-filter]").forEach((filter) => filter.addEventListener(filter.type === "search" ? "input" : "change", renderMaterials));
-  materialForm.elements.sectionId.addEventListener("change", filterMaterialTopicOptions);
-  materialForm.elements.type.addEventListener("change", filterMaterialTopicOptions);
+  materialForm.elements.scope.addEventListener("change", () => syncMaterialScopeFields(true));
+  materialForm.elements.sectionId.addEventListener("change", () => syncMaterialScopeFields(false));
   document.querySelector("[data-test-search]").addEventListener("input", renderAdminTests);
   testList.addEventListener("click", (event) => {
     const button = event.target.closest("[data-edit-test]");
@@ -1017,8 +1047,9 @@
     document.querySelector("[data-material-message]").textContent = "";
     try {
       const payload = await api(`/materials/${material.id}`, { method: "PATCH", body: JSON.stringify({ ...materialPayload({ elements: {
-        title: { value: material.title }, type: { value: material.type }, sectionId: { value: material.sectionId },
-        topicId: { value: material.topicId || "" }, referenceKey: { value: material.referenceKey || "" },
+        title: { value: material.title }, type: { value: material.type }, scope: { value: material.scope },
+        sectionId: { value: material.sectionId || "" }, topicId: { value: material.topicId || "" },
+        subtitle: { value: material.subtitle || "" }, referenceKey: { value: material.referenceKey || "" },
         contentVersion: { value: material.contentVersion || "" }, status: { value: status }, sortOrder: { value: material.sortOrder },
       } }) }) });
       materials = materials.map((item) => item.id === material.id ? payload.material : item);

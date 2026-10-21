@@ -323,6 +323,8 @@ button, select, textarea, input { font: inherit; }
   .attempt-row, .material-row { grid-template-columns: 1fr; gap: 8px; }
   .material-actions { grid-column: auto; }
   .material-form-grid { grid-template-columns: 1fr; }
+  .material-form .dialog-actions { align-items: stretch; flex-direction: column-reverse; }
+  .material-form .dialog-actions button { width: 100%; }
   .attempt-question { padding: 15px 13px; }
   .attempt-question dl { grid-template-columns: 1fr; }
   .unified-inbox-compact { grid-template-columns: 1fr; gap: 10px; }

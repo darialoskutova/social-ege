@@ -97,6 +97,7 @@
       <section class="is-hidden" data-panel="materials">
         <div class="section-heading"><div><h1>Материалы</h1><p>Конспекты, задания, планы и пробники, доступные ученикам.</p></div><button class="primary-button" type="button" data-create-material>Добавить материал</button></div>
         <div class="filter-bar material-filters">
+          <label>Область<select data-material-filter="scope"><option value="">Все области</option><option value="course">Весь курс</option><option value="section">Раздел</option><option value="topic">Тема</option></select></label>
           <label>Раздел<select data-material-filter="section"><option value="">Все разделы</option></select></label>
           <label>Тема<select data-material-filter="topic"><option value="">Все темы</option></select></label>
           <label>Тип<select data-material-filter="type"><option value="">Все типы</option><option value="notes">Конспект</option><option value="section_plan">План по разделу</option><option value="additional">Дополнительный материал</option><option value="homework">Домашнее задание</option><option value="thematic_mock">Тематический пробник</option></select></label>
@@ -137,8 +138,10 @@
       <div class="field"><label for="material-title">Название</label><input id="material-title" name="title" maxlength="300" required></div>
       <div class="material-form-grid">
         <div class="field"><label for="material-type">Тип</label><select id="material-type" name="type" required><option value="notes">Конспект</option><option value="section_plan">План по разделу</option><option value="additional">Дополнительный материал</option><option value="homework">Домашнее задание</option><option value="thematic_mock">Тематический пробник</option></select></div>
-        <div class="field"><label for="material-section">Раздел</label><select id="material-section" name="sectionId" required></select></div>
-        <div class="field"><label for="material-topic">Тема <small>— при необходимости</small></label><select id="material-topic" name="topicId"><option value="">Без привязки к теме</option></select></div>
+        <div class="field"><label for="material-scope">Где показывать</label><select id="material-scope" name="scope" required><option value="course">Весь курс</option><option value="section">Раздел</option><option value="topic">Тема</option></select></div>
+        <div class="field" data-material-section-field hidden><label for="material-section">Раздел</label><select id="material-section" name="sectionId"></select></div>
+        <div class="field" data-material-topic-field hidden><label for="material-topic">Тема</label><select id="material-topic" name="topicId"><option value="">Выберите тему</option></select></div>
+        <div class="field"><label for="material-subtitle">Подпись карточки <small>— необязательно</small></label><input id="material-subtitle" name="subtitle" maxlength="180" placeholder="Например, Задание № 24"></div>
         <div class="field"><label for="material-status">Статус</label><select id="material-status" name="status"><option value="published">Опубликован</option><option value="hidden">Скрыт</option><option value="archived">В архиве</option></select></div>
         <div class="field"><label for="material-order">Порядок</label><input id="material-order" name="sortOrder" type="number" min="-10000" max="10000" value="0"></div>
       </div>

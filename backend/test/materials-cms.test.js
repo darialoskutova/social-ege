@@ -62,7 +62,8 @@ function temporaryConfig(maxBytes = 1024 * 1024) {
 function materialRow(overrides = {}) {
   return {
     id: 7, legacy_key: null, title: "Материал", material_type: "notes",
-    section_id: "politics", topic_id: "pol29", reference_key: null,
+    scope_type: "topic", section_id: "politics", topic_id: "pol29",
+    card_subtitle: null, reference_key: null,
     content_version: null, storage_kind: "uploaded", legacy_path: null,
     object_key: "11111111-1111-4111-8111-111111111111.pdf",
     original_filename: "материал.pdf", mime_type: "application/pdf", size_bytes: PDF.length,
@@ -200,14 +201,14 @@ test("material metadata remains in the database after a later read cycle", async
     if (["BEGIN", "COMMIT", "ROLLBACK"].includes(normalized)) return { rows: [] };
     if (normalized.startsWith("SELECT id, legacy_key") && normalized.includes("FOR UPDATE")) return { rows: [{ ...state.row }] };
     if (normalized.startsWith("UPDATE materials SET title")) {
-      Object.assign(state.row, { title: values[1], material_type: values[2], section_id: values[3], topic_id: values[4], reference_key: values[5], content_version: values[6], status: values[7], sort_order: values[8], updated_at: new Date() });
+      Object.assign(state.row, { title: values[1], material_type: values[2], scope_type: values[3], section_id: values[4], topic_id: values[5], card_subtitle: values[6], reference_key: values[7], content_version: values[8], status: values[9], sort_order: values[10], updated_at: new Date() });
       return { rows: [{ ...state.row }] };
     }
     if (normalized.startsWith("INSERT INTO audit_log")) { state.audits.push(values); return { rows: [] }; }
     throw new Error(`Unexpected query: ${normalized}`);
   }
   const pool = { query, async connect() { return { query, release() {} }; } };
-  const updated = await materialService.update(pool, 9, "7", { title: "Сохранённое название", type: "notes", sectionId: "politics", topicId: "pol29", referenceKey: null, contentVersion: null, status: "hidden", sortOrder: 4 });
+  const updated = await materialService.update(pool, 9, "7", { title: "Сохранённое название", type: "notes", scope: "topic", sectionId: "politics", topicId: "pol29", subtitle: null, referenceKey: null, contentVersion: null, status: "hidden", sortOrder: 4 });
   assert.equal(updated.title, "Сохранённое название");
   assert.equal(state.row.title, "Сохранённое название");
   assert.equal(state.row.status, "hidden");
@@ -277,7 +278,7 @@ test("materials admin API returns its workspace list to an admin", async (t) => 
 
 test("admin creates a material through the protected upload endpoint", async (t) => {
   const context = await routerFixture(); t.after(context.close);
-  const metadata = { title: "Новый конспект", type: "notes", sectionId: "politics", topicId: "pol29", referenceKey: null, contentVersion: null, status: "published", sortOrder: 1 };
+  const metadata = { title: "Новый конспект", type: "notes", scope: "topic", sectionId: "politics", topicId: "pol29", subtitle: null, referenceKey: null, contentVersion: null, status: "published", sortOrder: 1 };
   const response = await routeRequest(context, "/api/admin/materials/file", ADMIN_TOKEN, {
     method: "POST",
     headers: { origin: ORIGIN, "content-type": "application/pdf", "x-file-name": encodeURIComponent("конспект.pdf"), "x-material-metadata": encodeURIComponent(JSON.stringify(metadata)) },
@@ -290,7 +291,7 @@ test("admin creates a material through the protected upload endpoint", async (t)
 
 test("student cannot create a material even with valid upload metadata", async (t) => {
   const context = await routerFixture(); t.after(context.close);
-  const metadata = { title: "Чужой файл", type: "notes", sectionId: "politics", topicId: null, referenceKey: null, contentVersion: null, status: "published", sortOrder: 0 };
+  const metadata = { title: "Чужой файл", type: "notes", scope: "topic", sectionId: "politics", topicId: "pol29", subtitle: null, referenceKey: null, contentVersion: null, status: "published", sortOrder: 0 };
   const response = await routeRequest(context, "/api/admin/materials/file", STUDENT_TOKEN, {
     method: "POST",
     headers: { origin: ORIGIN, "content-type": "application/pdf", "x-file-name": "file.pdf", "x-material-metadata": encodeURIComponent(JSON.stringify(metadata)) },
@@ -354,4 +355,126 @@ test("admin and student frontends are wired to the materials registry without ex
   assert.match(index, /learningRequest\("\/materials"\)/);
   assert.match(index, /materialsLoaded/);
   assert.doesNotMatch(index, /object_key|legacy_path/);
+});
+
+function scopedMetadata(overrides = {}) {
+  return {
+    title: "Новый материал",
+    type: "additional",
+    scope: "course",
+    sectionId: null,
+    topicId: null,
+    subtitle: "Для подготовки",
+    referenceKey: null,
+    contentVersion: null,
+    status: "published",
+    sortOrder: 10,
+    ...overrides,
+  };
+}
+
+function createMaterialRequest(context, metadata, token = ADMIN_TOKEN) {
+  return routeRequest(context, "/api/admin/materials/file", token, {
+    method: "POST",
+    headers: {
+      origin: ORIGIN,
+      "content-type": "application/pdf",
+      "x-file-name": encodeURIComponent("материал.pdf"),
+      "x-material-metadata": encodeURIComponent(JSON.stringify(metadata)),
+    },
+    body: PDF,
+  });
+}
+
+test("admin creates a course-scoped material without section or topic", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const response = await createMaterialRequest(context, scopedMetadata());
+  assert.equal(response.status, 201);
+  assert.deepEqual(context.calls.at(-1).metadata, scopedMetadata());
+});
+
+test("admin creates a section-scoped material", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const metadata = scopedMetadata({ scope: "section", sectionId: "politics" });
+  assert.equal((await createMaterialRequest(context, metadata)).status, 201);
+  assert.equal(context.calls.at(-1).metadata.sectionId, "politics");
+});
+
+test("admin creates a topic-scoped material from the canonical topic catalog", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const metadata = scopedMetadata({ scope: "topic", sectionId: "politics", topicId: "pol29" });
+  assert.equal((await createMaterialRequest(context, metadata)).status, 201);
+  assert.equal(context.calls.at(-1).metadata.topicId, "pol29");
+});
+
+test("admin API rejects course scope with forged topic metadata", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ topicId: "pol29" }))).status, 400);
+});
+
+test("admin API rejects section scope without section", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ scope: "section" }))).status, 400);
+});
+
+test("admin API rejects topic scope without topic", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ scope: "topic", sectionId: "politics" }))).status, 400);
+});
+
+test("admin API rejects a topic belonging to another section", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ scope: "topic", sectionId: "law", topicId: "pol29" }))).status, 400);
+});
+
+test("admin API rejects invalid scope and excessive subtitle", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ scope: "other" }))).status, 400);
+  assert.equal((await createMaterialRequest(context, scopedMetadata({ subtitle: "я".repeat(181) }))).status, 400);
+});
+
+test("admin edit can clear topic when moving a material to section scope", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const metadata = scopedMetadata({ scope: "section", sectionId: "politics", topicId: null });
+  const response = await routeRequest(context, "/api/admin/materials/7", ADMIN_TOKEN, {
+    method: "PATCH",
+    headers: { origin: ORIGIN, "content-type": "application/json" },
+    body: JSON.stringify(metadata),
+  });
+  assert.equal(response.status, 200);
+  assert.equal((await response.json()).material.topicId, null);
+});
+
+test("admin edit can clear section and topic when moving to course scope", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const metadata = scopedMetadata({ sectionId: null, topicId: null });
+  const response = await routeRequest(context, "/api/admin/materials/7", ADMIN_TOKEN, {
+    method: "PATCH",
+    headers: { origin: ORIGIN, "content-type": "application/json" },
+    body: JSON.stringify(metadata),
+  });
+  assert.equal(response.status, 200);
+  const material = (await response.json()).material;
+  assert.deepEqual([material.scope, material.sectionId, material.topicId], ["course", null, null]);
+});
+
+test("admin edit accepts published hidden and archived lifecycle states", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  for (const status of ["published", "hidden", "archived"]) {
+    const response = await routeRequest(context, "/api/admin/materials/7", ADMIN_TOKEN, {
+      method: "PATCH",
+      headers: { origin: ORIGIN, "content-type": "application/json" },
+      body: JSON.stringify(scopedMetadata({ status })),
+    });
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).material.status, status);
+  }
+});
+
+test("admin course catalog returns the canonical sections used by material scope", async (t) => {
+  const context = await routerFixture(); t.after(context.close);
+  const response = await routeRequest(context, "/api/admin/course-catalog", ADMIN_TOKEN);
+  assert.equal(response.status, 200);
+  const payload = await response.json();
+  assert.deepEqual(payload.sections.map((section) => section.id), ["human_society", "social_relations", "economics", "politics", "law"]);
 });

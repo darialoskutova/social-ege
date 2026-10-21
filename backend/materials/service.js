@@ -70,8 +70,10 @@ function legacySeeds() {
         title: type === "notes" ? `Конспект · ${topic.title}`
           : type === "homework" ? `Вторая часть · ${topic.title}` : `Дополнительный материал · ${topic.title}`,
         type,
+        scope: "topic",
         sectionId: catalog.sectionId,
         topicId: topic.id,
+        subtitle: null,
         legacyPath,
         originalFilename: path.basename(legacyPath),
         mimeType: mimeFor(legacyPath),
@@ -88,8 +90,10 @@ function legacySeeds() {
     legacyKey: `section-plan:${sectionId}`,
     title,
     type: "section_plan",
+    scope: "section",
     sectionId,
     topicId: null,
+    subtitle: "Задание № 24",
     legacyPath,
     originalFilename: path.basename(legacyPath),
     mimeType: "application/pdf",
@@ -99,8 +103,10 @@ function legacySeeds() {
     legacyKey: `mock:${mock.mockId}:${mock.contentVersion}`,
     title: `${mock.title} · вариант ${mock.variant}`,
     type: "thematic_mock",
+    scope: "section",
     sectionId: mock.focusSection,
     topicId: null,
+    subtitle: null,
     referenceKey: mock.mockId,
     contentVersion: mock.contentVersion,
     legacyPath: mock.downloadPath,
@@ -116,22 +122,23 @@ async function ensureLegacyMaterials(pool) {
   const promise = (async () => {
     const rows = legacySeeds().map((seed) => ({
       legacy_key: seed.legacyKey, title: seed.title, material_type: seed.type,
-      section_id: seed.sectionId, topic_id: seed.topicId,
+      scope_type: seed.scope, section_id: seed.sectionId, topic_id: seed.topicId,
+      card_subtitle: seed.subtitle,
       reference_key: seed.referenceKey || null, content_version: seed.contentVersion || null,
       legacy_path: seed.legacyPath, original_filename: seed.originalFilename,
       mime_type: seed.mimeType, sort_order: seed.sortOrder,
     }));
     await pool.query(
       `INSERT INTO materials (
-         legacy_key, title, material_type, section_id, topic_id, reference_key,
-         content_version, storage_kind, legacy_path, original_filename,
+         legacy_key, title, material_type, scope_type, section_id, topic_id,
+         card_subtitle, reference_key, content_version, storage_kind, legacy_path, original_filename,
          mime_type, status, sort_order
-       ) SELECT legacy_key, title, material_type, section_id, topic_id, reference_key,
-                content_version, 'legacy', legacy_path, original_filename,
+       ) SELECT legacy_key, title, material_type, scope_type, section_id, topic_id,
+                card_subtitle, reference_key, content_version, 'legacy', legacy_path, original_filename,
                 mime_type, 'published', sort_order
            FROM jsonb_to_recordset($1::JSONB) AS seed(
-             legacy_key TEXT, title TEXT, material_type TEXT, section_id TEXT,
-             topic_id TEXT, reference_key TEXT, content_version TEXT,
+             legacy_key TEXT, title TEXT, material_type TEXT, scope_type TEXT, section_id TEXT,
+             topic_id TEXT, card_subtitle TEXT, reference_key TEXT, content_version TEXT,
              legacy_path TEXT, original_filename TEXT, mime_type TEXT, sort_order INTEGER
            )
        ON CONFLICT (legacy_key) DO NOTHING`,
@@ -142,7 +149,8 @@ async function ensureLegacyMaterials(pool) {
   try { await promise; } catch (error) { seedPromises.delete(pool); throw error; }
 }
 
-const columns = `id, legacy_key, title, material_type, section_id, topic_id,
+const columns = `id, legacy_key, title, material_type, scope_type, section_id, topic_id,
+  card_subtitle,
   reference_key, content_version, storage_kind, legacy_path, object_key,
   original_filename, mime_type, size_bytes, status, sort_order, created_at, updated_at`;
 
@@ -152,9 +160,11 @@ function serialize(row, admin = false) {
     title: row.title,
     type: row.material_type,
     typeLabel: TYPE_LABELS[row.material_type] || row.material_type,
+    scope: row.scope_type,
     sectionId: row.section_id,
     sectionLabel: SECTION_LABELS[row.section_id] || row.section_id,
     topicId: row.topic_id || null,
+    subtitle: row.card_subtitle || null,
     referenceKey: row.reference_key || null,
     contentVersion: row.content_version || null,
     fileName: row.original_filename,
@@ -177,6 +187,7 @@ async function listAdmin(pool, filters = {}) {
   const clauses = [];
   const values = [];
   const add = (sql, value) => { values.push(value); clauses.push(sql.replace("?", `$${values.length}`)); };
+  if (filters.scope) add("scope_type = ?", filters.scope);
   if (filters.sectionId) add("section_id = ?", filters.sectionId);
   if (filters.topicId) add("topic_id = ?", filters.topicId);
   if (filters.type) add("material_type = ?", filters.type);
@@ -184,12 +195,13 @@ async function listAdmin(pool, filters = {}) {
   if (filters.search) {
     values.push(filters.search);
     clauses.push(`(title ILIKE '%' || $${values.length} || '%'
+      OR card_subtitle ILIKE '%' || $${values.length} || '%'
       OR original_filename ILIKE '%' || $${values.length} || '%')`);
   }
   const where = clauses.length ? `WHERE ${clauses.join(" AND ")}` : "";
   const { rows } = await pool.query(
     `SELECT ${columns} FROM materials ${where}
-      ORDER BY section_id, topic_id NULLS FIRST, material_type, sort_order, id`,
+      ORDER BY scope_type, section_id NULLS FIRST, topic_id NULLS FIRST, sort_order, id`,
     values,
   );
   return rows.map((row) => serialize(row, true));
@@ -199,7 +211,7 @@ async function listPublished(pool) {
   await ensureLegacyMaterials(pool);
   const { rows } = await pool.query(
     `SELECT ${columns} FROM materials WHERE status = 'published'
-      ORDER BY section_id, topic_id NULLS FIRST, material_type, sort_order, id`,
+      ORDER BY scope_type, section_id NULLS FIRST, topic_id NULLS FIRST, sort_order, id`,
   );
   return rows.map((row) => serialize(row, false));
 }
@@ -218,13 +230,15 @@ async function create(pool, actorId, metadata, req, config) {
     const row = await withTransaction(pool, async (client) => {
       const result = await client.query(
         `INSERT INTO materials (
-           title, material_type, section_id, topic_id, reference_key, content_version,
+           title, material_type, scope_type, section_id, topic_id, card_subtitle,
+           reference_key, content_version,
            storage_kind, object_key, original_filename, mime_type, size_bytes,
            status, sort_order, created_by, updated_by
-         ) VALUES ($1, $2, $3, $4, $5, $6, 'uploaded', $7, $8, $9, $10, $11, $12, $13, $13)
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'uploaded', $9, $10, $11, $12, $13, $14, $15, $15)
          RETURNING ${columns}`,
-        [metadata.title, metadata.type, metadata.sectionId, metadata.topicId || null,
-          metadata.referenceKey || null, metadata.contentVersion || null, uploaded.objectKey,
+        [metadata.title, metadata.type, metadata.scope, metadata.sectionId || null,
+          metadata.topicId || null, metadata.subtitle || null, metadata.referenceKey || null,
+          metadata.contentVersion || null, uploaded.objectKey,
           uploaded.originalFilename, uploaded.mimeType, uploaded.sizeBytes,
           metadata.status, metadata.sortOrder || 0, actorId],
       );
@@ -246,12 +260,14 @@ async function update(pool, actorId, id, metadata) {
     if (!current.rows[0]) throw new HttpError(404, "material_not_found", "Материал не найден");
     const before = current.rows[0];
     const result = await client.query(
-      `UPDATE materials SET title = $2, material_type = $3, section_id = $4,
-         topic_id = $5, reference_key = $6, content_version = $7, status = $8,
-         sort_order = $9, updated_by = $10, updated_at = NOW()
+      `UPDATE materials SET title = $2, material_type = $3, scope_type = $4,
+         section_id = $5, topic_id = $6, card_subtitle = $7, reference_key = $8,
+         content_version = $9, status = $10, sort_order = $11,
+         updated_by = $12, updated_at = NOW()
        WHERE id = $1 RETURNING ${columns}`,
-      [id, metadata.title, metadata.type, metadata.sectionId, metadata.topicId || null,
-        metadata.referenceKey || null, metadata.contentVersion || null, metadata.status,
+      [id, metadata.title, metadata.type, metadata.scope, metadata.sectionId || null,
+        metadata.topicId || null, metadata.subtitle || null, metadata.referenceKey || null,
+        metadata.contentVersion || null, metadata.status,
         metadata.sortOrder || 0, actorId],
     );
     const action = before.status !== metadata.status ? `material.${metadata.status}` : "material.updated";

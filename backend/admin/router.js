@@ -22,7 +22,14 @@ const defaultStudyPlanService = require("../study-plan/service");
 const defaultTestService = require("../tests/service");
 const defaultMaterialService = require("../materials/service");
 const { readMaterialConfig } = require("../materials/service");
-const { courseTopics } = require("../study-plan/course-catalog");
+const {
+  materialMetadataSchema,
+  materialScopeSchema,
+  materialSectionSchema,
+  materialStatusSchema,
+  materialTypeSchema,
+} = require("../materials/metadata");
+const { courseTopics, sectionRules } = require("../study-plan/course-catalog");
 const conversationService = require("../conversations/service");
 const inboxService = require("../inbox/service");
 const {
@@ -82,28 +89,6 @@ const reviewSchema = z.object({
   status: z.enum(["in_review", "needs_revision", "accepted"]),
   teacherComment: z.string().trim().max(4000).default(""),
 }).strict();
-const materialTypeSchema = z.enum(["notes", "section_plan", "additional", "homework", "thematic_mock"]);
-const materialStatusSchema = z.enum(["published", "hidden", "archived"]);
-const materialSectionSchema = z.enum(["human_society", "social_relations", "economics", "politics", "law"]);
-const materialMetadataSchema = z.object({
-  title: z.string().trim().min(1).max(300),
-  type: materialTypeSchema,
-  sectionId: materialSectionSchema,
-  topicId: z.string().trim().regex(/^[a-z0-9_-]{1,100}$/).nullable().optional(),
-  referenceKey: z.string().trim().regex(/^[a-z0-9._-]{1,160}$/).nullable().optional(),
-  contentVersion: z.string().trim().regex(/^[a-z0-9._-]{1,80}$/).nullable().optional(),
-  status: materialStatusSchema,
-  sortOrder: z.number().int().min(-10000).max(10000).default(0),
-}).strict().superRefine((value, context) => {
-  if (["notes", "homework"].includes(value.type) && !value.topicId) {
-    context.addIssue({ code: "custom", path: ["topicId"], message: "Для этого типа нужна тема" });
-  }
-  if (!value.topicId) return;
-  const topic = courseTopics.find((item) => item.id === value.topicId);
-  if (!topic || topic.sectionId !== value.sectionId) {
-    context.addIssue({ code: "custom", path: ["topicId"], message: "Тема не относится к выбранному разделу" });
-  }
-});
 const materialIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
 const conversationSubjectTypeSchema = z.enum(["homework", "mock", "test_attempt"]);
 const conversationSubjectIdSchema = z.string().regex(/^[1-9]\d{0,18}$/);
@@ -319,7 +304,10 @@ function createAdminRouter(
   });
 
   router.get("/course-catalog", (req, res) => {
-    res.set("Cache-Control", "no-store").json({ topics: studyPlanService.publicCourseCatalog() });
+    res.set("Cache-Control", "no-store").json({
+      topics: studyPlanService.publicCourseCatalog(),
+      sections: sectionRules.map(({ id, label }) => ({ id, label })),
+    });
   });
 
   router.get(
@@ -356,6 +344,7 @@ function createAdminRouter(
     asyncHandler(async (req, res) => {
       const filters = {};
       const parsers = {
+        scope: materialScopeSchema,
         sectionId: materialSectionSchema,
         type: materialTypeSchema,
         status: materialStatusSchema,
