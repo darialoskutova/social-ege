@@ -8,6 +8,7 @@ const { courseTopics } = require("../study-plan/course-catalog");
 
 const testsById = new Map(definitions.tests.map((test) => [test.id, test]));
 const topicsByTestId = new Map(courseTopics.map((topic) => [topic.testKey, topic]));
+const COMPARISON_MODES = new Set(["exact", "ordered", "set", "unordered"]);
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -23,6 +24,20 @@ function normalizeAnswer(value) {
   return /^[\d\s,;.]+$/.test(normalized) ? normalized.replace(/\D/g, "") : normalized;
 }
 
+function comparisonMode(answer, fallback = null) {
+  const mode = answer?.comparison || fallback || (answer?.type === "checkbox" ? "set" : "exact");
+  if (!COMPARISON_MODES.has(mode)) throw new Error(`Unsupported answer comparison mode: ${mode}`);
+  return mode;
+}
+
+function canonicalizeAnswer(value, comparison = "exact") {
+  const normalized = normalizeAnswer(value);
+  if (comparison === "unordered" && /^\d+$/.test(normalized)) {
+    return [...normalized].sort().join("");
+  }
+  return normalized;
+}
+
 function safeTestId(value) {
   const id = String(value || "");
   if (!/^[a-z0-9_-]{1,120}$/.test(id) || !testsById.has(id)) {
@@ -36,12 +51,25 @@ function compactAnswerKey(testId) {
   if (!source) throw new Error(`Missing answer key for ${testId}`);
   return {
     gradablePoints: Number(source.gradablePoints || 0),
-    answers: Object.fromEntries(Object.entries(source.answers).map(([questionId, answer]) => [questionId, {
-      type: answer.type,
-      points: Number(answer.points || 0),
-      acceptedAnswers: [...(answer.acceptedAnswers || [])],
-    }])),
+    answers: Object.fromEntries(Object.entries(source.answers).map(([questionId, answer]) => {
+      if (!answer.comparison) throw new Error(`Missing answer comparison for ${questionId}`);
+      return [questionId, {
+        type: answer.type,
+        comparison: comparisonMode(answer),
+        points: Number(answer.points || 0),
+        acceptedAnswers: [...(answer.acceptedAnswers || [])],
+      }];
+    })),
   };
+}
+
+function hydrateStoredAnswerKey(testId, source) {
+  const hydrated = clone(source);
+  const baselineAnswers = answerKeys.tests[testId]?.answers || {};
+  Object.entries(hydrated.answers || {}).forEach(([questionId, answer]) => {
+    answer.comparison = comparisonMode(answer, baselineAnswers[questionId]?.comparison);
+  });
+  return hydrated;
 }
 
 function baseline(testId) {
@@ -58,7 +86,7 @@ function baseline(testId) {
 function fromRow(row) {
   return {
     test: row.definition,
-    answerKey: row.answer_key,
+    answerKey: hydrateStoredAnswerKey(row.test_key, row.answer_key),
     version: Number(row.version),
     updatedAt: row.updated_at,
     updatedBy: row.updated_by === null ? null : String(row.updated_by),
@@ -92,8 +120,13 @@ async function historicalTest(pool, testId, version) {
 }
 
 function publicTest(resolved) {
+  const test = clone(resolved.test);
   return {
-    ...clone(resolved.test),
+    ...test,
+    questions: test.questions.map((question) => ({
+      ...question,
+      comparison: resolved.answerKey.answers[question.id]?.comparison || null,
+    })),
     version: resolved.version,
     questionCount: resolved.test.questions.length,
   };
@@ -122,6 +155,7 @@ function adminTest(resolved) {
         id: question.id,
         number: question.number,
         type: question.type,
+        comparison: key.comparison || null,
         prompt: question.prompt || "",
         explanation: question.explanation || null,
         points: Number(key.points || 0),
@@ -288,14 +322,16 @@ async function scoreTest(pool, testId, submittedAnswers) {
     const points = Number(key.points || 0);
     if (points <= 0) continue;
     const submitted = (submittedAnswers?.[questionId] || []).map(String).filter((value) => value.trim());
-    const normalizedSubmitted = submitted.map(normalizeAnswer).sort();
-    const normalizedAccepted = (key.acceptedAnswers || []).map(normalizeAnswer).sort();
-    const isExact = ["checkbox"].includes(key.type);
-    const isCorrect = isExact
+    const comparison = comparisonMode(key);
+    const normalizedSubmitted = submitted.map((value) => canonicalizeAnswer(value, comparison)).sort();
+    const normalizedAccepted = (key.acceptedAnswers || [])
+      .map((value) => canonicalizeAnswer(value, comparison)).sort();
+    const isCorrect = comparison === "set"
       ? sameValues(normalizedSubmitted, normalizedAccepted)
       : normalizedSubmitted.some((value) => normalizedAccepted.includes(value));
     questionResults[questionId] = {
       isCorrect,
+      comparison,
       submittedAnswers: submitted,
       acceptedAnswers: [...(key.acceptedAnswers || [])],
     };
@@ -322,6 +358,7 @@ async function scoreTest(pool, testId, submittedAnswers) {
 
 module.exports = {
   adminTest,
+  canonicalizeAnswer,
   getAdminTest: async (pool, testId) => adminTest(await resolvedTest(pool, testId)),
   getHistoricalTest: historicalTest,
   getStudentTest: async (pool, testId) => publicTest(await resolvedTest(pool, testId)),

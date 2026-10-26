@@ -13331,6 +13331,13 @@
             return /^[\d\s,;.]+$/.test(normalized) ? normalized.replace(/\D/g, "") : normalized;
         }
 
+        function canonicalizeTestAnswer(value, comparison = "exact") {
+            const normalized = normalizeTestAnswer(value);
+            return comparison === "unordered" && /^\d+$/.test(normalized)
+                ? [...normalized].sort().join("")
+                : normalized;
+        }
+
         function clearTestReview(form, shouldReset = true) {
             currentTestReview = null;
             if (shouldReset) form.reset();
@@ -13450,10 +13457,13 @@
                 const answerReview = currentTestReview.questionResults?.[questionId];
                 if (!answerReview) return;
                 const values = correctionFormData.getAll(`correction-${questionId}`).map(String).filter((value) => value.trim());
-                const submitted = values.map(normalizeTestAnswer).sort();
-                const accepted = (answerReview.acceptedAnswers || []).map(normalizeTestAnswer).sort();
                 const question = currentTest.questions.find((item) => item.id === questionId);
-                const isCorrect = question?.type === "checkbox"
+                const comparison = answerReview.comparison || question?.comparison
+                    || (question?.type === "checkbox" ? "set" : "exact");
+                const submitted = values.map((value) => canonicalizeTestAnswer(value, comparison)).sort();
+                const accepted = (answerReview.acceptedAnswers || [])
+                    .map((value) => canonicalizeTestAnswer(value, comparison)).sort();
+                const isCorrect = comparison === "set"
                     ? submitted.length === accepted.length && submitted.every((value, index) => value === accepted[index])
                     : submitted.some((value) => accepted.includes(value));
                 card.classList.toggle("is-corrected", isCorrect);
