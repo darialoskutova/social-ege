@@ -174,11 +174,12 @@ const expectedMigrations = [
     `);
     const expected = {
       materials: 105, plans: 4, mocks: 15, duplicates: 0,
-      threads: 5, messages: 6, attachments: 0,
     };
     for (const [key, value] of Object.entries(expected)) {
       if (counts[key] !== value) throw new Error(`${key}=${counts[key]}, expected ${value}`);
     }
+    // Conversation counts are dynamic production data. Keep them in the
+    // read-only query and log, but never use them as deploy blockers.
     console.log(JSON.stringify(counts));
   } finally {
     await pool.end();
