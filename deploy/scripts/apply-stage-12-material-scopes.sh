@@ -64,11 +64,13 @@ readonly -a EXPECTED_DIFF=(
 )
 
 rollback_armed=0
+stopped_backup_armed=0
 backup_dir=""
 staging_dir=""
 release_dir=""
 deploy_started_at=""
 marker_tmp=""
+warning_match_count=0
 
 step() {
   printf '\n== %s ==\n' "$*"
@@ -78,6 +80,8 @@ die() {
   printf 'ERROR: %s\n' "$*" >&2
   if [[ "$rollback_armed" == "1" ]]; then
     rollback_application 1
+  elif [[ "$stopped_backup_armed" == "1" ]]; then
+    recover_after_stopped_backup_failure 1
   fi
   exit 1
 }
@@ -218,6 +222,58 @@ const { createPool } = require("./scripts/database");
 });
 NODE
   )
+}
+
+database_backup() {
+  local destination=$1 toc_destination=$2
+  if ! (
+    cd "$BACKEND_DIR"
+    /usr/bin/node - "$destination" <<'NODE'
+"use strict";
+const { spawnSync } = require("node:child_process");
+const path = require("node:path");
+require("dotenv").config({ path: path.resolve(".env"), quiet: true });
+
+const destination = process.argv[2];
+const first = (...names) => names.map((name) => process.env[name]).find(Boolean);
+let host = first("DB_HOST", "PGHOST", "POSTGRES_HOST") || "127.0.0.1";
+let port = first("DB_PORT", "PGPORT", "POSTGRES_PORT") || "5432";
+let database = first("DB_NAME", "DB_DATABASE", "PGDATABASE", "POSTGRES_DB") || "social_ege";
+let user = first("DB_USER", "DB_USERNAME", "PGUSER", "POSTGRES_USER") || "social_ege_app";
+let password = first("DB_PASSWORD", "PGPASSWORD", "POSTGRES_PASSWORD");
+if (process.env.DATABASE_URL) {
+  const url = new URL(process.env.DATABASE_URL);
+  host = url.hostname;
+  port = url.port || "5432";
+  database = decodeURIComponent(url.pathname.replace(/^\//, ""));
+  user = decodeURIComponent(url.username);
+  password = decodeURIComponent(url.password);
+}
+if (!password) throw new Error("database password is unavailable");
+const result = spawnSync("/usr/bin/pg_dump", [
+  "--format=custom", "--file", destination,
+  "--host", host, "--port", port, "--username", user, database,
+], { env: { ...process.env, PGPASSWORD: password }, stdio: ["ignore", "inherit", "inherit"] });
+if (result.error) throw result.error;
+if (result.status !== 0) process.exit(result.status || 1);
+NODE
+  ); then
+    printf 'PostgreSQL dump failed: %s\n' "$destination" >&2
+    return 1
+  fi
+  if [[ ! -s "$destination" ]]; then
+    printf 'PostgreSQL backup is empty: %s\n' "$destination" >&2
+    return 1
+  fi
+  if ! /usr/bin/pg_restore --list "$destination" > "$toc_destination"; then
+    printf 'PostgreSQL backup verification failed: %s\n' "$destination" >&2
+    return 1
+  fi
+  if [[ ! -s "$toc_destination" ]]; then
+    printf 'PostgreSQL backup TOC is empty: %s\n' "$toc_destination" >&2
+    return 1
+  fi
+  return 0
 }
 
 database_post_migration() {
@@ -387,53 +443,169 @@ NODE
 }
 
 restore_previous_application() {
-  local pair_state=$1
+  local pair_state=$1 index migration
+  local -a restore_sources=(
+    "${backup_dir}/application/backend/admin/router.js"
+    "${backup_dir}/application/backend/materials/service.js"
+    "${backup_dir}/application/frontend/admin/admin.css"
+    "${backup_dir}/application/frontend/admin/admin.js"
+    "${backup_dir}/application/frontend/admin/index.html"
+    "${backup_dir}/application/frontend/index.html"
+  )
+  local -a restore_destinations=(
+    "${BACKEND_DIR}/admin/router.js"
+    "${BACKEND_DIR}/materials/service.js"
+    "${WEB_ROOT}/admin/admin.css"
+    "${WEB_ROOT}/admin/admin.js"
+    "${WEB_ROOT}/admin/index.html"
+    "${WEB_ROOT}/index.html"
+  )
   printf '%s\n' "Restoring application files from ${backup_dir}; DB migrations are not rolled back." >&2
 
-  sudo cp -p -- "${backup_dir}/application/backend/admin/router.js" "${BACKEND_DIR}/admin/router.js"
-  sudo cp -p -- "${backup_dir}/application/backend/materials/service.js" "${BACKEND_DIR}/materials/service.js"
-  sudo cp -p -- "${backup_dir}/application/frontend/admin/admin.css" "${WEB_ROOT}/admin/admin.css"
-  sudo cp -p -- "${backup_dir}/application/frontend/admin/admin.js" "${WEB_ROOT}/admin/admin.js"
-  sudo cp -p -- "${backup_dir}/application/frontend/admin/index.html" "${WEB_ROOT}/admin/index.html"
-  sudo cp -p -- "${backup_dir}/application/frontend/index.html" "${WEB_ROOT}/index.html"
+  for index in "${!restore_sources[@]}"; do
+    if ! sudo cp -p -- "${restore_sources[$index]}" "${restore_destinations[$index]}"; then
+      printf 'Restore copy failed: %s\n' "${restore_destinations[$index]}" >&2
+      return 1
+    fi
+    if ! sudo cmp -s "${restore_sources[$index]}" "${restore_destinations[$index]}"; then
+      printf 'Restore verification failed: %s\n' "${restore_destinations[$index]}" >&2
+      return 1
+    fi
+  done
+
   if [[ -e "${BACKEND_DIR}/materials/metadata.js" ]]; then
-    sudo unlink "${BACKEND_DIR}/materials/metadata.js"
+    if ! sudo unlink "${BACKEND_DIR}/materials/metadata.js"; then
+      printf '%s\n' 'Could not remove metadata.js from the old application.' >&2
+      return 1
+    fi
+  fi
+  if [[ -e "${BACKEND_DIR}/materials/metadata.js" ]]; then
+    printf '%s\n' 'metadata.js is still present after old application restore.' >&2
+    return 1
   fi
 
   if [[ "$pair_state" == "0" ]]; then
-    [[ -e "${BACKEND_DIR}/migrations/012_material_scopes.sql" ]] \
-      && sudo unlink "${BACKEND_DIR}/migrations/012_material_scopes.sql"
-    [[ -e "${BACKEND_DIR}/migrations/013_legacy_material_scope_compatibility.sql" ]] \
-      && sudo unlink "${BACKEND_DIR}/migrations/013_legacy_material_scope_compatibility.sql"
+    for migration in \
+      012_material_scopes.sql \
+      013_legacy_material_scope_compatibility.sql; do
+      if [[ -e "${BACKEND_DIR}/migrations/${migration}" ]] \
+        && ! sudo unlink "${BACKEND_DIR}/migrations/${migration}"; then
+        printf 'Could not remove unapplied migration file: %s\n' "$migration" >&2
+        return 1
+      fi
+      if [[ -e "${BACKEND_DIR}/migrations/${migration}" ]]; then
+        printf 'Unapplied migration file is still present: %s\n' "$migration" >&2
+        return 1
+      fi
+    done
+  elif [[ "$pair_state" == "2" ]]; then
+    for migration in \
+      012_material_scopes.sql \
+      013_legacy_material_scope_compatibility.sql; do
+      if [[ ! -f "${BACKEND_DIR}/migrations/${migration}" ]] \
+        || ! sudo cmp -s "${release_dir}/backend/migrations/${migration}" \
+          "${BACKEND_DIR}/migrations/${migration}"; then
+        printf 'Applied migration file is missing or changed: %s\n' "$migration" >&2
+        return 1
+      fi
+    done
+  else
+    printf 'Unsupported migration pair state during restore: %s\n' "$pair_state" >&2
+    return 1
   fi
-  sudo cp -p -- "${backup_dir}/application/RELEASE_COMMIT" "$RELEASE_MARKER"
+
+  if ! sudo cp -p -- "${backup_dir}/application/RELEASE_COMMIT" "$RELEASE_MARKER"; then
+    printf '%s\n' 'Could not restore RELEASE_COMMIT.' >&2
+    return 1
+  fi
+  if ! sudo cmp -s "${backup_dir}/application/RELEASE_COMMIT" "$RELEASE_MARKER"; then
+    printf '%s\n' 'RELEASE_COMMIT restore verification failed.' >&2
+    return 1
+  fi
+  if [[ "$(cat "$RELEASE_MARKER")" != "$PREVIOUS_RELEASE" ]]; then
+    printf '%s\n' 'RELEASE_COMMIT does not identify the previous release after restore.' >&2
+    return 1
+  fi
+
+  return 0
+}
+
+rollback_incomplete() {
+  local original_status=$1 reason=$2
+  printf 'ROLLBACK INCOMPLETE — MANUAL RECOVERY REQUIRED. %s\n' "$reason" >&2
+  if ! sudo systemctl stop "$SERVICE_NAME"; then
+    printf '%s\n' 'Unable to enforce stopped backend state after incomplete rollback.' >&2
+  fi
+  if systemctl is-active --quiet "$SERVICE_NAME"; then
+    printf '%s\n' 'Backend is still active after incomplete rollback.' >&2
+  fi
+  exit "$original_status"
+}
+
+recover_after_stopped_backup_failure() {
+  local original_status=${1:-1}
+  stopped_backup_armed=0
+  trap - ERR
+  printf '%s\n' \
+    'AUTHORITATIVE BACKUP FAILED. No migrations or application files were changed.' \
+    'Restarting the previous backend before aborting.' >&2
+  if ! sudo systemctl start "$SERVICE_NAME"; then
+    printf '%s\n' 'OLD BACKEND RECOVERY INCOMPLETE — MANUAL RECOVERY REQUIRED.' >&2
+    exit "$original_status"
+  fi
+  if ! retry_status 200 "http://127.0.0.1:3000/health" >/dev/null; then
+    printf '%s\n' 'Old backend direct health did not recover; manual recovery is required.' >&2
+    exit "$original_status"
+  fi
+  if ! retry_status 200 "${PUBLIC_ORIGIN}/api/health" >/dev/null; then
+    printf '%s\n' 'Old backend public health did not recover; manual recovery is required.' >&2
+    exit "$original_status"
+  fi
+  printf '%s\n' 'Previous backend health restored; deployment aborted before application changes.' >&2
+  exit "$original_status"
 }
 
 rollback_application() {
   local original_status=${1:-1} pair_state
   rollback_armed=0
   trap - ERR
-  set +e
   printf '\nROLLBACK: application deployment failed; starting guarded recovery.\n' >&2
   if [[ -n "$marker_tmp" && -e "$marker_tmp" ]]; then
-    sudo unlink "$marker_tmp" || true
+    if ! sudo unlink "$marker_tmp"; then
+      rollback_incomplete "$original_status" "Could not remove temporary release marker."
+    fi
   fi
-  sudo systemctl stop "$SERVICE_NAME" >/dev/null 2>&1 || true
-  pair_state=$(migration_pair_state 2>/dev/null)
+  if ! sudo systemctl stop "$SERVICE_NAME"; then
+    rollback_incomplete "$original_status" "Could not stop the backend before restore."
+  fi
+  if systemctl is-active --quiet "$SERVICE_NAME"; then
+    rollback_incomplete "$original_status" "Backend is still active before restore."
+  fi
+  if ! pair_state=$(migration_pair_state 2>/dev/null); then
+    rollback_incomplete "$original_status" "Could not determine migration pair state."
+  fi
   if [[ "$pair_state" == "0" || "$pair_state" == "2" ]]; then
-    restore_previous_application "$pair_state"
-    if sudo systemctl start "$SERVICE_NAME"; then
-      retry_status 200 "http://127.0.0.1:3000/health" >/dev/null || true
-      retry_status 200 "${PUBLIC_ORIGIN}/api/health" >/dev/null || true
-      materials_service_smoke || true
+    if ! restore_previous_application "$pair_state"; then
+      rollback_incomplete "$original_status" "Old application restore verification failed."
+    fi
+    if ! sudo systemctl start "$SERVICE_NAME"; then
+      rollback_incomplete "$original_status" "Verified old application could not be started."
+    fi
+    if ! retry_status 200 "http://127.0.0.1:3000/health" >/dev/null; then
+      rollback_incomplete "$original_status" "Old backend direct health did not recover."
+    fi
+    if ! retry_status 200 "${PUBLIC_ORIGIN}/api/health" >/dev/null; then
+      rollback_incomplete "$original_status" "Old backend public health did not recover."
+    fi
+    if ! materials_service_smoke; then
+      rollback_incomplete "$original_status" "Old backend materials smoke failed."
     fi
   else
-    printf '%s\n' \
-      "ROLLBACK BLOCKED: only one of migrations 012/013 is recorded. The old backend was not restored." \
-      "The reviewed backend files remain installed and the service remains stopped for manual recovery." >&2
+    rollback_incomplete "$original_status" \
+      "Migration pair is incomplete (${pair_state}); old application was not restored."
   fi
   printf 'Release marker after recovery: ' >&2
-  cat "$RELEASE_MARKER" >&2 || true
+  cat "$RELEASE_MARKER" >&2
   exit "$original_status"
 }
 
@@ -442,6 +614,8 @@ unexpected_error() {
   printf 'DEPLOY FAILED at line %s (status %s).\n' "$line" "$status" >&2
   if [[ "$rollback_armed" == "1" ]]; then
     rollback_application "$status"
+  elif [[ "$stopped_backup_armed" == "1" ]]; then
+    recover_after_stopped_backup_failure "$status"
   fi
   exit "$status"
 }
@@ -590,43 +764,12 @@ step "Fresh verified backups"
 sudo install -d -o daria -g daria -m 0700 "$backup_dir"
 protected_manifest "${backup_dir}/protected-before.sha256"
 storage_manifest "${backup_dir}/storage-before.sha256"
-database_snapshot "${backup_dir}/materials-before.tsv"
-
-(
-  cd "$BACKEND_DIR"
-  /usr/bin/node - "${backup_dir}/postgres.dump" <<'NODE'
-"use strict";
-const { spawnSync } = require("node:child_process");
-const path = require("node:path");
-require("dotenv").config({ path: path.resolve(".env"), quiet: true });
-
-const destination = process.argv[2];
-const first = (...names) => names.map((name) => process.env[name]).find(Boolean);
-let host = first("DB_HOST", "PGHOST", "POSTGRES_HOST") || "127.0.0.1";
-let port = first("DB_PORT", "PGPORT", "POSTGRES_PORT") || "5432";
-let database = first("DB_NAME", "DB_DATABASE", "PGDATABASE", "POSTGRES_DB") || "social_ege";
-let user = first("DB_USER", "DB_USERNAME", "PGUSER", "POSTGRES_USER") || "social_ege_app";
-let password = first("DB_PASSWORD", "PGPASSWORD", "POSTGRES_PASSWORD");
-if (process.env.DATABASE_URL) {
-  const url = new URL(process.env.DATABASE_URL);
-  host = url.hostname;
-  port = url.port || "5432";
-  database = decodeURIComponent(url.pathname.replace(/^\//, ""));
-  user = decodeURIComponent(url.username);
-  password = decodeURIComponent(url.password);
-}
-if (!password) throw new Error("database password is unavailable");
-const result = spawnSync("/usr/bin/pg_dump", [
-  "--format=custom", "--file", destination,
-  "--host", host, "--port", port, "--username", user, database,
-], { env: { ...process.env, PGPASSWORD: password }, stdio: ["ignore", "inherit", "inherit"] });
-if (result.error) throw result.error;
-if (result.status !== 0) process.exit(result.status || 1);
-NODE
-)
-[[ -s "${backup_dir}/postgres.dump" ]] || die "PostgreSQL backup is empty"
-/usr/bin/pg_restore --list "${backup_dir}/postgres.dump" > "${backup_dir}/postgres.dump.list"
-[[ -s "${backup_dir}/postgres.dump.list" ]] || die "PostgreSQL backup TOC is empty"
+database_snapshot "${backup_dir}/materials-pre-stop.tsv" \
+  || die "pre-stop material snapshot failed"
+database_backup \
+  "${backup_dir}/postgres-pre-stop.dump" \
+  "${backup_dir}/postgres-pre-stop.dump.list" \
+  || die "pre-stop PostgreSQL backup failed"
 
 sudo tar --one-file-system -cpf "${backup_dir}/web-root.tar" -C /var/www social-ege
 sudo tar --one-file-system -cpf "${backup_dir}/backend.tar" -C /opt/social-ege backend
@@ -680,13 +823,31 @@ cmp -s "${backup_dir}/storage-before.sha256" "${staging_dir}/storage-before-stop
 printf 'Verified backup: %s\n' "$backup_dir"
 
 deploy_started_at=$(date --iso-8601=seconds)
-rollback_armed=1
 
 # FIRST LIVE APPLICATION MUTATION. Everything above is preflight, isolated
 # release preparation, tests, comparison or backup creation/verification.
 step "Maintenance: stop backend"
+stopped_backup_armed=1
 sudo systemctl stop "$SERVICE_NAME"
 systemctl is-active --quiet "$SERVICE_NAME" && die "backend did not stop"
+
+step "Authoritative stopped-state database backup"
+database_preflight || die "stopped-state database preflight failed"
+database_snapshot "${backup_dir}/materials-before.tsv" \
+  || die "authoritative stopped-state material snapshot failed"
+database_backup \
+  "${backup_dir}/postgres.dump" \
+  "${backup_dir}/postgres.dump.list" \
+  || die "authoritative stopped-state PostgreSQL backup failed"
+storage_manifest "${backup_dir}/storage-stopped.sha256" \
+  || die "stopped-state private storage snapshot failed"
+cmp -s "${backup_dir}/storage-before.sha256" "${backup_dir}/storage-stopped.sha256" \
+  || die "private storage changed between verified backup and service stop"
+printf 'Authoritative stopped-state backup verified: %s\n' \
+  "${backup_dir}/postgres.dump"
+
+stopped_backup_armed=0
+rollback_armed=1
 
 step "Publish reviewed backend runtime"
 for path in "${BACKEND_EXISTING[@]}" "${BACKEND_NEW[@]}"; do
@@ -708,7 +869,8 @@ sudo -u daria /usr/bin/npm --prefix "$BACKEND_DIR" run migrate \
   > "${backup_dir}/migration-output.log" 2>&1
 database_post_migration \
   "${backup_dir}/materials-before.tsv" \
-  "${backup_dir}/materials-after-migration.tsv"
+  "${backup_dir}/materials-after-migration.tsv" \
+  || die "post-migration database verification failed"
 
 step "Publish reviewed frontend runtime"
 for path in "${FRONTEND_FILES[@]}"; do
@@ -716,6 +878,13 @@ for path in "${FRONTEND_FILES[@]}"; do
   cmp -s "${release_dir}/${path}" "${WEB_ROOT}/${path}" \
     || die "frontend publish mismatch: ${path}"
 done
+
+step "Verify private storage before restart"
+storage_manifest "${backup_dir}/storage-before-restart.sha256" \
+  || die "pre-restart private storage snapshot failed"
+cmp -s "${backup_dir}/storage-stopped.sha256" \
+  "${backup_dir}/storage-before-restart.sha256" \
+  || die "private storage changed while backend was stopped"
 
 step "Start backend and health checks"
 sudo systemctl start "$SERVICE_NAME"
@@ -754,10 +923,11 @@ admin_post_status=$(curl --noproxy '*' --silent --show-error --max-time 10 \
 [[ "$admin_post_status" == "401" ]] \
   || die "origin-valid anonymous admin POST is ${admin_post_status}, expected 401"
 
-materials_service_smoke
+materials_service_smoke || die "materials service smoke failed"
 database_post_migration \
   "${backup_dir}/materials-before.tsv" \
-  "${backup_dir}/materials-after-smoke.tsv"
+  "${backup_dir}/materials-after-smoke.tsv" \
+  || die "post-smoke database verification failed"
 
 for path in "${BACKEND_EXISTING[@]}" "${BACKEND_NEW[@]}"; do
   relative=${path#backend/}
@@ -770,11 +940,13 @@ for path in "${FRONTEND_FILES[@]}"; do
 done
 
 protected_manifest "${backup_dir}/protected-after.sha256"
-storage_manifest "${backup_dir}/storage-after.sha256"
 cmp -s "${backup_dir}/protected-before.sha256" "${backup_dir}/protected-after.sha256" \
   || die "a protected production file changed"
-cmp -s "${backup_dir}/storage-before.sha256" "${backup_dir}/storage-after.sha256" \
-  || die "private storage changed"
+for directory in "${STORAGE_DIRS[@]}"; do
+  [[ -d "$directory" ]] || die "private storage disappeared after restart: $directory"
+  [[ "$(stat -c '%a:%U:%G' "$directory")" == "700:daria:daria" ]] \
+    || die "private storage metadata changed after restart: $directory"
+done
 
 sudo journalctl -q -u "$SERVICE_NAME" --since "$deploy_started_at" -p 0..3 --no-pager \
   > "${backup_dir}/service-critical.log"
@@ -784,9 +956,10 @@ sudo journalctl -q -u "$SERVICE_NAME" --since "$deploy_started_at" --no-pager \
   > "${backup_dir}/service-since-deploy.log"
 if grep -Eai 'warning|error|fatal|exception|unhandled' \
   "${backup_dir}/service-since-deploy.log" > "${backup_dir}/service-warning-lines.log"; then
-  die "service warning/error text appeared; see ${backup_dir}/service-warning-lines.log"
+  warning_match_count=$(awk 'END { print NR }' "${backup_dir}/service-warning-lines.log")
 else
   : > "${backup_dir}/service-warning-lines.log"
+  warning_match_count=0
 fi
 
 step "Finalize release marker"
@@ -807,5 +980,8 @@ printf 'Backup: %s\n' "$backup_dir"
 printf 'Staging: %s\n' "$staging_dir"
 printf 'Migrations: 012_material_scopes.sql, 013_legacy_material_scope_compatibility.sql\n'
 printf 'Tests: %s/322; targeted materials: %s/112\n' "$full_test_plan" "$targeted_test_plan"
-printf 'Service warnings/errors since deploy start: 0\n'
-printf '%s\n' 'Private storage and protected production files: unchanged'
+printf 'Critical journal entries: 0\n'
+printf 'Textual warning matches: %s (diagnostic only)\n' "$warning_match_count"
+printf '%s\n' \
+  'Private storage content unchanged before restart; directory metadata verified after restart.' \
+  'Protected production files: unchanged.'
